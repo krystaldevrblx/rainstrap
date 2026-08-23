@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -133,7 +133,7 @@
     <value>برای حذف نصب، ابتدا باید بلاکسترپ را نصب کنید.</value>
   </data>
   <data name="Bootstrapper.NotEnoughSpace" xml:space="preserve">
-    <value>Fishstrap فضای کافی برای دانلود و نصب Roblox ندارد. لطفاً مقداری حافظه را آزاد کنید و دوباره تلاش کنید.</value>
+    <value>Rainstrap فضای کافی برای دانلود و نصب Roblox ندارد. لطفاً مقداری حافظه را آزاد کنید و دوباره تلاش کنید.</value>
   </data>
   <data name="Bootstrapper.Status.ApplyingModifications" xml:space="preserve">
     <value>در حال اعمال کردن تغییرات روبلاکس...</value>
@@ -169,10 +169,10 @@
     <comment>Text for style previews that use text button that says "Cancel"</comment>
   </data>
   <data name="Bootstrapper.SuccessfullyUninstalled" xml:space="preserve">
-    <value>Fishstrap با موفقیت حذف شد</value>
+    <value>Rainstrap با موفقیت حذف شد</value>
   </data>
   <data name="Bootstrapper.Uninstall.RobloxRunning" xml:space="preserve">
-    <value>Roblox در حال اجرا است؛ ولی قبل از حذف نصب Fishstrap باید بسته شود. آیا میخواهید Roblox را الان بیندید?</value>
+    <value>Roblox در حال اجرا است؛ ولی قبل از حذف نصب Rainstrap باید بسته شود. آیا میخواهید Roblox را الان بیندید?</value>
   </data>
   <data name="Bootstrapper.WMFNotFound" xml:space="preserve">
     <value>روبلاکس نیاز به استفاده از اجزای Windows Media Foundation میباشد. همانا شما آنرا ندارید؛ و یا ممکن است شما درحال استفاده از نسخه N در Windows باشید. اول آنرا نصب کرده، و بعد روبلاکس را اجرا کنید.</value>
@@ -1100,7 +1100,7 @@
   <data name="Installer.Install.CannotOverwrite" xml:space="preserve">
     <value>بلاکسترپ قبلا در این مسیر نصب شده و هنوز در این مسیر وجود دارد، اما نصب کننده نمیتواند فایل اجرایی قدیمی را بازنویسی کند.
 
-لطفا به طور دستی "Fishstrap.exe" را از مسیر نصب کننده پاک کنید و یا سیستم خود را خاموش و روشن کنید، و بعد از آن دوباره نصب کننده را اجرا کنید.</value>
+لطفا به طور دستی "Rainstrap.exe" را از مسیر نصب کننده پاک کنید و یا سیستم خود را خاموش و روشن کنید، و بعد از آن دوباره نصب کننده را اجرا کنید.</value>
   </data>
   <data name="Common.NotAvailable" xml:space="preserve">
     <value>در دسترس نیست</value>

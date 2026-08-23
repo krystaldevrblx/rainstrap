@@ -1,4 +1,4 @@
-﻿<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.AppearancePage"
+<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.AppearancePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -193,7 +193,7 @@
         </ui:CardExpander>
 
         <controls:OptionControl Header="{x:Static resources:Strings.Menu_Appearance_CustomisationTitle_Title}" Description="{x:Static resources:Strings.Menu_Appearance_CustomisationTitle_Description}">
-            <ui:TextBox PlaceholderText="Fishstrap" Width="200" Text="{Binding Title, Mode=TwoWay}" />
+            <ui:TextBox PlaceholderText="Rainstrap" Width="200" Text="{Binding Title, Mode=TwoWay}" />
         </controls:OptionControl>
 
         <controls:OptionControl x:Name="IconSelector" Header="{x:Static resources:Strings.Menu_Appearance_Icon_Title}" Description="{x:Static resources:Strings.Menu_Appearance_Icon_Description}" HelpLink="https://wiki.fishstrap.app/manual/appearance/#custom-icons">

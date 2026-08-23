@@ -26,6 +26,6 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v7
       with:
-        #name: Fishstrap (Debug) (${{ github.sha }})
-        path: .\Bloxstrap\bin\Debug\net6.0-windows\win-x64\publish\Fishstrap.exe
+        #name: Rainstrap (Debug) (${{ github.sha }})
+        path: .\Bloxstrap\bin\Debug\net6.0-windows\win-x64\publish\Rainstrap.exe
         archive: false

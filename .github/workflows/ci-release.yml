@@ -26,8 +26,8 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v7
       with:
-        #name: Fishstrap (Release) (${{ github.sha }})
-        path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Fishstrap.exe
+        #name: Rainstrap (Release) (${{ github.sha }})
+        path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Rainstrap.exe
         archive: false
 
   release:
@@ -41,18 +41,18 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v8
         #with:
-        #  name: Fishstrap (Release) (${{ github.sha }})
+        #  name: Rainstrap (Release) (${{ github.sha }})
         #  path: release
 
       #- name: Rename binaries
-      #  run: mv release/Fishstrap.exe Fishstrap.exe
+      #  run: mv release/Rainstrap.exe Rainstrap.exe
 
       - name: Create release
         uses: softprops/action-gh-release@v3
         with:
           draft: true
-          files: Fishstrap.exe
-          name: Fishstrap ${{ github.ref_name }}
+          files: Rainstrap.exe
+          name: Rainstrap ${{ github.ref_name }}
           fail_on_unmatched_files: true
 
   release-test:
@@ -66,16 +66,16 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v8
         #with:
-        #  name: Fishstrap (Release) (${{ github.sha }})
+        #  name: Rainstrap (Release) (${{ github.sha }})
         #  path: release
 
       #- name: Rename binaries
-      #  run: mv release/Fishstrap.exe Fishstrap.exe
+      #  run: mv release/Rainstrap.exe Rainstrap.exe
 
       - name: Create release
         uses: softprops/action-gh-release@v3
         with:
           draft: true
-          files: Fishstrap.exe
-          name: Fishstrap ${{ github.ref_name }}
+          files: Rainstrap.exe
+          name: Rainstrap ${{ github.ref_name }}
           fail_on_unmatched_files: true

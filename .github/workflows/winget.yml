@@ -1,14 +1,30 @@
 name: Publish to Winget
 
+# DISABLED for Rainstrap.
+#
+# This workflow still targets the upstream Fishstrap winget package
+# (identifier: Fishstrap.Fishstrap). Running it from this repository would
+# publish Rainstrap releases as updates to the Fishstrap package, which is
+# wrong: Rainstrap (krystaldevrblx/rainstrap) must not publish under the
+# upstream Fishstrap identity, and no Rainstrap winget package exists yet.
+#
+# To re-enable later:
+#   1. Publish a Rainstrap package to winget under its own identifier
+#      (e.g. krystaldevrblx.Rainstrap) via a manual manifest submission.
+#   2. Update "identifier" below to that package id.
+#   3. Configure a WINGET_TOKEN secret for this repository.
+#   4. Remove the "if: false" guard on the publish job.
+
 on:
   release:
     types: [released]
 
 jobs:
   publish:
+    if: false # disabled - do not publish Rainstrap as Fishstrap.Fishstrap; see comment above
     runs-on: windows-latest
     steps:
       - uses: vedantmgoyal9/winget-releaser@main
         with:
-          identifier: Fishstrap.Fishstrap
+          identifier: Fishstrap.Fishstrap # upstream id kept only as historical reference; see comment above
           token: ${{ secrets.WINGET_TOKEN }}

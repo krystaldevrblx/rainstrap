@@ -14,15 +14,15 @@ namespace Bloxstrap
     public partial class App : Application
     {
 #if QA_BUILD
-        public const string ProjectName = "Fishstrap-QA";
+        public const string ProjectName = "Rainstrap-QA";
 #else
-        public const string ProjectName = "Fishstrap";
+        public const string ProjectName = "Rainstrap";
 #endif
-        public const string ProjectOwner = "returnrqt";
-        public const string ProjectRepository = "returnrqt/fishstrap";
-        public const string ProjectDownloadLink = "https://github.com/returnrqt/fishstrap/releases";
+        public const string ProjectOwner = "krystaldevrblx";
+        public const string ProjectRepository = "krystaldevrblx/rainstrap";
+        public const string ProjectDownloadLink = "https://github.com/krystaldevrblx/rainstrap/releases";
         public const string ProjectHelpLink = "https://github.com/bloxstraplabs/bloxstrap/wiki";
-        public const string ProjectSupportLink = "https://github.com/returnrqt/fishstrap/issues/new";
+        public const string ProjectSupportLink = "https://github.com/krystaldevrblx/rainstrap/issues/new";
         public const string ProjectRemoteDataLink = "https://config.fishstrap.app/v1/Data.json";
 
         public const string RobloxPlayerAppName = "RobloxPlayerBeta.exe";

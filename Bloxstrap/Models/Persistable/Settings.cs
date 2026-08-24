@@ -62,5 +62,9 @@ namespace Bloxstrap.Models.Persistable
 
         // mod preset configuration
         public bool UseDisableAppPatch { get; set; } = false;
+
+        public bool MultiInstanceLaunching { get; set; } = false;
+
+        public UpgradeMode UpgradeMode { get; set; } = UpgradeMode.Automatic;
     }
 }

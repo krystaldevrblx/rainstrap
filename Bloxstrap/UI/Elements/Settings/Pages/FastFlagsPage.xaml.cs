@@ -26,6 +26,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             _viewModel = new FastFlagsViewModel();
 
             _viewModel.OpenFlagEditorEvent += OpenFlagEditor;
+            _viewModel.OpenCatalogEvent += OpenCatalog;
             _viewModel.RequestPageReloadEvent += (_, _) => SetupViewModel();
 
             DataContext = _viewModel;
@@ -36,6 +37,14 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             if (Window.GetWindow(this) is INavigationWindow window)
             {
                window.Navigate(typeof(FastFlagEditorPage));
+            }
+        }
+
+        private void OpenCatalog(object? sender, EventArgs e)
+        {
+            if (Window.GetWindow(this) is INavigationWindow window)
+            {
+               window.Navigate(typeof(FastFlagCatalogPage));
             }
         }
 

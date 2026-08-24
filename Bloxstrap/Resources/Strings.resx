@@ -1857,4 +1857,326 @@ Please don't change this setting unless you know what you're doing.</value>
   <data name="Menu.Appearance.WindowManipulationAlert" xml:space="preserve">
     <value>This feature requires window manipulation</value>
   </data>
+  <data name="Menu.Accounts.Title" xml:space="preserve">
+    <value>Account Manager</value>
+  </data>
+  <data name="Common.Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Common.Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Common.Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Menu.Accounts.Description" xml:space="preserve">
+    <value>Save your Roblox accounts and pick which one Rainstrap uses when it launches Roblox. Credentials are read from your local Roblox installation and stored encrypted - they are never shown or logged.</value>
+  </data>
+  <data name="Accounts.AddAccount" xml:space="preserve">
+    <value>Add current account</value>
+  </data>
+  <data name="Accounts.AddHint" xml:space="preserve">
+    <value>To save another account, sign into it in the Roblox app first, then click "Add current account".</value>
+  </data>
+  <data name="Accounts.EmptyTitle" xml:space="preserve">
+    <value>No saved accounts</value>
+  </data>
+  <data name="Accounts.EmptyDescription" xml:space="preserve">
+    <value>Sign into Roblox, then click "Add current account" to save it here.</value>
+  </data>
+  <data name="Accounts.Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Accounts.SetActive" xml:space="preserve">
+    <value>Set active</value>
+  </data>
+  <data name="Accounts.Launch" xml:space="preserve">
+    <value>Launch</value>
+  </data>
+  <data name="Accounts.Launching" xml:space="preserve">
+    <value>Launching...</value>
+  </data>
+  <data name="Accounts.RemoveConfirmTitle" xml:space="preserve">
+    <value>Remove account</value>
+  </data>
+  <data name="Accounts.RemoveConfirmText" xml:space="preserve">
+    <value>Remove '{0}' from the Account Manager? This only removes it from Rainstrap. You will stay signed in inside Roblox.</value>
+  </data>
+  <data name="Accounts.RenameTitle" xml:space="preserve">
+    <value>Rename account</value>
+  </data>
+  <data name="Accounts.CookieAccessDisabled" xml:space="preserve">
+    <value>Cookie access is disabled, so accounts cannot be captured or applied. Enable "Allow cookie access" in Behaviour settings.</value>
+  </data>
+  <data name="Accounts.CaptureFailed" xml:space="preserve">
+    <value>Rainstrap could not read the current Roblox session. Make sure you are signed into the Roblox app and try again.</value>
+  </data>
+  <data name="Accounts.AlreadySaved" xml:space="preserve">
+    <value>'{0}' was already saved - its details were refreshed instead.</value>
+  </data>
+  <data name="Accounts.SwitchNote" xml:space="preserve">
+    <value>The active account is applied automatically when Rainstrap launches Roblox.</value>
+  </data>
+  <data name="Accounts.LastUsed" xml:space="preserve">
+    <value>Last used: {0}</value>
+  </data>
+  <data name="Accounts.LaunchFailed" xml:space="preserve">
+    <value>Rainstrap could not start the launcher process.</value>
+  </data>
+  <data name="MultiInstance.Title" xml:space="preserve">
+    <value>Multi-Instance</value>
+  </data>
+  <data name="MultiInstance.Description" xml:space="preserve">
+    <value>Run multiple Roblox instances at the same time - directly through Rainstrap, no third-party tools.</value>
+  </data>
+  <data name="MultiInstance.Enable.Title" xml:space="preserve">
+    <value>Allow multiple instances</value>
+  </data>
+  <data name="MultiInstance.Enable.Description" xml:space="preserve">
+    <value>Lets you launch additional Roblox instances while one is already running. Roblox itself decides whether an extra instance is allowed; if it refuses one, close the running instance first.</value>
+  </data>
+  <data name="MultiInstance.RunningInstances" xml:space="preserve">
+    <value>Running instances</value>
+  </data>
+  <data name="MultiInstance.NoInstances" xml:space="preserve">
+    <value>No Roblox instances are currently running.</value>
+  </data>
+  <data name="MultiInstance.LaunchAnother" xml:space="preserve">
+    <value>Launch another instance</value>
+  </data>
+  <data name="MultiInstance.StatusRunning" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="MultiInstance.StatusLaunching" xml:space="preserve">
+    <value>Launching...</value>
+  </data>
+  <data name="MultiInstance.StatusError" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="MultiInstance.UnknownAccount" xml:space="preserve">
+    <value>Unknown account</value>
+  </data>
+  <data name="MultiInstance.StartedAt" xml:space="preserve">
+    <value>Started {0}</value>
+  </data>
+  <data name="MultiInstance.ConfirmParallel" xml:space="preserve">
+    <value>A Roblox instance appears to be running already. Launch another one anyway?</value>
+  </data>
+  <data name="MultiInstance.Note" xml:space="preserve">
+    <value>Rainstrap launches each client normally and never modifies or hacks the Roblox process. If Roblox rejects an extra instance (it may exit immediately or show its own error), that restriction comes from Roblox.</value>
+  </data>
+  <data name="Updates.Title" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="Updates.Description" xml:space="preserve">
+    <value>See which Roblox version you have, which one is available, and how Rainstrap should handle updates.</value>
+  </data>
+  <data name="Updates.CurrentVersion" xml:space="preserve">
+    <value>Installed version</value>
+  </data>
+  <data name="Updates.AvailableVersion" xml:space="preserve">
+    <value>Available version</value>
+  </data>
+  <data name="Updates.NotChecked" xml:space="preserve">
+    <value>Not checked yet - use "Check for updates".</value>
+  </data>
+  <data name="Updates.UpToDate" xml:space="preserve">
+    <value>You're up to date</value>
+  </data>
+  <data name="Updates.UpToDateDescription" xml:space="preserve">
+    <value>Your installed Roblox version matches the latest available one.</value>
+  </data>
+  <data name="Updates.UpdateAvailable" xml:space="preserve">
+    <value>An update is available</value>
+  </data>
+  <data name="Updates.UpdateAvailableDescription" xml:space="preserve">
+    <value>A newer Roblox version is available on this channel. It will be installed on your next launch (or after your approval, depending on the mode below).</value>
+  </data>
+  <data name="Updates.CheckNow" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Updates.Checking" xml:space="preserve">
+    <value>Checking...</value>
+  </data>
+  <data name="Updates.LastChecked" xml:space="preserve">
+    <value>Last checked: {0}</value>
+  </data>
+  <data name="Updates.LastCheckedLabel" xml:space="preserve">
+    <value>Last update check</value>
+  </data>
+  <data name="Updates.LatencyLabel" xml:space="preserve">
+    <value>Web API latency</value>
+  </data>
+  <data name="Updates.LatencyNotMeasured" xml:space="preserve">
+    <value>Not measured yet - run a check first.</value>
+  </data>
+  <data name="Updates.CheckFailedTitle" xml:space="preserve">
+    <value>Unable to check for updates</value>
+  </data>
+  <data name="Updates.BehaviorHeader" xml:space="preserve">
+    <value>Update behavior</value>
+  </data>
+  <data name="Updates.Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="Updates.CurrentChannel" xml:space="preserve">
+    <value>Channel: {0}</value>
+  </data>
+  <data name="Updates.ApiLatency" xml:space="preserve">
+    <value>Web API latency: {0} ms (measured)</value>
+  </data>
+  <data name="Updates.UpgradeMode.Title" xml:space="preserve">
+    <value>Roblox updates</value>
+  </data>
+  <data name="Updates.UpgradeMode.Description" xml:space="preserve">
+    <value>"Ask before updating" keeps your current version when you decline, until Roblox stops supporting it. If a launch fails because the held version is no longer accepted, updating becomes required - this is enforced by Roblox and cannot be bypassed safely.</value>
+  </data>
+  <data name="Updates.UpgradeMode.Automatic" xml:space="preserve">
+    <value>Automatic (recommended)</value>
+  </data>
+  <data name="Updates.UpgradeMode.Notify" xml:space="preserve">
+    <value>Ask before updating</value>
+  </data>
+  <data name="Updates.ForcedNote" xml:space="preserve">
+    <value>Roblox requires clients to run a supported version. When Roblox enforces an update, Rainstrap cannot skip it - attempts to do so would break launching.</value>
+  </data>
+  <data name="Updates.CheckFailed" xml:space="preserve">
+    <value>Could not check for updates: {0}</value>
+  </data>
+  <data name="Bootstrapper.Dialog.UpdateAvailable" xml:space="preserve">
+    <value>A new Roblox version ({0}) is available.
+
+Update now?
+
+If you choose No, Rainstrap will keep your current version for now. If Roblox no longer supports that version, the next launch may fail until you update.</value>
+  </data>
+  <data name="Menu.FastFlags.Catalog.Open.Title" xml:space="preserve">
+    <value>FastFlag catalog</value>
+  </data>
+  <data name="Menu.FastFlags.Catalog.Open.Description" xml:space="preserve">
+    <value>Browse known FastFlags by category, with descriptions, value editing and per-flag reset.</value>
+  </data>
+  <data name="Catalog.SearchHint" xml:space="preserve">
+    <value>Search flags...</value>
+  </data>
+  <data name="Catalog.AllCategories" xml:space="preserve">
+    <value>All categories</value>
+  </data>
+  <data name="Catalog.Category.Performance" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="Catalog.Category.FPS" xml:space="preserve">
+    <value>FPS</value>
+  </data>
+  <data name="Catalog.Category.Rendering" xml:space="preserve">
+    <value>Rendering</value>
+  </data>
+  <data name="Catalog.Category.Network" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="Catalog.Category.UI" xml:space="preserve">
+    <value>Interface</value>
+  </data>
+  <data name="Catalog.Category.Visuals" xml:space="preserve">
+    <value>Visual quality</value>
+  </data>
+  <data name="Catalog.Category.Optimization" xml:space="preserve">
+    <value>Optimization</value>
+  </data>
+  <data name="Catalog.Category.Debug" xml:space="preserve">
+    <value>Debugging</value>
+  </data>
+  <data name="Catalog.Modified" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="Catalog.ResetOne" xml:space="preserve">
+    <value>Reset flag</value>
+  </data>
+  <data name="Catalog.ResetAll" xml:space="preserve">
+    <value>Reset all catalog flags</value>
+  </data>
+  <data name="Catalog.ResetAllConfirm" xml:space="preserve">
+    <value>Remove every flag listed in the catalog from your FastFlag configuration?</value>
+  </data>
+  <data name="Catalog.Preset.Performance" xml:space="preserve">
+    <value>Recommended performance</value>
+  </data>
+  <data name="Catalog.Preset.LowLatency" xml:space="preserve">
+    <value>Low latency</value>
+  </data>
+  <data name="Catalog.Preset.UIMinimal" xml:space="preserve">
+    <value>Minimal UI</value>
+  </data>
+  <data name="Catalog.PresetApplied" xml:space="preserve">
+    <value>Preset applied: {0}</value>
+  </data>
+  <data name="Catalog.PresetNote" xml:space="preserve">
+    <value>Presets only change flags listed in this catalog. Everything else stays as-is.</value>
+  </data>
+  <data name="Catalog.ImportedCount" xml:space="preserve">
+    <value>Imported {0} flags from file.</value>
+  </data>
+  <data name="Catalog.ExportDone" xml:space="preserve">
+    <value>Configuration exported.</value>
+  </data>
+  <data name="Catalog.ImportFailed" xml:space="preserve">
+    <value>Import failed: {0}</value>
+  </data>
+  <data name="Catalog.NoResults" xml:space="preserve">
+    <value>No flags match your search.</value>
+  </data>
+  <data name="Catalog.NetworkEmpty" xml:space="preserve">
+    <value>There are no network flags listed here yet. Roblox networking is mostly controlled by the server, and community flags claiming large ping reductions are unreliable - so none are recommended.</value>
+  </data>
+  <data name="Catalog.Flag.DFIntTaskSchedulerTargetFps.Desc" xml:space="preserve">
+    <value>Caps the target frames-per-second of the client. Values above your monitor's refresh rate only help if your hardware can keep up. (number)</value>
+  </data>
+  <data name="Catalog.Flag.FFlagDebugGraphicsPreferD3D11.Desc" xml:space="preserve">
+    <value>Prefers the Direct3D 11 graphics API. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.FFlagDebugGraphicsPreferVulkan.Desc" xml:space="preserve">
+    <value>Prefers the Vulkan graphics API. Can improve FPS on some systems and cause problems on others. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.FFlagDebugGraphicsDisableDirect3D11.Desc" xml:space="preserve">
+    <value>Disables Direct3D 11 so the engine falls back to another API. Troubleshooting only. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.DFIntDebugFRMQualityLevelOverride.Desc" xml:space="preserve">
+    <value>Overrides the automatic frame-rate-manager quality level (1 = lowest, 21 = highest). (number)</value>
+  </data>
+  <data name="Catalog.Flag.FIntDebugForceMSAASamples.Desc" xml:space="preserve">
+    <value>Forces anti-aliasing sample count. Higher looks smoother but costs performance. (number)</value>
+  </data>
+  <data name="Catalog.Flag.DFFlagDisableDPIScale.Desc" xml:space="preserve">
+    <value>Disables Roblox's DPI scaling adjustments. Useful for fixing blurriness on scaled displays. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.DFIntCanHideGuiGroupId.Desc" xml:space="preserve">
+    <value>Lets members of the given group id hide in-experience GUI. (number)</value>
+  </data>
+  <data name="Catalog.Flag.FFlagUserShowGuiHideToggles.Desc" xml:space="preserve">
+    <value>Shows GUI hide toggles. Experimental interface control. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.FFlagDebugDisplayFPS.Desc" xml:space="preserve">
+    <value>Shows an on-screen FPS counter overlay. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.FFlagDebugRenderForceTechnologyVoxel.Desc" xml:space="preserve">
+    <value>Forces the older Voxel lighting technology, which is cheaper to render. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.FFlagDebugForceFutureIsBrightPhase3.Desc" xml:space="preserve">
+    <value>Forces Future lighting. Looks more realistic but is heavier. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.FFlagDebugSkyGray.Desc" xml:space="preserve">
+    <value>Replaces the skybox with flat gray, cutting rendering work outdoors. (True/False)</value>
+  </data>
+  <data name="Catalog.Flag.DFIntCSGLevelOfDetailSwitchingDistance.Desc" xml:space="preserve">
+    <value>Base distance threshold for switching mesh detail levels. Lower values use less memory at range. (number)</value>
+  </data>
+  <data name="Catalog.Flag.DFIntCSGLevelOfDetailSwitchingDistanceL12.Desc" xml:space="preserve">
+    <value>Mesh detail switching distance, level 1-2 band. Part of the mesh LOD group. (number)</value>
+  </data>
+  <data name="Catalog.Flag.DFIntCSGLevelOfDetailSwitchingDistanceL23.Desc" xml:space="preserve">
+    <value>Mesh detail switching distance, level 2-3 band. Part of the mesh LOD group. (number)</value>
+  </data>
+  <data name="Catalog.Flag.DFIntCSGLevelOfDetailSwitchingDistanceL34.Desc" xml:space="preserve">
+    <value>Mesh detail switching distance, level 3-4 band. Part of the mesh LOD group. (number)</value>
+  </data>
 </root>

@@ -18,6 +18,10 @@
   </PropertyGroup>
     
   <ItemGroup>
+    <InternalsVisibleTo Include="Harness" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Bloxstrap.ico" />
     <Resource Include="Resources\BootstrapperStyles\TerminalDialog\Powershell.png" />
     <Resource Include="Resources\BootstrapperStyles\TwentyFiveDialog\PlayerLogo.png" />

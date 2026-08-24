@@ -63,6 +63,16 @@ namespace Bloxstrap.Utility
         }
 
         /// <summary>
+        /// Registers the rainhub:// protocol used by the RainHub web dashboard to
+        /// hand server-join launches to Rainstrap. The link format is strictly
+        /// validated on launch (see RainHubDeepLink).
+        /// </summary>
+        public static void RegisterRainHub()
+        {
+            RegisterProtocol("rainhub", "RainHub", Paths.Application, "-rainhub \"%1\"");
+        }
+
+        /// <summary>
         /// Registers file associations for Roblox.Place class
         /// </summary>
         public static void RegisterStudioFileTypes()

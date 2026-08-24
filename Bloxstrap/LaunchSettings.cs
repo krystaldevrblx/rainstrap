@@ -42,6 +42,10 @@ namespace Bloxstrap
 
         public LaunchFlag BloxshadeFlag { get; } = new("bloxshade");
 
+        public LaunchFlag AccountFlag             { get; } = new("account");
+
+        public LaunchFlag RainHubFlag             { get; } = new("rainhub");
+
 #if DEBUG
         public bool BypassUpdateCheck => true;
 #else
@@ -95,6 +99,13 @@ namespace Bloxstrap
                     App.Logger.WriteLine(LOG_IDENT, "Got Roblox player argument");
                     RobloxLaunchMode = LaunchMode.Player;
                     RobloxLaunchArgs = arg;
+                    startIdx = 1;
+                }
+                else if (arg.StartsWith("rainhub://", StringComparison.OrdinalIgnoreCase))
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Got RainHub deep link argument");
+                    RainHubFlag.Active = true;
+                    RainHubFlag.Data = arg;
                     startIdx = 1;
                 }
                 else if (arg.StartsWith("version-"))

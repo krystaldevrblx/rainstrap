@@ -67,6 +67,13 @@ namespace Bloxstrap
 
         public static readonly CookiesManager Cookies = new();
 
+        public static readonly AccountsManager Accounts = new();
+
+        // RainHub ecosystem link (optional; offline-first)
+        public static readonly JsonManager<Models.Persistable.RainHubLink> RainHubLink = new();
+
+        public static readonly Integrations.RainHub.RainHubLinkManager RainHubManager = Integrations.RainHub.RainHubLinkManager.Instance;
+
         public static readonly HttpClient HttpClient = new(
             new HttpClientLoggingHandler(
                 new HttpClientHandler { AutomaticDecompression = DecompressionMethods.All }
@@ -317,7 +324,9 @@ namespace Bloxstrap
                 State.Load();
                 RobloxState.Load();
                 FastFlags.Load();
+                Accounts.Load();
                 GlobalSettings.Load();
+                RainHubLink.Load();
 
                 if (Settings.Prop.AllowCookieAccess)
                     Task.Run(Cookies.LoadCookies);
@@ -334,6 +343,10 @@ namespace Bloxstrap
                     Installer.HandleUpgrade();
 
                 Task.Run(App.RemoteData.LoadData); // ok
+
+                // RainHub sync is best-effort and fully optional — it starts in the
+                // background, never blocks launching, and no-ops when unlinked.
+                App.RainHubManager.Start();
 
                 WindowsRegistry.RegisterApis(); // we want to register those early on
                                                 // so we wont have any issues with bloxshade

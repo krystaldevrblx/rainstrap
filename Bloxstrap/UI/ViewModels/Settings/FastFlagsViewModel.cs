@@ -20,9 +20,15 @@ namespace Bloxstrap.UI.ViewModels.Settings
         
         public event EventHandler? OpenFlagEditorEvent;
 
+        public event EventHandler? OpenCatalogEvent;
+
         private void OpenFastFlagEditor() => OpenFlagEditorEvent?.Invoke(this, EventArgs.Empty);
 
+        private void OpenCatalog() => OpenCatalogEvent?.Invoke(this, EventArgs.Empty);
+
         public ICommand OpenFastFlagEditorCommand => new RelayCommand(OpenFastFlagEditor);
+
+        public ICommand OpenCatalogCommand => new RelayCommand(OpenCatalog);
 
         public bool UseFastFlagManager
         {

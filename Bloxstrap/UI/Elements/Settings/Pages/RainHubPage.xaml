@@ -1,0 +1,56 @@
+<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.RainHubPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      mc:Ignorable="d"
+      d:DesignHeight="800" d:DesignWidth="800"
+      Title="RainHubPage"
+      Scrollable="True"
+      Loaded="Page_Loaded">
+    <StackPanel Margin="0,0,14,14">
+
+        <TextBlock Margin="0,0,0,16" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                   Text="Link this device to your RainHub account to manage it from the web dashboard. RainHub is entirely optional - everything keeps working offline, and Roblox launching is never blocked by it." />
+
+        <ui:InfoBar Padding="8" Title="Privacy" Severity="Informational" IsOpen="True" IsClosable="False"
+                    Message="Rainstrap never sends Roblox credentials, cookies or files to RainHub. Only device status (version, channel, Roblox running) and FastFlag configurations are synchronized." />
+
+        <!-- Link / unlink card -->
+        <Grid Margin="0,12,0,0">
+            <ui:Card>
+                <StackPanel>
+                    <TextBlock FontSize="14" FontWeight="Medium" Text="{Binding StatusText, Mode=OneWay}" TextWrapping="Wrap" />
+
+                    <StackPanel Margin="0,14,0,0" Visibility="{Binding LinkedPanelVisibility, Mode=OneWay}">
+                        <ui:Button Appearance="Danger" Content="Disconnect from RainHub" Command="{Binding UnlinkCommand}" HorizontalAlignment="Left" MinWidth="180" />
+                    </StackPanel>
+
+                    <StackPanel Margin="0,14,0,0" Visibility="{Binding UnlinkedPanelVisibility, Mode=OneWay}">
+                        <TextBlock FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap"
+                                   Text="1. Open getrainhub.com/dashboard/devices and click Connect device.  2. Enter the code here." />
+                        <TextBox Margin="0,10,0,0" HorizontalAlignment="Left" MinWidth="160"
+                                 FontFamily="Consolas" FontSize="18" MaxLength="6"
+                                 Text="{Binding PairingCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <ui:Button Margin="0,10,0,0" Content="Link device" Appearance="Primary" MinWidth="140" HorizontalAlignment="Left" Command="{Binding LinkCommand}" />
+                        <ui:Button Margin="0,8,0,0" Content="Open the devices dashboard" HorizontalAlignment="Left" Command="{Binding OpenDevicesPageCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </ui:Card>
+        </Grid>
+
+        <TextBlock FontSize="20" FontWeight="Medium" Margin="0,24,0,0" Text="FastFlag synchronization" />
+
+        <Grid Margin="0,8,0,0">
+            <ui:Card>
+                <StackPanel>
+                    <TextBlock FontSize="14" TextWrapping="Wrap"
+                               Text="Profiles pushed from RainHub are validated locally before being applied. A backup of your previous flags is kept so you can always roll back." />
+                    <ui:Button Margin="0,12,0,0" Content="Restore backup of my flags" Command="{Binding RollbackCommand}" HorizontalAlignment="Left" MinWidth="180" />
+                </StackPanel>
+            </ui:Card>
+        </Grid>
+
+    </StackPanel>
+</ui:UiPage>

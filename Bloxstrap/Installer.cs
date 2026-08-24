@@ -100,6 +100,9 @@ namespace Bloxstrap
             // studio can be implicitly registered when it's first launched manually
             WindowsRegistry.RegisterPlayer();
 
+            // rainhub:// links (RainHub dashboard server joins) — strictly validated on launch
+            WindowsRegistry.RegisterRainHub();
+
             if (CreateDesktopShortcuts)
                 Shortcut.Create(Paths.Application, "", DesktopShortcut);
 

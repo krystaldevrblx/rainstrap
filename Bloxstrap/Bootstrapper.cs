@@ -317,6 +317,8 @@ namespace Bloxstrap
             else
                 WindowsRegistry.RegisterPlayer();
 
+            WindowsRegistry.RegisterRainHub();
+
             WindowsRegistry.RegisterClientLocation(IsStudioLaunch, _latestVersionDirectory); // if it for some reason doesnt exist
 
             if (_launchMode != LaunchMode.Player)
@@ -511,6 +513,31 @@ namespace Bloxstrap
 
                 _latestVersionGuid = clientVersion.VersionGuid;
                 _latestVersion = Utilities.ParseVersionSafe(clientVersion.Version);
+
+                // Notify upgrade mode - let the user postpone updating until the next launch.
+                // Note that Roblox may refuse to let an outdated client connect or download,
+                // in which case launching will fail and updating will be required - this is a
+                // Roblox-side restriction that cannot be bypassed.
+                if (
+                    App.Settings.Prop.UpgradeMode == UpgradeMode.Notify &&
+                    !App.LaunchSettings.ForceFlag.Active &&
+                    !String.IsNullOrEmpty(AppData.State.VersionGuid) &&
+                    AppData.State.VersionGuid != _latestVersionGuid
+                )
+                {
+                    MessageBoxResult choice = Frontend.ShowMessageBox(
+                        String.Format(Strings.Bootstrapper_Dialog_UpdateAvailable, clientVersion.Version),
+                        MessageBoxImage.Information,
+                        MessageBoxButton.YesNo
+                    );
+
+                    if (choice != MessageBoxResult.Yes)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Holding current version {AppData.State.VersionGuid} at user request");
+                        _latestVersionGuid = AppData.State.VersionGuid;
+                        _latestVersion = null;
+                    }
+                }
             }
             else
             {
@@ -699,10 +726,56 @@ namespace Bloxstrap
             return "";
         }
 
+        /// <summary>
+        /// Records the launched Roblox instance in application state, associating it with
+        /// the account it was launched for when known. Entries for instances that are no
+        /// longer running are pruned.
+        /// </summary>
+        private void RecordLaunchedInstance()
+        {
+            const string LOG_IDENT = "Bootstrapper::RecordLaunchedInstance";
+
+            if (_launchMode != LaunchMode.Player)
+                return;
+
+            try
+            {
+                string? accountId =
+                    App.LaunchSettings.AccountFlag.Active && !String.IsNullOrEmpty(App.LaunchSettings.AccountFlag.Data)
+                        ? App.LaunchSettings.AccountFlag.Data
+                        : App.Accounts.Prop.ActiveAccountId;
+
+                SavedAccount? account = accountId is null ? null : App.Accounts.GetAccount(accountId);
+
+                string playerProcessName = Path.GetFileNameWithoutExtension(App.RobloxPlayerAppName);
+                HashSet<int> alivePids = Utilities.GetProcessesSafe()
+                    .Where(x => x.ProcessName == playerProcessName)
+                    .Select(x => x.Id)
+                    .ToHashSet();
+
+                // prune entries for instances that are no longer running
+                App.State.Prop.Instances.RemoveAll(x => !alivePids.Contains(x.Pid));
+                App.State.Prop.Instances.RemoveAll(x => x.Pid == _appPid);
+
+                App.State.Prop.Instances.Add(new InstanceEntry
+                {
+                    Pid = _appPid,
+                    AccountId = accountId,
+                    Username = account?.Username ?? "",
+                    StartedAtUtc = DateTime.UtcNow
+                });
+
+                App.State.Save();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to record launched instance: {ex.Message}");
+            }
+        }
+
         private async Task StartRoblox()
         {
             const string LOG_IDENT = "Bootstrapper::StartRoblox";
-
             SetStatus(Strings.Bootstrapper_Status_Starting);
 
             if (_launchMode == LaunchMode.Player)
@@ -766,6 +839,12 @@ namespace Bloxstrap
                 if (!Deployment.IsDefaultRobloxDomain && string.IsNullOrEmpty(_launchCommandLine))
                     _launchCommandLine = "roblox://navigation/home"; // fixes a bug on rblx.org where its stuck on the login screen, doesnt affect anything else
             }
+
+            // apply the active saved account (if any) before starting the client,
+            // so that Roblox signs into it. Failure is non-fatal: we continue with
+            // whatever account the local Roblox installation is currently signed into.
+            if (!App.Accounts.ApplyActiveCookieForLaunch())
+                App.Logger.WriteLine(LOG_IDENT, "Continuing with the account currently signed into Roblox");
 
             var startInfo = new ProcessStartInfo()
             {
@@ -870,6 +949,8 @@ namespace Bloxstrap
             }
 
             App.Logger.WriteLine(LOG_IDENT, $"Started Roblox (PID {_appPid}), waiting for log file");
+
+            RecordLaunchedInstance();
 
             logCreatedEvent.WaitOne(TimeSpan.FromSeconds(15));
 

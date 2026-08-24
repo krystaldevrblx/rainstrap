@@ -1,4 +1,4 @@
-﻿﻿using System.Windows;
+﻿using System.Windows;
 
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -68,6 +68,11 @@ namespace Bloxstrap
             {
                 App.Logger.WriteLine(LOG_IDENT, $"Opening bootstrapper ({App.LaunchSettings.RobloxLaunchMode})");
                 LaunchRoblox(App.LaunchSettings.RobloxLaunchMode);
+            }
+            else if (App.LaunchSettings.RainHubFlag.Active)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Handling RainHub deep link");
+                LaunchRainHubDeepLink(App.LaunchSettings.RainHubFlag.Data);
             }
             else if (App.LaunchSettings.BloxshadeFlag.Active)
             {
@@ -319,6 +324,37 @@ namespace Bloxstrap
 
             new BloxshadeDialog().ShowDialog();
             App.SoftTerminate();
+        }
+
+        /// <summary>
+        /// Handles rainhub://join?placeId=...&amp;gameInstanceId=... links by
+        /// converting them into the standard Roblox launch command and entering
+        /// the normal bootstrapper flow. Malformed or unsupported links are
+        /// rejected with a message — never executed.
+        /// </summary>
+        public static void LaunchRainHubDeepLink(string? data)
+        {
+            const string LOG_IDENT = "LaunchHandler::LaunchRainHubDeepLink";
+
+            if (!Integrations.RainHub.RainHubDeepLink.TryParse(data, out var join) || join is null)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Rejected deep link: {data}");
+                Frontend.ShowMessageBox(
+                    "This RainHub link is not supported. Only links that open a specific Roblox server can be handled.",
+                    MessageBoxImage.Warning
+                );
+                App.Terminate(ErrorCode.ERROR_INVALID_FUNCTION);
+                return;
+            }
+
+            string launchCommand = Integrations.RainHub.RainHubDeepLink.BuildRobloxPlayerCommand(join);
+
+            App.Logger.WriteLine(LOG_IDENT, $"Launching place {join.PlaceId} (server {join.JobId}) via RainHub link");
+
+            App.LaunchSettings.RobloxLaunchMode = LaunchMode.Player;
+            App.LaunchSettings.RobloxLaunchArgs = launchCommand;
+
+            LaunchRoblox(LaunchMode.Player);
         }
 
         public static void LaunchBackgroundUpdater()

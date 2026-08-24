@@ -18,6 +18,17 @@ namespace Bloxstrap.Models.Persistable
 
         public WindowState SettingsWindow { get; set; } = new();
 
+        /// <summary>
+        /// Roblox instances that Rainstrap has launched, with the account they were launched for (if known).
+        /// </summary>
+        public List<InstanceEntry> Instances { get; set; } = new();
+
+        /// <summary>
+        /// UTC timestamp of the last manual Roblox update check from the Updates page.
+        /// </summary>
+        public DateTime? LastUpdateCheckUtc { get; set; } = null;
+
+
         #region Deprecated properties
         /// <summary>
         /// Deprecated, use App.RobloxState.Player

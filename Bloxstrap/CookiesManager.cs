@@ -1,4 +1,4 @@
-﻿using Bloxstrap.RobloxInterfaces;
+using Bloxstrap.RobloxInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +28,119 @@ namespace Bloxstrap
         private const string SupportedVersion = "1";
         private const string AuthPattern = $@"\t{AuthCookieName}\t(.+?)(;|$)";
         private string CookiesPath => Path.Combine(Paths.Roblox, "LocalStorage", Deployment.IsDefaultRobloxDomain ? "RobloxCookies.dat" : $"{Deployment.RobloxDomain}_RobloxCookies.dat");
+
+        /// <summary>
+        /// The authentication token currently held by this manager.
+        /// This must never be logged, displayed, or persisted anywhere in plaintext.
+        /// </summary>
+        public string AuthCookieValue => AuthCookie;
+
+        /// <summary>
+        /// Writes an authentication token into the local Roblox client's cookie storage,
+        /// so that the next launched Roblox client signs into the corresponding account.
+        /// A backup of the previous state is kept, and restored if writing fails.
+        /// </summary>
+        public bool WriteAuthCookie(string token)
+        {
+            const string LOG_IDENT = "CookiesManager::WriteAuthCookie";
+
+            if (!Enabled)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Cookie access is not enabled");
+                return false;
+            }
+
+            if (String.IsNullOrEmpty(token))
+                throw new ArgumentException("Token must not be empty", nameof(token));
+
+            string backupPath = CookiesPath + ".rainstrap-backup";
+
+            try
+            {
+                // preserve the rest of the cookie jar so only the auth cookie entry changes
+                string rawCookies = "";
+
+                if (File.Exists(CookiesPath))
+                {
+                    string content = File.ReadAllText(CookiesPath);
+                    RobloxCookies cookies = JsonSerializer.Deserialize<RobloxCookies>(content)!;
+                    byte[] encryptedData = Convert.FromBase64String(cookies.Cookies);
+                    rawCookies = Encoding.UTF8.GetString(ProtectedData.Unprotect(encryptedData, null, DataProtectionScope.CurrentUser));
+
+                    // back up the previous state before modifying anything
+                    File.Copy(CookiesPath, backupPath, true);
+                }
+
+                string newEntry = $"\t{AuthCookieName}\t{token};";
+
+                if (Regex.IsMatch(rawCookies, AuthPattern))
+                    rawCookies = Regex.Replace(rawCookies, AuthPattern, _ => newEntry);
+                else
+                    rawCookies += newEntry;
+
+                byte[] newData = ProtectedData.Protect(Encoding.UTF8.GetBytes(rawCookies), null, DataProtectionScope.CurrentUser);
+                var newCookies = new RobloxCookies
+                {
+                    Version = SupportedVersion,
+                    Cookies = Convert.ToBase64String(newData)
+                };
+
+                Directory.CreateDirectory(Path.GetDirectoryName(CookiesPath)!);
+                File.WriteAllText(CookiesPath, JsonSerializer.Serialize(newCookies));
+
+                // keep the in-memory token consistent with what is now on disk
+                AuthCookie = token;
+                State = CookieState.Success;
+
+                App.Logger.WriteLine(LOG_IDENT, "Updated stored authentication state for the next launch");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to update stored authentication state: {ex.Message}");
+
+                // never leave the client's storage in a broken state
+                try
+                {
+                    if (File.Exists(backupPath))
+                    {
+                        File.Copy(backupPath, CookiesPath, true);
+                        App.Logger.WriteLine(LOG_IDENT, "Restored previous authentication state from backup");
+                    }
+                }
+                catch (Exception restoreEx)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to restore backup: {restoreEx.Message}");
+                }
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Restores the backed-up authentication state, if one exists.
+        /// </summary>
+        public void RestoreAuthCookieBackup()
+        {
+            const string LOG_IDENT = "CookiesManager::RestoreAuthCookieBackup";
+
+            string backupPath = CookiesPath + ".rainstrap-backup";
+
+            if (!File.Exists(backupPath))
+                return;
+
+            try
+            {
+                File.Copy(backupPath, CookiesPath, true);
+                File.Delete(backupPath);
+                App.Logger.WriteLine(LOG_IDENT, "Restored previous authentication state from backup");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to restore backup: {ex.Message}");
+            }
+        }
+
 
         public async Task<HttpResponseMessage> AuthRequest(HttpRequestMessage request)
         {

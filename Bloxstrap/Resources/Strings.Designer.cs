@@ -5123,6 +5123,30 @@ namespace Bloxstrap.Resources {
             }
         }
 
+        public static string Accounts_CredentialsSaved {
+            get {
+                return ResourceManager.GetString("Accounts.CredentialsSaved", resourceCulture);
+            }
+        }
+
+        public static string Accounts_CredentialsMissing {
+            get {
+                return ResourceManager.GetString("Accounts.CredentialsMissing", resourceCulture);
+            }
+        }
+
+        public static string Accounts_ActiveSummary {
+            get {
+                return ResourceManager.GetString("Accounts.ActiveSummary", resourceCulture);
+            }
+        }
+
+        public static string Accounts_ActiveSummaryNone {
+            get {
+                return ResourceManager.GetString("Accounts.ActiveSummaryNone", resourceCulture);
+            }
+        }
+
         public static string MultiInstance_Title {
             get {
                 return ResourceManager.GetString("MultiInstance.Title", resourceCulture);
@@ -5360,6 +5384,96 @@ namespace Bloxstrap.Resources {
         public static string Updates_CheckFailed {
             get {
                 return ResourceManager.GetString("Updates.CheckFailed", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_Header {
+            get {
+                return ResourceManager.GetString("Updates.History.Header", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_Description {
+            get {
+                return ResourceManager.GetString("Updates.History.Description", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_Empty {
+            get {
+                return ResourceManager.GetString("Updates.History.Empty", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_InstalledOn {
+            get {
+                return ResourceManager.GetString("Updates.History.InstalledOn", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_BadgeCurrent {
+            get {
+                return ResourceManager.GetString("Updates.History.BadgeCurrent", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_BadgeLatest {
+            get {
+                return ResourceManager.GetString("Updates.History.BadgeLatest", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_BadgePrevious {
+            get {
+                return ResourceManager.GetString("Updates.History.BadgePrevious", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_CheckingRollback {
+            get {
+                return ResourceManager.GetString("Updates.History.CheckingRollback", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_RollbackAvailable {
+            get {
+                return ResourceManager.GetString("Updates.History.RollbackAvailable", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_RollbackUnavailable {
+            get {
+                return ResourceManager.GetString("Updates.History.RollbackUnavailable", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_RollbackButton {
+            get {
+                return ResourceManager.GetString("Updates.History.RollbackButton", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_RollbackConfirmTitle {
+            get {
+                return ResourceManager.GetString("Updates.History.RollbackConfirmTitle", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_RollbackConfirmText {
+            get {
+                return ResourceManager.GetString("Updates.History.RollbackConfirmText", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_RollbackStarted {
+            get {
+                return ResourceManager.GetString("Updates.History.RollbackStarted", resourceCulture);
+            }
+        }
+
+        public static string Updates_History_RollbackFailed {
+            get {
+                return ResourceManager.GetString("Updates.History.RollbackFailed", resourceCulture);
             }
         }
 

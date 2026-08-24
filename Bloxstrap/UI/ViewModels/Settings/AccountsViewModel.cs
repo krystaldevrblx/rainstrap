@@ -21,6 +21,13 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public long UserId { get; set; }
         public string LastUsedText { get; set; } = "";
 
+        /// <summary>Whether stored sign-in material exists for this account.</summary>
+        public bool HasStoredCredentials { get; set; } = true;
+
+        /// <summary>User-facing sign-in status ("sign-in saved" / guidance to re-add).</summary>
+        public string CredentialsText =>
+            HasStoredCredentials ? Strings.Accounts_CredentialsSaved : Strings.Accounts_CredentialsMissing;
+
         private bool _isActive = false;
         public bool IsActive
         {
@@ -52,6 +59,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public string LaunchButtonText => IsLaunching ? Strings.Accounts_Launching : Strings.Accounts_Launch;
 
         public ImageSource? AvatarImage { get; set; }
+
+        internal DateTime? LastUsedAtUtc { get; set; }
     }
 
     public class AccountsViewModel : NotifyPropertyChangedViewModel
@@ -79,9 +88,26 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public Visibility EmptyStateVisibility =>
             (!_isLoading && Accounts.Count == 0) ? Visibility.Visible : Visibility.Collapsed;
 
-        public bool AddAccountEnabled => !_isLoading && !_addingAccount && App.Settings.Prop.AllowCookieAccess;
+        /// <summary>
+        /// One-glance summary of which account Roblox will launch into, shown
+        /// above the list so the active account is always obvious.
+        /// </summary>
+        public string ActiveAccountSummary
+        {
+            get
+            {
+                var active = App.Accounts.GetActiveAccount();
+                if (active is null)
+                    return Strings.Accounts_ActiveSummaryNone;
+
+                string name = String.IsNullOrWhiteSpace(active.AccountDisplayName) ? active.Username : active.AccountDisplayName;
+                return String.Format(Strings.Accounts_ActiveSummary, name);
+            }
+        }
 
         public bool CookieAccessDisabled => !App.Settings.Prop.AllowCookieAccess;
+
+        public bool AddAccountEnabled => !_isLoading && !_addingAccount && App.Settings.Prop.AllowCookieAccess;
 
         private Visibility _errorVisibility = Visibility.Collapsed;
         public Visibility ErrorVisibility
@@ -182,8 +208,19 @@ namespace Bloxstrap.UI.ViewModels.Settings
             ErrorMessage = "";
             Accounts.Clear();
 
-            foreach (SavedAccount account in App.Accounts.Prop.Items)
+            // Deterministic order: active account first, then most recently
+            // used, then display name — so the list reads consistently and the
+            // active account is always at the top.
+            var sorted = App.Accounts.Prop.Items
+                .OrderByDescending(x => x.Id == App.Accounts.Prop.ActiveAccountId)
+                .ThenByDescending(x => x.LastUsedAt ?? DateTime.MinValue)
+                .ThenBy(x => String.IsNullOrWhiteSpace(x.AccountDisplayName) ? x.Username : x.AccountDisplayName, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            foreach (SavedAccount account in sorted)
             {
+                bool hasCredentials = App.Accounts.HasSecret(account.Id);
+
                 var card = new AccountCardViewModel
                 {
                     Id = account.Id,
@@ -192,7 +229,9 @@ namespace Bloxstrap.UI.ViewModels.Settings
                     AvatarUrl = account.AvatarUrl,
                     Title = String.IsNullOrWhiteSpace(account.AccountDisplayName) ? account.Username : account.AccountDisplayName,
                     LastUsedText = account.LastUsedAt is null ? "" : String.Format(Strings.Accounts_LastUsed, account.LastUsedAt.Value.ToLocalTime().ToString("g")),
-                    IsActive = App.Accounts.Prop.ActiveAccountId == account.Id
+                    IsActive = App.Accounts.Prop.ActiveAccountId == account.Id,
+                    HasStoredCredentials = hasCredentials,
+                    LastUsedAtUtc = account.LastUsedAt,
                 };
 
                 Accounts.Add(card);
@@ -202,6 +241,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             OnPropertyChanged(nameof(EmptyStateVisibility));
             OnPropertyChanged(nameof(CookieAccessDisabled));
             OnPropertyChanged(nameof(AddAccountEnabled));
+            OnPropertyChanged(nameof(ActiveAccountSummary));
         }
 
         private async Task LoadAvatarAsync(AccountCardViewModel card, SavedAccount account)

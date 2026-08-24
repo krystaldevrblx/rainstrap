@@ -1920,6 +1920,18 @@ Please don't change this setting unless you know what you're doing.</value>
   <data name="Accounts.LastUsed" xml:space="preserve">
     <value>Last used: {0}</value>
   </data>
+  <data name="Accounts.CredentialsSaved" xml:space="preserve">
+    <value>sign-in saved</value>
+  </data>
+  <data name="Accounts.CredentialsMissing" xml:space="preserve">
+    <value>sign-in missing - re-add this account to refresh it</value>
+  </data>
+  <data name="Accounts.ActiveSummary" xml:space="preserve">
+    <value>Active account: {0}. It will be applied automatically the next time Rainstrap launches Roblox.</value>
+  </data>
+  <data name="Accounts.ActiveSummaryNone" xml:space="preserve">
+    <value>No active account selected - Roblox will launch into whatever account is signed in locally.</value>
+  </data>
   <data name="Accounts.LaunchFailed" xml:space="preserve">
     <value>Rainstrap could not start the launcher process.</value>
   </data>
@@ -2042,6 +2054,51 @@ Please don't change this setting unless you know what you're doing.</value>
   </data>
   <data name="Updates.CheckFailed" xml:space="preserve">
     <value>Could not check for updates: {0}</value>
+  </data>
+  <data name="Updates.History.Header" xml:space="preserve">
+    <value>Version history</value>
+  </data>
+  <data name="Updates.History.Description" xml:space="preserve">
+    <value>Versions previously installed by Rainstrap. "Roll back" reinstalls the exact build - it is only offered when that build's package manifest is still downloadable from Roblox.</value>
+  </data>
+  <data name="Updates.History.Empty" xml:space="preserve">
+    <value>No previous versions recorded yet. History builds up automatically as Rainstrap installs Roblox updates.</value>
+  </data>
+  <data name="Updates.History.InstalledOn" xml:space="preserve">
+    <value>Installed: {0}</value>
+  </data>
+  <data name="Updates.History.BadgeCurrent" xml:space="preserve">
+    <value>current</value>
+  </data>
+  <data name="Updates.History.BadgeLatest" xml:space="preserve">
+    <value>latest</value>
+  </data>
+  <data name="Updates.History.BadgePrevious" xml:space="preserve">
+    <value>previous</value>
+  </data>
+  <data name="Updates.History.CheckingRollback" xml:space="preserve">
+    <value>checking availability...</value>
+  </data>
+  <data name="Updates.History.RollbackAvailable" xml:space="preserve">
+    <value>rollback available</value>
+  </data>
+  <data name="Updates.History.RollbackUnavailable" xml:space="preserve">
+    <value>no longer downloadable</value>
+  </data>
+  <data name="Updates.History.RollbackButton" xml:space="preserve">
+    <value>Roll back</value>
+  </data>
+  <data name="Updates.History.RollbackConfirmTitle" xml:space="preserve">
+    <value>Roll back Roblox?</value>
+  </data>
+  <data name="Updates.History.RollbackConfirmText" xml:space="preserve">
+    <value>Rainstrap will download and install Roblox {0} silently, without launching it.&#10;&#10;Please note:&#10;• Roblox may require a newer version again at any time; if so, updating becomes mandatory and this rollback will be replaced on your next launch (set updates to "Ask before updating" to hold it longer).&#10;• Saved settings carry over, but an older client may behave differently with current content.&#10;• You can always update again normally afterwards.</value>
+  </data>
+  <data name="Updates.History.RollbackStarted" xml:space="preserve">
+    <value>Rollback started - Roblox {0} will be installed in the background. This page will reflect the new version when it completes.</value>
+  </data>
+  <data name="Updates.History.RollbackFailed" xml:space="preserve">
+    <value>Could not start the rollback: {0}</value>
   </data>
   <data name="Bootstrapper.Dialog.UpdateAvailable" xml:space="preserve">
     <value>A new Roblox version ({0}) is available.

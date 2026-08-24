@@ -58,6 +58,65 @@
             Header="{x:Static resources:Strings.Updates_LatencyLabel}"
             Description="{Binding ApiLatencyText, Mode=OneWay}" />
 
+        <!-- version history (version-control style) -->
+        <TextBlock Margin="0,24,0,0" Text="{x:Static resources:Strings.Updates_History_Header}" FontSize="20" FontWeight="Medium" />
+        <TextBlock Margin="0,4,0,8" Text="{x:Static resources:Strings.Updates_History_Description}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+
+        <TextBlock Margin="0,4,0,0"
+                   Text="{x:Static resources:Strings.Updates_History_Empty}"
+                   FontSize="12"
+                   Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                   TextWrapping="Wrap"
+                   Visibility="{Binding HistoryEmptyVisibility, Mode=OneWay}" />
+
+        <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding RecentVersions, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="0,0,0,6" Padding="12" CornerRadius="8" BorderThickness="1"
+                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                            Background="{DynamicResource ControlFillColorDefaultBrush}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="13" FontWeight="Medium" Text="{Binding DisplayVersion, Mode=OneWay}" VerticalAlignment="Center" />
+                                    <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="4" Background="{DynamicResource SystemFillColorSuccessBrush}">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock FontSize="11" Text="{Binding StateBadgeText, Mode=OneWay}" Foreground="White" />
+                                    </Border>
+                                    <TextBlock Margin="8,0,0,0" FontSize="11" VerticalAlignment="Center"
+                                               Text="{Binding RollbackStatusText, Mode=OneWay}"
+                                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                               Visibility="{Binding RollbackProbeVisibility, Mode=OneWay}" />
+                                </StackPanel>
+                                <TextBlock FontSize="11" Text="{Binding VersionGuid, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextTrimming="CharacterEllipsis" />
+                                <TextBlock FontSize="11" Text="{Binding InstalledText, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                            </StackPanel>
+
+                            <ui:Button Grid.Column="1" VerticalAlignment="Center" MinWidth="110"
+                                       Content="{x:Static resources:Strings.Updates_History_RollbackButton}"
+                                       Command="{Binding RollbackCommand}"
+                                       Appearance="Caution"
+                                       Visibility="{Binding RollbackButtonVisibility, Mode=OneWay}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
         <TextBlock Margin="0,16,0,0" Text="{x:Static resources:Strings.Updates_BehaviorHeader}" FontSize="20" FontWeight="Medium" />
 
         <controls:OptionControl

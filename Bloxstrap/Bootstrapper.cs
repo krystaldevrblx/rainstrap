@@ -1487,6 +1487,8 @@ namespace Bloxstrap
 
             MigrateCompatibilityFlags();
 
+            RecordVersionHistory();
+
             AppData.State.VersionGuid = _latestVersionGuid;
 
             AppData.State.PackageHashes.Clear();
@@ -1545,6 +1547,46 @@ namespace Bloxstrap
             App.RobloxState.Save();
 
             _isInstalling = false;
+        }
+
+        /// <summary>
+        /// Records a version-control style history entry for the player install
+        /// that just completed. This is what makes explicit rollback possible:
+        /// the Updates page can list exact previously-installed builds and
+        /// reinstall one via its still-downloadable package manifest.
+        /// </summary>
+        private void RecordVersionHistory()
+        {
+            const string LOG_IDENT = "Bootstrapper::RecordVersionHistory";
+
+            // Rollback targets the player client only.
+            if (!IsStudioLaunch)
+            {
+                string guid = _latestVersionGuid;
+
+                var history = App.RobloxState.Prop.PlayerVersionHistory;
+
+                var existing = history.LastOrDefault(x => x.VersionGuid == guid);
+                if (existing is not null)
+                {
+                    // Re-installing the same build (e.g. a rollback) refreshes
+                    // its timestamp instead of duplicating the entry.
+                    history.Remove(existing);
+                }
+
+                history.Add(new PlayerVersionHistoryEntry
+                {
+                    VersionGuid = guid,
+                    Version = _latestVersion?.ToString() ?? "",
+                    Channel = Deployment.Channel,
+                    InstalledAtUtc = DateTime.UtcNow
+                });
+
+                while (history.Count > RobloxState.VersionHistoryMaxEntries)
+                    history.RemoveAt(0);
+
+                App.Logger.WriteLine(LOG_IDENT, $"Recorded player version {guid} ({history.Count} entries in history)");
+            }
         }
 
         private static void StartBackgroundUpdater()

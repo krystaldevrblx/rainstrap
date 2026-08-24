@@ -231,7 +231,7 @@ namespace Bloxstrap.RobloxInterfaces
             return null;
         }
 
-        public static async Task<ClientVersion> GetInfo(string? channel = null, bool behindProductionCheck = false, bool includeTimestamp = false)
+        public static async Task<ClientVersion> GetInfo(string? channel = null, bool behindProductionCheck = false, bool includeTimestamp = false, bool forceRefresh = false)
         {
             const string LOG_IDENT = "Deployment::GetInfo";
 
@@ -244,11 +244,11 @@ namespace Bloxstrap.RobloxInterfaces
 
             string cacheKey = $"{channel}-{BinaryType}";
 
-            HttpRequestMessage request = new() 
+            HttpRequestMessage request = new()
             {
                 Method = HttpMethod.Get
             };
-            
+
             if (!string.IsNullOrEmpty(ChannelToken))
             {
                 App.Logger.WriteLine(LOG_IDENT, "Got Roblox-Channel-Token");
@@ -257,7 +257,9 @@ namespace Bloxstrap.RobloxInterfaces
 
             ClientVersion clientVersion;
 
-            if (ClientVersionCache.ContainsKey(cacheKey))
+            // An explicit user action ("Check for updates") must not be served
+            // from a cache that never expires within the session.
+            if (!forceRefresh && ClientVersionCache.ContainsKey(cacheKey))
             {
                 App.Logger.WriteLine(LOG_IDENT, "Deploy information is cached");
                 clientVersion = ClientVersionCache[cacheKey];

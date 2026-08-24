@@ -74,6 +74,13 @@ namespace Bloxstrap
 
         public bool IsKnownUserId(long userId) => Prop.Items.Any(x => x.UserId == userId);
 
+        /// <summary>
+        /// Whether stored sign-in material exists for this account. Never
+        /// exposes the secret itself - only its presence, so the UI can flag
+        /// accounts whose captured session is missing (e.g. deleted manually).
+        /// </summary>
+        public bool HasSecret(string id) => File.Exists(GetSecretPath(id));
+
         #endregion
 
         #region Capture / add

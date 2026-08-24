@@ -26,8 +26,20 @@
                     IsOpen="{Binding ErrorVisibility, Mode=OneWay}"
                     IsClosable="False" />
 
+        <!-- active account summary -->
+        <Border Margin="0,12,0,0" Padding="12" CornerRadius="8" BorderThickness="1"
+                BorderBrush="{DynamicResource ControlStrokeColorSecondaryBrush}"
+                Background="{DynamicResource ControlFillColorSecondaryBrush}">
+            <StackPanel Orientation="Horizontal">
+                <ui:SymbolIcon Symbol="PersonAvailable24" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource SystemFillColorSuccessBrush}" />
+                <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" FontSize="12" TextWrapping="Wrap"
+                           Text="{Binding ActiveAccountSummary, Mode=OneWay}" />
+            </StackPanel>
+        </Border>
+
         <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
             <ui:Button Appearance="Primary" Icon="Add20" Content="{x:Static resources:Strings.Accounts_AddAccount}" Command="{Binding AddAccountCommand}" IsEnabled="{Binding AddAccountEnabled, Mode=OneWay}" />
+            <ui:Button Margin="8,0,0,0" Icon="ArrowSync20" Content="{x:Static resources:Strings.Common_Refresh}" Command="{Binding RefreshCommand}" IsEnabled="{Binding AddAccountEnabled, Mode=OneWay}" />
             <StackPanel Orientation="Horizontal" Margin="12,0,0,0" Visibility="{Binding LoadingVisibility, Mode=OneWay}">
                 <ui:ProgressRing Width="18" Height="18" IsIndeterminate="True" />
                 <TextBlock Margin="8,2,0,0" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_Loading}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
@@ -72,6 +84,7 @@
                                 </StackPanel>
                                 <TextBlock FontSize="12" Text="{Binding Username, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
                                 <TextBlock FontSize="11" Text="{Binding LastUsedText, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                                <TextBlock FontSize="11" Text="{Binding CredentialsText, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">

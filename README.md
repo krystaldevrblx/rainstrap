@@ -6,59 +6,68 @@
 
 **A performance-focused Roblox bootstrapper built for customization, optimization, and RainHub integration.**
 
+[![Release](https://img.shields.io/github/v/release/krystaldevrblx/rainstrap?style=flat-square&color=blue)](https://github.com/krystaldevrblx/rainstrap/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/krystaldevrblx/rainstrap/total?style=flat-square&color=green)](https://github.com/krystaldevrblx/rainstrap/releases/latest)
+[![License](https://img.shields.io/github/license/krystaldevrblx/rainstrap?style=flat-square)](LICENSE)
+
 </div>
 
 > [!NOTE]
-> Rainstrap is an application for **Windows 10 and above**.
+> Rainstrap requires **Windows 10** or later.
 
 ## Features
 
-* Detailed Roblox server information
-* Support for Roblox Studio
-* FastFlags editor
+- Detailed Roblox server information
+- Roblox Studio support
+- FastFlags editor with full configuration
+- Global Roblox settings (frame-rate cap, graphics quality, and more)
+- Performance-focused launch optimizations
+- Custom bootstrapper styles, themes, and icons
+- Cache cleaner
+- Roblox channel switching
+- RainHub integration
+- One-click installer with automatic dependency setup
 
-  * Configure supported Roblox FastFlags directly through Rainstrap
-  * FastFlags not present in Roblox's allowlist cannot be applied
-  * This restriction does not affect Roblox Studio
-* Global Roblox settings editor
+## Quick Start
 
-  * Adjustable frame-rate cap
-  * Graphics quality controls
-  * Additional client configuration options
-* Performance-focused improvements and launch optimizations
-* Custom bootstrapper styles, themes, and icons
-* Cache cleaner
-* Roblox channel switching
-* RainHub integration and RainHub-powered features
-* Additional quality-of-life improvements
+Download the latest release from the [Releases](https://github.com/krystaldevrblx/rainstrap/releases/latest) page, then run `setup.bat` to install all required dependencies. After setup completes, launch `Rainstrap.exe`.
+
+### System Requirements
+
+| Requirement | Version |
+|---|---|
+| Windows | 10 or later |
+| .NET Runtime | 6.0 (auto-installed by setup) |
+| VC++ Redistributable | 2015-2022 (auto-installed by setup) |
+| WebView2 Runtime | Latest (auto-installed by setup) |
 
 ## Building
 
-Building Rainstrap requires the **.NET 6 SDK**.
+Building from source requires the **.NET 6 SDK**.
 
-Clone the repository with its submodules:
+Clone the repository with submodules:
 
 ```bash
 git clone --recursive https://github.com/krystaldevrblx/rainstrap.git
 cd rainstrap
 ```
 
-You can build the solution using Visual Studio or build directly from the command line:
+Build from the command line:
 
 ```bash
 dotnet publish -p:PublishSingleFile=true -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
 ```
 
-The resulting executable will be produced as `Rainstrap.exe`.
+Or open `Rainstrap.sln` in Visual Studio and build from there.
+
+The output will be produced as `Rainstrap.exe`.
 
 ## Credits & Attribution
 
-Rainstrap is a fork of [Fishstrap](https://github.com/fishstrap/fishstrap), which is itself based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap) by **pizzaboxer**.
+Rainstrap is a fork of [Fishstrap](https://github.com/fishstrap/fishstrap), which is based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap) by **pizzaboxer**.
 
-Rainstrap builds upon the work of these projects and their contributors. Credit for the original software, libraries, and contributions belongs to their respective authors.
+Credit for the original software, libraries, and contributions belongs to their respective authors. All applicable licensing and attribution notices are preserved in this repository (`LICENSE`, `LICENSE.Bloxstrap`).
 
-* **Rainstrap:** https://github.com/krystaldevrblx/rainstrap
-* **Fishstrap:** https://github.com/fishstrap/fishstrap
-* **Bloxstrap:** https://github.com/bloxstraplabs/bloxstrap
-
-The applicable licensing and attribution notices from the upstream projects are preserved in this repository, including `LICENSE` and `LICENSE.Bloxstrap`.
+- **Rainstrap:** https://github.com/krystaldevrblx/rainstrap
+- **Fishstrap:** https://github.com/fishstrap/fishstrap
+- **Bloxstrap:** https://github.com/bloxstraplabs/bloxstrap

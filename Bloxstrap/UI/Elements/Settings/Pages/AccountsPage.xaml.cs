@@ -1,5 +1,6 @@
 using System.Windows;
 
+using Bloxstrap.Plugins;
 using Bloxstrap.UI.ViewModels.Settings;
 
 namespace Bloxstrap.UI.Elements.Settings.Pages
@@ -18,14 +19,20 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            // refresh on every load so the list stays in sync with state changes
             if (!_initialLoad)
             {
                 _initialLoad = true;
+            }
+
+            if (App.PluginManager is null ||
+                !App.PluginManager.Plugins.TryGetValue("rainstrap.accountmanager", out var plugin) ||
+                plugin is not AccountManagerPlugin accountPlugin)
+            {
+                DataContext = null;
                 return;
             }
 
-            DataContext = new AccountsViewModel();
+            DataContext = new AccountsViewModel(accountPlugin);
         }
     }
 }

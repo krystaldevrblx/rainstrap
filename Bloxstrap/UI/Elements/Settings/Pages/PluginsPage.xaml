@@ -1,0 +1,167 @@
+<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.PluginsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
+      xmlns:resources="clr-namespace:Bloxstrap.Resources"
+      xmlns:dmodels="clr-namespace:Bloxstrap.UI.ViewModels.Settings"
+      mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance dmodels:PluginsViewModel, IsDesignTimeCreatable=True}"
+      d:DesignHeight="900" d:DesignWidth="800"
+      Title="PluginsPage"
+      Scrollable="True"
+      Loaded="Page_Loaded">
+    <StackPanel Margin="0,0,14,14">
+        <TextBlock Text="{x:Static resources:Strings.Plugins_Title}" FontSize="20" FontWeight="Medium" />
+        <TextBlock Margin="0,4,0,12" Text="{x:Static resources:Strings.Plugins_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+        <ui:InfoBar Margin="0,0,0,12"
+                    Title="{x:Static resources:Strings.Common_Note}"
+                    Message="{x:Static resources:Strings.Plugins_StoreInfo}"
+                    Severity="Informational"
+                    IsOpen="True"
+                    IsClosable="False" />
+
+        <!-- Catalogue error -->
+        <ui:InfoBar Margin="0,0,0,12"
+                    Title="{x:Static resources:Strings.Plugins_CatalogError}"
+                    Message="{Binding CatalogueErrorText, Mode=OneWay}"
+                    Severity="Warning"
+                    IsOpen="True"
+                    IsClosable="False"
+                    Visibility="{Binding CatalogueErrorVisibility, Mode=OneWay}" />
+
+        <!-- Installed Plugins -->
+        <TextBlock Text="{x:Static resources:Strings.Plugins_InstalledPlugins}" FontSize="18" FontWeight="Medium" Margin="0,8,0,8" />
+
+        <TextBlock Margin="0,10,0,0" Text="{x:Static resources:Strings.Plugins_NoPluginsInstalled}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Visibility="{Binding NoPluginsVisibility, Mode=OneWay}" />
+
+        <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding InstalledPlugins, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="0,0,0,8" Padding="12" CornerRadius="8" BorderThickness="1"
+                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                            Background="{DynamicResource ControlFillColorDefaultBrush}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Width="40" Height="40" CornerRadius="6" Background="{DynamicResource ControlFillColorSecondaryBrush}">
+                                <ui:SymbolIcon Symbol="PuzzlePiece24" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+
+                            <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="14" FontWeight="Medium" Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center" />
+                                    <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="4" Visibility="{Binding OfficialBadgeVisibility, Mode=OneWay}" Background="{DynamicResource SystemFillColorSuccessBrush}">
+                                        <TextBlock FontSize="11" Text="{x:Static resources:Strings.Plugins_Official}" Foreground="White" />
+                                    </Border>
+                                    <Border Margin="4,0,0,0" Padding="6,1" CornerRadius="4" Visibility="{Binding VerifiedBadgeVisibility, Mode=OneWay}" Background="{DynamicResource SystemFillColorAttentionBrush}">
+                                        <TextBlock FontSize="11" Text="{x:Static resources:Strings.Plugins_Verified}" Foreground="White" />
+                                    </Border>
+                                    <Border Margin="4,0,0,0" Padding="6,1" CornerRadius="4" Visibility="{Binding UpdateVisibility, Mode=OneWay}" Background="{DynamicResource SystemFillColorCriticalBrush}">
+                                        <TextBlock FontSize="11" Text="{x:Static resources:Strings.Plugins_UpdateAvailable}" Foreground="White" />
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock FontSize="12" Text="{Binding Description, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <TextBlock FontSize="11" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+                                        <Run Text="{x:Static resources:Strings.Plugins_Version}" /><Run Text="{Binding Version, Mode=OneWay}" />
+                                    </TextBlock>
+                                    <TextBlock FontSize="11" Margin="12,0,0,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+                                        <Run Text="{x:Static resources:Strings.Plugins_Author}" /><Run Text="{Binding Author, Mode=OneWay}" />
+                                    </TextBlock>
+                                </StackPanel>
+                                <TextBlock FontSize="11" Margin="0,2,0,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap">
+                                    <Run Text="{x:Static resources:Strings.Plugins_Permissions}" /><Run Text="{Binding PermissionsText, Mode=OneWay}" />
+                                </TextBlock>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12" FontWeight="Medium"
+                                           Foreground="{DynamicResource SystemFillColorSuccessBrush}" Text="{x:Static resources:Strings.Plugins_Enabled}"
+                                           Visibility="{Binding EnabledStatusVisibility, Mode=OneWay}" />
+                                <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{x:Static resources:Strings.Plugins_Disabled}"
+                                           Visibility="{Binding DisabledStatusVisibility, Mode=OneWay}" />
+                                <ui:Button Margin="0,0,8,0" VerticalAlignment="Center"
+                                           Appearance="Primary"
+                                           Content="{x:Static resources:Strings.Plugins_Update}"
+                                           IsEnabled="{Binding InstallButtonEnabled, Mode=OneWay}"
+                                           Visibility="{Binding UpdateVisibility, Mode=OneWay}"
+                                           Click="UpdateButton_Click"
+                                           Tag="{Binding Id, Mode=OneWay}" />
+                                <ui:ToggleSwitch IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Available Plugins -->
+        <TextBlock Text="{x:Static resources:Strings.Plugins_AvailablePlugins}" FontSize="18" FontWeight="Medium" Margin="0,20,0,8" />
+
+        <TextBlock Margin="0,10,0,0" Text="{x:Static resources:Strings.Plugins_NoAvailablePlugins}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Visibility="{Binding NoAvailableVisibility, Mode=OneWay}" />
+
+        <ui:ProgressRing Margin="0,10,0,0" IsIndeterminate="True" Visibility="{Binding LoadingVisibility, Mode=OneWay}" Width="30" Height="30" HorizontalAlignment="Center" />
+
+        <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding AvailablePlugins, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="0,0,0,8" Padding="12" CornerRadius="8" BorderThickness="1"
+                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                            Background="{DynamicResource ControlFillColorDefaultBrush}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Width="40" Height="40" CornerRadius="6" Background="{DynamicResource ControlFillColorSecondaryBrush}">
+                                <ui:SymbolIcon Symbol="PuzzlePiece24" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+
+                            <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="14" FontWeight="Medium" Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center" />
+                                    <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="4" Visibility="{Binding OfficialBadgeVisibility, Mode=OneWay}" Background="{DynamicResource SystemFillColorSuccessBrush}">
+                                        <TextBlock FontSize="11" Text="{x:Static resources:Strings.Plugins_Official}" Foreground="White" />
+                                    </Border>
+                                    <Border Margin="4,0,0,0" Padding="6,1" CornerRadius="4" Visibility="{Binding VerifiedBadgeVisibility, Mode=OneWay}" Background="{DynamicResource SystemFillColorAttentionBrush}">
+                                        <TextBlock FontSize="11" Text="{x:Static resources:Strings.Plugins_Verified}" Foreground="White" />
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock FontSize="12" Text="{Binding Description, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <TextBlock FontSize="11" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+                                        <Run Text="{x:Static resources:Strings.Plugins_Version}" /><Run Text="{Binding Version, Mode=OneWay}" />
+                                    </TextBlock>
+                                    <TextBlock FontSize="11" Margin="12,0,0,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+                                        <Run Text="{x:Static resources:Strings.Plugins_Author}" /><Run Text="{Binding Author, Mode=OneWay}" />
+                                    </TextBlock>
+                                </StackPanel>
+                                <TextBlock FontSize="11" Margin="0,2,0,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap">
+                                    <Run Text="{x:Static resources:Strings.Plugins_Permissions}" /><Run Text="{Binding PermissionsText, Mode=OneWay}" />
+                                </TextBlock>
+                            </StackPanel>
+
+                            <ui:Button Grid.Column="2" VerticalAlignment="Center"
+                                       Appearance="Primary"
+                                       Content="{x:Static resources:Strings.Plugins_Install}"
+                                       IsEnabled="{Binding InstallButtonEnabled, Mode=OneWay}"
+                                       Click="InstallButton_Click"
+                                       Tag="{Binding Id, Mode=OneWay}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</ui:UiPage>

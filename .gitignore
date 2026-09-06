@@ -348,3 +348,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Self-contained build output (too large for GitHub)
+Rainstrap/Rainstrap.exe
+Rainstrap/*.pdb
+Rainstrap/License*

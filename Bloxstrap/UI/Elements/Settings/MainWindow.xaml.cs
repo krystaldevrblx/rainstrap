@@ -40,11 +40,33 @@ namespace Bloxstrap.UI.Elements.Settings
 
             App.Logger.WriteLine("MainWindow", "Initializing settings window");
 
+            // Initialize plugin host for the settings window
+            if (App.PluginManager is not null)
+            {
+                try
+                {
+                    var pluginHost = new Plugins.SettingsPluginHost(this);
+                    App.PluginManager.SetHost(pluginHost);
+                    App.PluginManager.InitializePlugins();
+
+                    // Ensure builtin plugins register their navigation items with the real host
+                    App.PluginManager.RegisterBuiltinNavigationItems();
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteException("MainWindow", ex);
+                    App.Logger.WriteLine("MainWindow", "Plugin initialization failed — settings will open without plugin support");
+                }
+            }
+
             if (showAlreadyRunningWarning)
                 ShowAlreadyRunningSnackbar();
 
             gbs.Opacity = viewModel.GBSEnabled ? 1 : 0.5;
             gbs.IsEnabled = viewModel.GBSEnabled; // binding doesnt work as expected so we are setting it in here instead
+
+            // Hide plugin-controlled navigation items based on plugin state
+            UpdatePluginNavigationVisibility();
 
             LoadState();
 
@@ -77,6 +99,8 @@ namespace Bloxstrap.UI.Elements.Settings
             // run scraper
             this.Loaded += (s, e) =>
             {
+                SettingsRainBackground.Start();
+
                 Dispatcher.InvokeAsync(() =>
                 {
                     BuildSearchIndexAutomatically();
@@ -104,6 +128,24 @@ namespace Bloxstrap.UI.Elements.Settings
                 this.Left = _state.Left;
                 this.Top = _state.Top;
             }
+        }
+
+        private void UpdatePluginNavigationVisibility()
+        {
+            if (App.PluginManager is null)
+                return;
+
+            navAccounts.Visibility = App.PluginManager.IsPluginEnabled("rainstrap.accountmanager")
+                ? System.Windows.Visibility.Visible
+                : System.Windows.Visibility.Collapsed;
+
+            navMultiInstance.Visibility = App.PluginManager.IsPluginEnabled("rainstrap.multiinstance")
+                ? System.Windows.Visibility.Visible
+                : System.Windows.Visibility.Collapsed;
+
+            navClips.Visibility = App.PluginManager.IsPluginEnabled("rainstrap.clips")
+                ? System.Windows.Visibility.Visible
+                : System.Windows.Visibility.Collapsed;
         }
 
         private async void SafeNavigate(Type page)
@@ -159,6 +201,11 @@ namespace Bloxstrap.UI.Elements.Settings
 
         private void WpfUiWindow_Closed(object sender, EventArgs e)
         {
+            SettingsRainBackground.Dispose();
+
+            // Shut down plugins
+            App.PluginManager?.ShutdownAll();
+
             if (App.LaunchSettings.TestModeFlag.Active)
                 LaunchHandler.LaunchRoblox(LaunchMode.Player);
             else

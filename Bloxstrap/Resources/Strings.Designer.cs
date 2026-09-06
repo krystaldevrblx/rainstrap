@@ -2503,6 +2503,15 @@ namespace Bloxstrap.Resources {
                 return ResourceManager.GetString("Installer.ImportSettings", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to We detected a Bloxstrap installation. Import all settings, mods, fast flags, saved accounts, and custom themes?.
+        /// </summary>
+        public static string Installer_MigrationPrompt {
+            get {
+                return ResourceManager.GetString("Installer.MigrationPrompt", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Rainstrap has been installed to this location before and is still present, however the installer cannot overwrite the old executable. 
@@ -5738,6 +5747,390 @@ namespace Bloxstrap.Resources {
         public static string Catalog_Flag_DFIntCSGLevelOfDetailSwitchingDistanceL34_Desc {
             get {
                 return ResourceManager.GetString("Catalog.Flag.DFIntCSGLevelOfDetailSwitchingDistanceL34.Desc", resourceCulture);
+            }
+        }
+
+        public static string Clips_Title {
+            get {
+                return ResourceManager.GetString("Clips_Title", resourceCulture);
+            }
+        }
+
+        public static string Clips_Description {
+            get {
+                return ResourceManager.GetString("Clips_Description", resourceCulture);
+            }
+        }
+
+        public static string Clips_Enable_Title {
+            get {
+                return ResourceManager.GetString("Clips_Enable_Title", resourceCulture);
+            }
+        }
+
+        public static string Clips_Enable_Description {
+            get {
+                return ResourceManager.GetString("Clips_Enable_Description", resourceCulture);
+            }
+        }
+
+        public static string Clips_Hotkey_Title {
+            get {
+                return ResourceManager.GetString("Clips_Hotkey_Title", resourceCulture);
+            }
+        }
+
+        public static string Clips_Hotkey_Description {
+            get {
+                return ResourceManager.GetString("Clips_Hotkey_Description", resourceCulture);
+            }
+        }
+
+        public static string Clips_Duration_Title {
+            get {
+                return ResourceManager.GetString("Clips_Duration_Title", resourceCulture);
+            }
+        }
+
+        public static string Clips_Duration_Description {
+            get {
+                return ResourceManager.GetString("Clips_Duration_Description", resourceCulture);
+            }
+        }
+
+        public static string Clips_OutputFolder_Title {
+            get {
+                return ResourceManager.GetString("Clips_OutputFolder_Title", resourceCulture);
+            }
+        }
+
+        public static string Clips_OutputFolder_Description {
+            get {
+                return ResourceManager.GetString("Clips_OutputFolder_Description", resourceCulture);
+            }
+        }
+
+        public static string Clips_Fps_Title {
+            get {
+                return ResourceManager.GetString("Clips_Fps_Title", resourceCulture);
+            }
+        }
+
+        public static string Clips_Fps_Description {
+            get {
+                return ResourceManager.GetString("Clips_Fps_Description", resourceCulture);
+            }
+        }
+
+        public static string Clips_SaveClip {
+            get {
+                return ResourceManager.GetString("Clips_SaveClip", resourceCulture);
+            }
+        }
+
+        public static string Clips_OpenFolder {
+            get {
+                return ResourceManager.GetString("Clips_OpenFolder", resourceCulture);
+            }
+        }
+
+        public static string Clips_Status_Header {
+            get {
+                return ResourceManager.GetString("Clips_Status_Header", resourceCulture);
+            }
+        }
+
+        public static string Clips_Status_Idle {
+            get {
+                return ResourceManager.GetString("Clips_Status_Idle", resourceCulture);
+            }
+        }
+
+        public static string Clips_Status_Buffering {
+            get {
+                return ResourceManager.GetString("Clips_Status_Buffering", resourceCulture);
+            }
+        }
+
+        public static string Clips_Status_Saving {
+            get {
+                return ResourceManager.GetString("Clips_Status_Saving", resourceCulture);
+            }
+        }
+
+        public static string Clips_Status_Saved {
+            get {
+                return ResourceManager.GetString("Clips_Status_Saved", resourceCulture);
+            }
+        }
+
+        public static string Clips_Status_Error {
+            get {
+                return ResourceManager.GetString("Clips_Status_Error", resourceCulture);
+            }
+        }
+
+        public static string Clips_Status_RobloxNotRunning {
+            get {
+                return ResourceManager.GetString("Clips_Status_RobloxNotRunning", resourceCulture);
+            }
+        }
+
+        public static string Clips_Recent_Header {
+            get {
+                return ResourceManager.GetString("Clips_Recent_Header", resourceCulture);
+            }
+        }
+
+        public static string Clips_Recent_Empty {
+            get {
+                return ResourceManager.GetString("Clips_Recent_Empty", resourceCulture);
+            }
+        }
+
+        public static string Clips_Limitations_Header {
+            get {
+                return ResourceManager.GetString("Clips_Limitations_Header", resourceCulture);
+            }
+        }
+
+        public static string Clips_Limitations_Description {
+            get {
+                return ResourceManager.GetString("Clips_Limitations_Description", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_Header {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_Header", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_Description {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_Description", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_CurrentVersion {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_CurrentVersion", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_CheckNow {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_CheckNow", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_Checking {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_Checking", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_UpToDate {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_UpToDate", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_UpdateAvailable {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_UpdateAvailable", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_UpdateNow {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_UpdateNow", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_Downloading {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_Downloading", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_Installing {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_Installing", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_CheckFailed {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_CheckFailed", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_LatestRelease {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_LatestRelease", resourceCulture);
+            }
+        }
+
+        public static string Updates_Rainstrap_ViewChangelog {
+            get {
+                return ResourceManager.GetString("Updates_Rainstrap_ViewChangelog", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Title {
+            get {
+                return ResourceManager.GetString("Plugins_Title", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Description {
+            get {
+                return ResourceManager.GetString("Plugins_Description", resourceCulture);
+            }
+        }
+
+        public static string Plugins_StoreInfo {
+            get {
+                return ResourceManager.GetString("Plugins_StoreInfo", resourceCulture);
+            }
+        }
+
+        public static string Plugins_InstalledPlugins {
+            get {
+                return ResourceManager.GetString("Plugins_InstalledPlugins", resourceCulture);
+            }
+        }
+
+        public static string Plugins_AvailablePlugins {
+            get {
+                return ResourceManager.GetString("Plugins_AvailablePlugins", resourceCulture);
+            }
+        }
+
+        public static string Plugins_NoPluginsInstalled {
+            get {
+                return ResourceManager.GetString("Plugins_NoPluginsInstalled", resourceCulture);
+            }
+        }
+
+        public static string Plugins_ComingSoon {
+            get {
+                return ResourceManager.GetString("Plugins_ComingSoon", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Enabled {
+            get {
+                return ResourceManager.GetString("Plugins_Enabled", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Disabled {
+            get {
+                return ResourceManager.GetString("Plugins_Disabled", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Official {
+            get {
+                return ResourceManager.GetString("Plugins_Official", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Verified {
+            get {
+                return ResourceManager.GetString("Plugins_Verified", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Version {
+            get {
+                return ResourceManager.GetString("Plugins_Version", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Author {
+            get {
+                return ResourceManager.GetString("Plugins_Author", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Permissions {
+            get {
+                return ResourceManager.GetString("Plugins_Permissions", resourceCulture);
+            }
+        }
+
+        public static string Plugins_None {
+            get {
+                return ResourceManager.GetString("Plugins_None", resourceCulture);
+            }
+        }
+
+        public static string Plugins_CatalogOffline {
+            get {
+                return ResourceManager.GetString("Plugins_CatalogOffline", resourceCulture);
+            }
+        }
+
+        public static string Plugins_CatalogError {
+            get {
+                return ResourceManager.GetString("Plugins_CatalogError", resourceCulture);
+            }
+        }
+
+        public static string Plugins_NoAvailablePlugins {
+            get {
+                return ResourceManager.GetString("Plugins_NoAvailablePlugins", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Install {
+            get {
+                return ResourceManager.GetString("Plugins_Install", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Update {
+            get {
+                return ResourceManager.GetString("Plugins_Update", resourceCulture);
+            }
+        }
+
+        public static string Plugins_UpdateAvailable {
+            get {
+                return ResourceManager.GetString("Plugins_UpdateAvailable", resourceCulture);
+            }
+        }
+
+        public static string Plugins_RestartRequired {
+            get {
+                return ResourceManager.GetString("Plugins_RestartRequired", resourceCulture);
+            }
+        }
+
+        public static string Plugins_InstallFailed {
+            get {
+                return ResourceManager.GetString("Plugins_InstallFailed", resourceCulture);
+            }
+        }
+
+        public static string Plugins_DownloadFailed {
+            get {
+                return ResourceManager.GetString("Plugins_DownloadFailed", resourceCulture);
+            }
+        }
+
+        public static string Plugins_HashMismatch {
+            get {
+                return ResourceManager.GetString("Plugins_HashMismatch", resourceCulture);
+            }
+        }
+
+        public static string Plugins_Incompatible {
+            get {
+                return ResourceManager.GetString("Plugins_Incompatible", resourceCulture);
             }
         }
     }

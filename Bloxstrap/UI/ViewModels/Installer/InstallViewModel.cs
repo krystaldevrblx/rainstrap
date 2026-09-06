@@ -83,6 +83,20 @@ namespace Bloxstrap.UI.ViewModels.Installer
                 return false;
             }
 
+            // Show one-click migration prompt when Bloxstrap is detected
+            if (installer.ImportSettings && installer.ExistingDataPresent)
+            {
+                var result = Frontend.ShowMessageBox(
+                    Strings.Installer_MigrationPrompt,
+                    MessageBoxImage.Question,
+                    MessageBoxButton.YesNo,
+                    MessageBoxResult.Yes
+                );
+
+                if (result != MessageBoxResult.Yes)
+                    installer.ImportSettings = false;
+            }
+
             installer.DoInstall();
 
             return true;

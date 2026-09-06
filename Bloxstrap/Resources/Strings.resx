@@ -1358,6 +1358,9 @@ Would you like to switch your preferred channel to {0}?</value>
   <data name="Installer.ImportSettings" xml:space="preserve">
     <value>Import settings from Bloxstrap</value>
   </data>
+  <data name="Installer.MigrationPrompt" xml:space="preserve">
+    <value>We detected a Bloxstrap installation. Import all settings, mods, fast flags, saved accounts, and custom themes?</value>
+  </data>
   <data name="Installer.InstallationNotFound" xml:space="preserve">
     <value>Bloxstrap installation was not found.</value>
   </data>
@@ -2235,5 +2238,206 @@ If you choose No, Rainstrap will keep your current version for now. If Roblox no
   </data>
   <data name="Catalog.Flag.DFIntCSGLevelOfDetailSwitchingDistanceL34.Desc" xml:space="preserve">
     <value>Mesh detail switching distance, level 3-4 band. Part of the mesh LOD group. (number)</value>
+  </data>
+  <!-- Clips -->
+  <data name="Clips_Title" xml:space="preserve">
+    <value>Clips</value>
+  </data>
+  <data name="Clips_Description" xml:space="preserve">
+    <value>Capture Roblox gameplay clips using a rolling replay buffer. When enabled, Rainstrap continuously buffers the last few seconds of gameplay and saves a clip on demand.</value>
+  </data>
+  <data name="Clips_Enable_Title" xml:space="preserve">
+    <value>Enable Replay Buffer</value>
+  </data>
+  <data name="Clips_Enable_Description" xml:space="preserve">
+    <value>Start the rolling replay buffer when Roblox is launched.</value>
+  </data>
+  <data name="Clips_Hotkey_Title" xml:space="preserve">
+    <value>Clip Hotkey</value>
+  </data>
+  <data name="Clips_Hotkey_Description" xml:space="preserve">
+    <value>The keyboard shortcut to save the current replay buffer as a clip.</value>
+  </data>
+  <data name="Clips_Duration_Title" xml:space="preserve">
+    <value>Replay Buffer Duration</value>
+  </data>
+  <data name="Clips_Duration_Description" xml:space="preserve">
+    <value>How many seconds of gameplay to keep in the rolling buffer.</value>
+  </data>
+  <data name="Clips_OutputFolder_Title" xml:space="preserve">
+    <value>Output Folder</value>
+  </data>
+  <data name="Clips_OutputFolder_Description" xml:space="preserve">
+    <value>Where saved clips are stored.</value>
+  </data>
+  <data name="Clips_Fps_Title" xml:space="preserve">
+    <value>Capture FPS</value>
+  </data>
+  <data name="Clips_Fps_Description" xml:space="preserve">
+    <value>Frames per second for the captured clip video.</value>
+  </data>
+  <data name="Clips_SaveClip" xml:space="preserve">
+    <value>Save Clip</value>
+  </data>
+  <data name="Clips_OpenFolder" xml:space="preserve">
+    <value>Open Clips Folder</value>
+  </data>
+  <data name="Clips_Status_Header" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Clips_Status_Idle" xml:space="preserve">
+    <value>Idle - Waiting for Roblox to start</value>
+  </data>
+  <data name="Clips_Status_Buffering" xml:space="preserve">
+    <value>Buffering - Rolling buffer active</value>
+  </data>
+  <data name="Clips_Status_Saving" xml:space="preserve">
+    <value>Saving clip...</value>
+  </data>
+  <data name="Clips_Status_Saved" xml:space="preserve">
+    <value>Clip saved successfully</value>
+  </data>
+  <data name="Clips_Status_Error" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="Clips_Status_RobloxNotRunning" xml:space="preserve">
+    <value>Roblox is not running</value>
+  </data>
+  <data name="Clips_Recent_Header" xml:space="preserve">
+    <value>Recent Clips</value>
+  </data>
+  <data name="Clips_Recent_Empty" xml:space="preserve">
+    <value>No clips saved yet. Press the hotkey while Roblox is running to save a clip.</value>
+  </data>
+  <data name="Clips_Limitations_Header" xml:space="preserve">
+    <value>Limitations</value>
+  </data>
+  <data name="Clips_Limitations_Description" xml:space="preserve">
+    <value>Capture is limited to the Roblox window only. System audio mixing and arbitrary capture resolutions may not be supported. If capture is unreliable on your system, consider using dedicated recording software.</value>
+  </data>
+
+  <!-- Rainstrap self-update -->
+  <data name="Updates_Rainstrap_Header" xml:space="preserve">
+    <value>Rainstrap</value>
+  </data>
+  <data name="Updates_Rainstrap_Description" xml:space="preserve">
+    <value>Keep Rainstrap up to date with the latest features and fixes.</value>
+  </data>
+  <data name="Updates_Rainstrap_CurrentVersion" xml:space="preserve">
+    <value>Current version</value>
+  </data>
+  <data name="Updates_Rainstrap_CheckNow" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Updates_Rainstrap_Checking" xml:space="preserve">
+    <value>Checking...</value>
+  </data>
+  <data name="Updates_Rainstrap_UpToDate" xml:space="preserve">
+    <value>Rainstrap is up to date</value>
+  </data>
+  <data name="Updates_Rainstrap_UpdateAvailable" xml:space="preserve">
+    <value>Update available: {0}</value>
+  </data>
+  <data name="Updates_Rainstrap_UpdateNow" xml:space="preserve">
+    <value>Update now</value>
+  </data>
+  <data name="Updates_Rainstrap_Downloading" xml:space="preserve">
+    <value>Downloading update...</value>
+  </data>
+  <data name="Updates_Rainstrap_Installing" xml:space="preserve">
+    <value>Installing update...</value>
+  </data>
+  <data name="Updates_Rainstrap_CheckFailed" xml:space="preserve">
+    <value>Failed to check for updates: {0}</value>
+  </data>
+  <data name="Updates_Rainstrap_LatestRelease" xml:space="preserve">
+    <value>Latest release</value>
+  </data>
+  <data name="Updates_Rainstrap_ViewChangelog" xml:space="preserve">
+    <value>View changelog</value>
+  </data>
+
+  <!-- Plugins -->
+  <data name="Plugins_Title" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="Plugins_Description" xml:space="preserve">
+    <value>Manage Rainstrap plugins. Plugins extend Rainstrap with optional features.</value>
+  </data>
+  <data name="Plugins_StoreInfo" xml:space="preserve">
+    <value>Installed plugins are listed below. Enable or disable them using the toggle switches.</value>
+  </data>
+  <data name="Plugins_InstalledPlugins" xml:space="preserve">
+    <value>Installed Plugins</value>
+  </data>
+  <data name="Plugins_AvailablePlugins" xml:space="preserve">
+    <value>Available Plugins</value>
+  </data>
+  <data name="Plugins_NoPluginsInstalled" xml:space="preserve">
+    <value>No plugins are currently installed.</value>
+  </data>
+  <data name="Plugins_ComingSoon" xml:space="preserve">
+    <value>More plugins will be available in the Plugin Store soon.</value>
+  </data>
+  <data name="Plugins_Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Plugins_Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Plugins_Official" xml:space="preserve">
+    <value>Official</value>
+  </data>
+  <data name="Plugins_Verified" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+  <data name="Plugins_Version" xml:space="preserve">
+    <value>Version: </value>
+  </data>
+  <data name="Plugins_Author" xml:space="preserve">
+    <value>Author: </value>
+  </data>
+  <data name="Plugins_Permissions" xml:space="preserve">
+    <value>Permissions: </value>
+  </data>
+  <data name="Plugins_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Plugins_CatalogOffline" xml:space="preserve">
+    <value>Unable to reach the plugin catalogue. Installed plugins will continue to work normally.</value>
+  </data>
+  <data name="Plugins_CatalogError" xml:space="preserve">
+    <value>Catalogue Unavailable</value>
+  </data>
+  <data name="Plugins_NoAvailablePlugins" xml:space="preserve">
+    <value>No additional plugins are available right now.</value>
+  </data>
+  <data name="Plugins_Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Plugins_Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Plugins_UpdateAvailable" xml:space="preserve">
+    <value>Update Available</value>
+  </data>
+  <data name="Plugins_RestartRequired" xml:space="preserve">
+    <value>Restart Required
+
+This plugin will be active after Rainstrap restarts.
+
+Restart now?</value>
+  </data>
+  <data name="Plugins_InstallFailed" xml:space="preserve">
+    <value>Failed to install the plugin. Please try again later.</value>
+  </data>
+  <data name="Plugins_DownloadFailed" xml:space="preserve">
+    <value>Failed to download the plugin package. Please check your network connection.</value>
+  </data>
+  <data name="Plugins_HashMismatch" xml:space="preserve">
+    <value>The downloaded package has an unexpected hash. Installation has been cancelled for security.</value>
+  </data>
+  <data name="Plugins_Incompatible" xml:space="preserve">
+    <value>The plugin "{0}" is not compatible with this version of Rainstrap: {1}</value>
   </data>
 </root>

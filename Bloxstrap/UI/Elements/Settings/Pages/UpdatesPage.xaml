@@ -12,6 +12,62 @@
       Scrollable="True"
       Loaded="Page_Loaded">
     <StackPanel Margin="0,0,14,14">
+        <!-- Rainstrap self-update section -->
+        <TextBlock Text="{x:Static resources:Strings.Updates_Rainstrap_Header}" FontSize="20" FontWeight="Medium" />
+        <TextBlock Margin="0,4,0,12" Text="{x:Static resources:Strings.Updates_Rainstrap_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+        <ui:InfoBar Title="{x:Static resources:Strings.Common_Error}"
+                    Message="{Binding RainstrapError, Mode=OneWay}"
+                    Severity="Error"
+                    IsOpen="{Binding RainstrapErrorVisibility, Mode=OneWay}"
+                    IsClosable="False" />
+
+        <Border Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" Background="{DynamicResource ControlFillColorDefaultBrush}">
+            <StackPanel>
+                <TextBlock FontSize="16" FontWeight="Medium" Text="{Binding RainstrapStatusText, Mode=OneWay}" />
+                <TextBlock Margin="0,4,0,0" FontSize="12" Text="{Binding RainstrapLatestVersionText, Mode=OneWay}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"
+                           Visibility="{Binding RainstrapLatestVersionVisibility, Mode=OneWay}" />
+            </StackPanel>
+        </Border>
+
+        <Grid Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <controls:OptionControl Grid.Column="0"
+                Header="{x:Static resources:Strings.Updates_Rainstrap_CurrentVersion}"
+                Description="{Binding RainstrapCurrentVersionText, Mode=OneWay}" />
+
+            <ui:Button Grid.Column="1" Appearance="Primary" Icon="ArrowSync16" MinWidth="140"
+                       Content="{Binding RainstrapCheckButtonText, Mode=OneWay}"
+                       Command="{Binding CheckRainstrapUpdatesCommand}"
+                       IsEnabled="{Binding RainstrapCheckEnabled, Mode=OneWay}"
+                       VerticalAlignment="Center" Margin="12,0,0,0" />
+        </Grid>
+
+        <TextBlock Margin="0,6,0,0" FontSize="11" Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                   Text="{Binding RainstrapLastCheckedText, Mode=OneWay}" />
+
+        <ui:Button Margin="0,12,0,0" Appearance="Primary" Icon="ArrowDownload16" MinWidth="140"
+                   Content="{Binding RainstrapUpdateButtonText, Mode=OneWay}"
+                   Command="{Binding InstallRainstrapUpdateCommand}"
+                   Visibility="{Binding RainstrapUpdateButtonVisibility, Mode=OneWay}" />
+
+        <TextBlock Margin="0,8,0,0" FontSize="11" TextWrapping="Wrap"
+                   Visibility="{Binding RainstrapChangelogVisibility, Mode=OneWay}">
+            <Run Text="{x:Static resources:Strings.Updates_Rainstrap_LatestRelease}" FontWeight="SemiBold" />
+            <LineBreak />
+            <Run Text="{Binding RainstrapChangelog, Mode=OneWay}" />
+        </TextBlock>
+
+        <ui:Button Margin="0,8,0,16" Appearance="Secondary" Icon="Globe16"
+                   Content="{x:Static resources:Strings.Updates_Rainstrap_ViewChangelog}"
+                   Command="{Binding ViewRainstrapChangelogCommand}"
+                   Visibility="{Binding RainstrapChangelogVisibility, Mode=OneWay}" />
+
+        <!-- Roblox updates section -->
         <TextBlock Text="{x:Static resources:Strings.Updates_Title}" FontSize="20" FontWeight="Medium" />
         <TextBlock Margin="0,4,0,12" Text="{x:Static resources:Strings.Updates_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 

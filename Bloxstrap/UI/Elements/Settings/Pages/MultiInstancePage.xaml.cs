@@ -1,5 +1,6 @@
 using System.Windows;
 
+using Bloxstrap.Plugins;
 using Bloxstrap.UI.ViewModels.Settings;
 
 namespace Bloxstrap.UI.Elements.Settings.Pages
@@ -15,14 +16,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         public MultiInstancePage()
         {
-            SetupViewModel();
             InitializeComponent();
-        }
-
-        private void SetupViewModel()
-        {
-            _viewModel = new MultiInstanceViewModel();
-            DataContext = _viewModel;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -30,11 +24,25 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             if (!_initialLoad)
             {
                 _initialLoad = true;
+            }
+
+            if (App.PluginManager is null ||
+                !App.PluginManager.Plugins.TryGetValue("rainstrap.multiinstance", out var plugin) ||
+                plugin is not MultiInstancePlugin miPlugin)
+            {
+                DataContext = null;
                 return;
             }
 
-            // refresh the instance list every time the page is revisited
-            _viewModel.Refresh();
+            if (DataContext is not MultiInstanceViewModel)
+            {
+                _viewModel = new MultiInstanceViewModel(miPlugin);
+                DataContext = _viewModel;
+            }
+            else
+            {
+                _viewModel.Refresh();
+            }
         }
     }
 }

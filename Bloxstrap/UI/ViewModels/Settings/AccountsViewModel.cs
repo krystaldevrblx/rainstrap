@@ -8,6 +8,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.Input;
 
 using Bloxstrap.Models;
+using Bloxstrap.Plugins;
 using Bloxstrap.UI.Elements.Dialogs;
 
 namespace Bloxstrap.UI.ViewModels.Settings
@@ -18,7 +19,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public string Title { get; set; } = "";
         public string Username { get; set; } = "";
         public string AvatarUrl { get; set; } = "";
-        public long UserId { get; set; }
+        public long UserId { get; set; } = 0;
         public string LastUsedText { get; set; } = "";
 
         /// <summary>Whether stored sign-in material exists for this account.</summary>
@@ -65,6 +66,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
     public class AccountsViewModel : NotifyPropertyChangedViewModel
     {
+        private readonly AccountManagerPlugin _plugin;
+
         public ObservableCollection<AccountCardViewModel> Accounts { get; } = new();
 
         private bool _isLoading = false;
@@ -96,7 +99,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             get
             {
-                var active = App.Accounts.GetActiveAccount();
+                var active = _plugin.GetActiveAccount();
                 if (active is null)
                     return Strings.Accounts_ActiveSummaryNone;
 
@@ -151,7 +154,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (parameter is not string id)
                 return;
 
-            var account = App.Accounts.GetAccount(id);
+            var account = _plugin.GetAccount(id);
             if (account is null)
                 return;
 
@@ -161,7 +164,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (dialog.Result != MessageBoxResult.OK)
                 return;
 
-            App.Accounts.RenameAccount(id, dialog.Value);
+            _plugin.RenameAccount(id, dialog.Value);
             LoadAccounts();
         });
 
@@ -170,7 +173,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (parameter is not string id)
                 return;
 
-            var account = App.Accounts.GetAccount(id);
+            var account = _plugin.GetAccount(id);
             if (account is null)
                 return;
 
@@ -184,7 +187,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (choice != MessageBoxResult.Yes)
                 return;
 
-            App.Accounts.RemoveAccount(id);
+            _plugin.RemoveAccount(id);
             LoadAccounts();
         });
 
@@ -198,8 +201,9 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private bool _launchingInstance = false;
 
-        public AccountsViewModel()
+        public AccountsViewModel(AccountManagerPlugin plugin)
         {
+            _plugin = plugin;
             LoadAccounts();
         }
 
@@ -219,7 +223,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
             foreach (SavedAccount account in sorted)
             {
-                bool hasCredentials = App.Accounts.HasSecret(account.Id);
+                bool hasCredentials = _plugin.HasSecret(account.Id);
 
                 var card = new AccountCardViewModel
                 {
@@ -296,7 +300,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             try
             {
                 IsLoading = true;
-                (SavedAccount Account, bool AlreadyExisted) = await App.Accounts.AddCurrentAccountAsync();
+                (SavedAccount Account, bool AlreadyExisted) = await _plugin.AddCurrentAccountAsync();
 
                 LoadAccounts();
 
@@ -320,7 +324,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private void SetActive(string id)
         {
-            App.Accounts.SetActiveAccount(App.Accounts.Prop.ActiveAccountId == id ? null : id);
+            _plugin.SetActiveAccount(App.Accounts.Prop.ActiveAccountId == id ? null : id);
             LoadAccounts();
         }
 
@@ -334,7 +338,13 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 return;
 
             // prevent accidental duplicate launches
-            if (Utilities.IsRobloxRunning() && !App.Settings.Prop.MultiInstanceLaunching)
+            // When multi-instance plugin is active and enabled, skip confirmation
+            bool multiInstanceAllowed = App.PluginManager is not null
+                && App.PluginManager.Plugins.TryGetValue("rainstrap.multiinstance", out var miPlugin)
+                && miPlugin is MultiInstancePlugin { IsMultiInstanceActive: true }
+                && App.Settings.Prop.MultiInstanceLaunching;
+
+            if (Utilities.IsRobloxRunning() && !multiInstanceAllowed)
             {
                 var choice = Frontend.ShowMessageBox(
                     Strings.MultiInstance_ConfirmParallel,
@@ -354,7 +364,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             try
             {
                 // make this the active account so the launch applies it
-                App.Accounts.SetActiveAccount(id);
+                _plugin.SetActiveAccount(id);
 
                 using var process = Process.Start(new ProcessStartInfo
                 {

@@ -72,6 +72,9 @@ namespace Bloxstrap
         // RainHub ecosystem link (optional; offline-first)
         public static readonly JsonManager<Models.Persistable.RainHubLink> RainHubLink = new();
 
+        // Plugin system
+        public static Plugins.PluginManager? PluginManager { get; set; }
+
         public static readonly Integrations.RainHub.RainHubLinkManager RainHubManager = Integrations.RainHub.RainHubLinkManager.Instance;
 
         public static readonly HttpClient HttpClient = new(
@@ -170,6 +173,39 @@ namespace Bloxstrap
         public static void SendLog()
         {
 
+        }
+
+        private static async Task CheckForRainstrapUpdate()
+        {
+            const string LOG_IDENT = "App::CheckForRainstrapUpdate";
+
+            try
+            {
+                var (updateAvailable, latestVersion) = await Utility.VersionChecker.CheckForUpdateAsync();
+
+                if (updateAvailable)
+                {
+                    Logger.WriteLine(LOG_IDENT, $"Update available: {latestVersion}");
+
+                    Current.Dispatcher.Invoke(() =>
+                    {
+                        UI.Frontend.ShowBalloonTip(
+                            $"{ProjectName} Update Available",
+                            $"A new version ({latestVersion}) is available.\nOpen Settings > Updates to download it.",
+                            System.Windows.Forms.ToolTipIcon.Info,
+                            10
+                        );
+                    });
+                }
+                else
+                {
+                    Logger.WriteLine(LOG_IDENT, "No updates available");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteException(LOG_IDENT, ex);
+            }
         }
 
         public static void AssertWindowsOSVersion()
@@ -328,6 +364,40 @@ namespace Bloxstrap
                 GlobalSettings.Load();
                 RainHubLink.Load();
 
+                // Initialize plugin system
+                PluginManager = new Plugins.PluginManager(installLocation);
+                PluginManager.DiscoverPlugins();
+
+                // Ensure builtin plugin manifests are in the discovered list
+                foreach (var manifest in new[] {
+                    new Plugins.PluginManifest { Id = "rainstrap.multiinstance", Name = "Multi-Instance", Version = "1.0.0", ApiVersion = "1.0", Author = "Rainstrap", Description = "Run multiple Roblox instances at the same time.", IsOfficial = true, Verified = true, Permissions = new() { "processManagement" } },
+                    new Plugins.PluginManifest { Id = "rainstrap.clips", Name = "Clips", Version = "1.0.0", ApiVersion = "1.0", Author = "Rainstrap", Description = "Capture Roblox gameplay clips using a rolling replay buffer.", IsOfficial = true, Verified = true, Permissions = new() { "screenCapture", "filesystem" } },
+                    new Plugins.PluginManifest { Id = "rainstrap.accountmanager", Name = "Account Manager", Version = "1.0.0", ApiVersion = "1.0", Author = "Rainstrap", Description = "Manage multiple Roblox accounts and switch between them.", IsOfficial = true, Verified = true, Permissions = new() { "credentialStorage", "cookieAccess" } }
+                })
+                {
+                    if (!PluginManager.Manifests.ContainsKey(manifest.Id))
+                    {
+                        PluginManager.Manifests[manifest.Id] = manifest;
+                    }
+                }
+
+                // Load persisted enabled states, then enable any newly discovered plugins
+                PluginManager.LoadPluginStates();
+
+                // Apply any pending enable/disable/uninstall changes from previous session
+                PluginManager.ApplyPendingChanges();
+
+                PluginManager.EnableNewPlugins();
+
+                // Register builtin plugins (initializes only those that are enabled)
+                PluginManager.RegisterBuiltinPlugin(new Plugins.MultiInstancePlugin(), () => new Plugins.MultiInstancePlugin());
+                PluginManager.RegisterBuiltinPlugin(new Plugins.ClipsPlugin(), () => new Plugins.ClipsPlugin());
+                PluginManager.RegisterBuiltinPlugin(new Plugins.AccountManagerPlugin(), () => new Plugins.AccountManagerPlugin());
+
+                // Initialize builtin plugins now so they are active before the Settings window
+                // exists. This ensures plugin-owned functionality works during direct Roblox launch.
+                PluginManager.InitializeBuiltinPlugins();
+
                 if (Settings.Prop.AllowCookieAccess)
                     Task.Run(Cookies.LoadCookies);
 
@@ -347,6 +417,9 @@ namespace Bloxstrap
                 // RainHub sync is best-effort and fully optional — it starts in the
                 // background, never blocks launching, and no-ops when unlinked.
                 App.RainHubManager.Start();
+
+                // Check for Rainstrap updates in the background
+                Task.Run(CheckForRainstrapUpdate);
 
                 WindowsRegistry.RegisterApis(); // we want to register those early on
                                                 // so we wont have any issues with bloxshade

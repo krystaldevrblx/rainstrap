@@ -38,9 +38,14 @@ namespace Bloxstrap
         // anything we want copied should be put in here
         // root directory only
         public string[] FilesForImporting = {
-            "CustomThemes", // from feature/custom-bootstrappers
+            "CustomThemes",
             "Modifications",
-            "Settings.json"
+            "Settings.json",
+            "State.json",
+            "RobloxState.json",
+            "Accounts.json",
+            "AccountSecrets",
+            "Profiles"
         };
 
         public void DoInstall()
@@ -461,6 +466,22 @@ namespace Bloxstrap
                 }
             }
 
+            // Backup current executable before replacement
+            string backupPath = Paths.Application + ".bak";
+            try
+            {
+                File.Copy(Paths.Application, backupPath, true);
+                App.Logger.WriteLine(LOG_IDENT, $"Backed up current executable to {backupPath}");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException(LOG_IDENT, ex);
+                App.Logger.WriteLine(LOG_IDENT, "Failed to backup current executable, aborting upgrade");
+                return;
+            }
+
+            bool copySucceeded = false;
+
             // prior to 2.8.0, auto-updating was handled with this... bruteforce method
             // now it's handled with the system mutex you see above, but we need to keep this logic for <2.8.0 versions
             for (int i = 1; i <= 10; i++)
@@ -468,6 +489,7 @@ namespace Bloxstrap
                 try
                 {
                     File.Copy(Paths.Process, Paths.Application, true);
+                    copySucceeded = true;
                     break;
                 }
                 catch (Exception ex)
@@ -480,12 +502,61 @@ namespace Bloxstrap
                     {
                         App.Logger.WriteLine(LOG_IDENT, "Failed to update! (Could not get write permissions after 10 tries/5 seconds)");
                         App.Logger.WriteException(LOG_IDENT, ex);
-                        return;
                     }
 
                     Thread.Sleep(500);
                 }
             }
+
+            // If replacement failed, restore from backup
+            if (!copySucceeded)
+            {
+                try
+                {
+                    File.Copy(backupPath, Paths.Application, true);
+                    App.Logger.WriteLine(LOG_IDENT, "Restored executable from backup");
+                }
+                catch (Exception restoreEx)
+                {
+                    App.Logger.WriteException(LOG_IDENT, restoreEx);
+                    App.Logger.WriteLine(LOG_IDENT, "CRITICAL: Failed to restore executable from backup");
+                }
+
+                try { File.Delete(backupPath); } catch { }
+                return;
+            }
+
+            // Verify the replacement succeeded by checking the file exists and is non-empty
+            try
+            {
+                var replacedInfo = new FileInfo(Paths.Application);
+                if (!replacedInfo.Exists || replacedInfo.Length == 0)
+                {
+                    throw new InvalidOperationException("Replaced executable is missing or zero-byte");
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException(LOG_IDENT, ex);
+                App.Logger.WriteLine(LOG_IDENT, "Verification of replaced executable failed, restoring from backup");
+
+                try
+                {
+                    File.Copy(backupPath, Paths.Application, true);
+                    App.Logger.WriteLine(LOG_IDENT, "Restored executable from backup");
+                }
+                catch (Exception restoreEx)
+                {
+                    App.Logger.WriteException(LOG_IDENT, restoreEx);
+                    App.Logger.WriteLine(LOG_IDENT, "CRITICAL: Failed to restore executable from backup");
+                }
+
+                try { File.Delete(backupPath); } catch { }
+                return;
+            }
+
+            // Replacement succeeded — clean up backup
+            try { File.Delete(backupPath); } catch { }
 
             using (var uninstallKey = Registry.CurrentUser.CreateSubKey(App.UninstallKey))
             {

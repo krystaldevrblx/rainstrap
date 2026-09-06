@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore
+        run: |
+          dotnet restore Bloxstrap/Bloxstrap.csproj
+          dotnet restore Tests/Rainstrap.Tests.csproj
+
+      - name: Build
+        run: |
+          dotnet build Bloxstrap/Bloxstrap.csproj --no-restore --configuration Release
+          dotnet build Tests/Rainstrap.Tests.csproj --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Tests/Rainstrap.Tests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Publish (self-contained single-file)
+        run: >
+          dotnet publish Bloxstrap/Bloxstrap.csproj -c Release -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:PublishReadyToRun=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o Rainstrap
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rainstrap-win-x64
+          path: Rainstrap/Rainstrap.exe

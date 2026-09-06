@@ -66,5 +66,30 @@ namespace Bloxstrap.Models.Persistable
         public bool MultiInstanceLaunching { get; set; } = false;
 
         public UpgradeMode UpgradeMode { get; set; } = UpgradeMode.Automatic;
+
+        // plugin configuration
+        public List<string> EnabledPlugins { get; set; } = new();
+
+        /// <summary>
+        /// Plugins to enable on next restart. Plugin IDs here will be added to EnabledPlugins at startup.
+        /// </summary>
+        public List<string> PendingEnable { get; set; } = new();
+
+        /// <summary>
+        /// Plugins to disable on next restart. Plugin IDs here will be removed from EnabledPlugins at startup.
+        /// </summary>
+        public List<string> PendingDisable { get; set; } = new();
+
+        /// <summary>
+        /// Plugins to uninstall on next restart. Plugin directories will be deleted at startup.
+        /// </summary>
+        public List<string> PendingUninstall { get; set; } = new();
+
+        // clips/replay buffer configuration
+        public bool ClipsEnabled { get; set; } = false;
+        public int ClipsBufferDurationSeconds { get; set; } = 30;
+        public int ClipsCaptureFps { get; set; } = 30;
+        public string ClipsOutputFolder { get; set; } = "";
+        public int ClipsHotkeyVirtualKey { get; set; } = 0x7B; // F12
     }
 }

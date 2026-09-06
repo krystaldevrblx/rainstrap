@@ -28,6 +28,21 @@ namespace Bloxstrap.Models.Persistable
         /// </summary>
         public DateTime? LastUpdateCheckUtc { get; set; } = null;
 
+        /// <summary>
+        /// UTC timestamp of the last Rainstrap self-update check.
+        /// </summary>
+        public DateTime? LastRainstrapCheckUtc { get; set; } = null;
+
+        /// <summary>
+        /// Cached latest Rainstrap release tag from the last check.
+        /// </summary>
+        public string? LastRainstrapReleaseTag { get; set; } = null;
+
+        /// <summary>
+        /// Cached latest Rainstrap release changelog body.
+        /// </summary>
+        public string? LastRainstrapReleaseBody { get; set; } = null;
+
 
         #region Deprecated properties
         /// <summary>

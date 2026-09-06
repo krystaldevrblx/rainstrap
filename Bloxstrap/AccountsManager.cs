@@ -25,6 +25,14 @@ namespace Bloxstrap
 
         private string SecretsDirectory => Path.Combine(Paths.Base, "AccountSecrets");
 
+        /// <summary>
+        /// Whether the Account Manager plugin is currently active. When false,
+        /// <see cref="ApplyActiveCookieForLaunch"/> becomes a no-op so that a
+        /// disabled plugin cannot influence which account Roblox signs into.
+        /// Set by the plugin during Initialize/OnShutdown.
+        /// </summary>
+        public bool IsAccountManagementActive { get; set; }
+
         #region Persistence
 
         public void Load() => Load(false);
@@ -257,6 +265,9 @@ namespace Bloxstrap
         public bool ApplyActiveCookieForLaunch()
         {
             const string LOG_IDENT = "AccountsManager::ApplyActiveCookieForLaunch";
+
+            if (!IsAccountManagementActive)
+                return true; // plugin disabled - do not interfere with launching
 
             SavedAccount? account = GetActiveAccount();
 

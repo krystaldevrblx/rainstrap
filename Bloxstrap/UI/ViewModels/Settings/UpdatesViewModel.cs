@@ -5,6 +5,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 
 using Bloxstrap.Enums;
+using Bloxstrap.Models.APIs.GitHub;
 using Bloxstrap.Models.APIs.Roblox;
 using Bloxstrap.Models.Persistable;
 using Bloxstrap.RobloxInterfaces;
@@ -82,6 +83,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
     public class UpdatesViewModel : NotifyPropertyChangedViewModel
     {
         private ClientVersion? _availableVersion;
+        private GithubRelease? _latestRainstrapRelease;
 
         public ObservableCollection<VersionHistoryCard> RecentVersions { get; } = new();
 
@@ -227,10 +229,213 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         public ICommand CheckForUpdatesCommand => new AsyncRelayCommand(async () => await CheckForUpdatesAsync());
 
+        // ─── Rainstrap self-update ──────────────────────────────────────
+
+        private bool _isCheckingRainstrap = false;
+        public bool IsCheckingRainstrap
+        {
+            get => _isCheckingRainstrap;
+            set
+            {
+                _isCheckingRainstrap = value;
+                OnPropertyChanged(nameof(IsCheckingRainstrap));
+                OnPropertyChanged(nameof(RainstrapCheckButtonText));
+                OnPropertyChanged(nameof(RainstrapCheckEnabled));
+            }
+        }
+
+        public string RainstrapCheckButtonText => IsCheckingRainstrap
+            ? Strings.Updates_Rainstrap_Checking
+            : Strings.Updates_Rainstrap_CheckNow;
+
+        public bool RainstrapCheckEnabled => !_isCheckingRainstrap && !_isInstallingRainstrap;
+
+        public string RainstrapCurrentVersionText => $"v{App.Version}";
+
+        private string _rainstrapStatusText = "";
+        public string RainstrapStatusText
+        {
+            get => _rainstrapStatusText;
+            set
+            {
+                _rainstrapStatusText = value;
+                OnPropertyChanged(nameof(RainstrapStatusText));
+            }
+        }
+
+        private string _rainstrapLatestVersionText = "";
+        public string RainstrapLatestVersionText
+        {
+            get => _rainstrapLatestVersionText;
+            set
+            {
+                _rainstrapLatestVersionText = value;
+                OnPropertyChanged(nameof(RainstrapLatestVersionText));
+                OnPropertyChanged(nameof(RainstrapLatestVersionVisibility));
+            }
+        }
+
+        public Visibility RainstrapLatestVersionVisibility =>
+            String.IsNullOrEmpty(_rainstrapLatestVersionText) ? Visibility.Collapsed : Visibility.Visible;
+
+        private string _rainstrapChangelog = "";
+        public string RainstrapChangelog
+        {
+            get => _rainstrapChangelog;
+            set
+            {
+                _rainstrapChangelog = value;
+                OnPropertyChanged(nameof(RainstrapChangelog));
+                OnPropertyChanged(nameof(RainstrapChangelogVisibility));
+            }
+        }
+
+        public Visibility RainstrapChangelogVisibility =>
+            String.IsNullOrEmpty(_rainstrapChangelog) ? Visibility.Collapsed : Visibility.Visible;
+
+        private bool _isRainstrapUpToDate = false;
+        public bool IsRainstrapUpToDate
+        {
+            get => _isRainstrapUpToDate;
+            set
+            {
+                _isRainstrapUpToDate = value;
+                OnPropertyChanged(nameof(IsRainstrapUpToDate));
+                OnPropertyChanged(nameof(RainstrapUpdateButtonVisibility));
+            }
+        }
+
+        public Visibility RainstrapUpdateButtonVisibility =>
+            IsRainstrapUpToDate || IsCheckingRainstrap || _isInstallingRainstrap
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+
+        private bool _isInstallingRainstrap = false;
+        public bool IsInstallingRainstrap
+        {
+            get => _isInstallingRainstrap;
+            set
+            {
+                _isInstallingRainstrap = value;
+                OnPropertyChanged(nameof(IsInstallingRainstrap));
+                OnPropertyChanged(nameof(RainstrapCheckEnabled));
+                OnPropertyChanged(nameof(RainstrapUpdateButtonVisibility));
+                OnPropertyChanged(nameof(RainstrapUpdateButtonText));
+            }
+        }
+
+        public string RainstrapUpdateButtonText => IsInstallingRainstrap
+            ? Strings.Updates_Rainstrap_Installing
+            : Strings.Updates_Rainstrap_UpdateNow;
+
+        private string _rainstrapError = "";
+        public string RainstrapError
+        {
+            get => _rainstrapError;
+            set
+            {
+                _rainstrapError = value;
+                OnPropertyChanged(nameof(RainstrapError));
+                OnPropertyChanged(nameof(RainstrapErrorVisibility));
+            }
+        }
+
+        public Visibility RainstrapErrorVisibility =>
+            String.IsNullOrEmpty(_rainstrapError) ? Visibility.Collapsed : Visibility.Visible;
+
+        private string _rainstrapLastCheckedText = "";
+        public string RainstrapLastCheckedText
+        {
+            get => _rainstrapLastCheckedText;
+            set
+            {
+                _rainstrapLastCheckedText = value;
+                OnPropertyChanged(nameof(RainstrapLastCheckedText));
+            }
+        }
+
+        public ICommand CheckRainstrapUpdatesCommand => new AsyncRelayCommand(async () => await CheckForRainstrapUpdatesAsync());
+        public ICommand InstallRainstrapUpdateCommand => new AsyncRelayCommand(async () => await InstallRainstrapUpdateAsync());
+        public ICommand ViewRainstrapChangelogCommand => new RelayCommand(() =>
+        {
+            if (_latestRainstrapRelease is not null)
+                Utilities.ShellExecute($"https://github.com/{App.ProjectRepository}/releases/tag/{_latestRainstrapRelease.TagName}");
+        });
+
         public UpdatesViewModel()
         {
             RefreshCurrentVersion();
             BuildVersionHistory();
+            LoadCachedRainstrapCheck();
+        }
+
+        /// <summary>
+        /// Loads cached Rainstrap update check from State.json.
+        /// If the cache is less than 5 minutes old, shows cached result immediately.
+        /// Otherwise, auto-checks in the background.
+        /// </summary>
+        private void LoadCachedRainstrapCheck()
+        {
+            var lastCheck = App.State.Prop.LastRainstrapCheckUtc;
+            var cachedTag = App.State.Prop.LastRainstrapReleaseTag;
+            var cachedBody = App.State.Prop.LastRainstrapReleaseBody;
+
+            if (lastCheck is not null && !String.IsNullOrEmpty(cachedTag))
+            {
+                var age = DateTime.UtcNow - lastCheck.Value;
+                RainstrapLastCheckedText = String.Format(Strings.Updates_LastChecked, lastCheck.Value.ToLocalTime().ToString("g"));
+
+                // If cache is fresh (<5 min), show cached result immediately
+                if (age.TotalMinutes < 5)
+                {
+                    ApplyRainstrapCachedResult(cachedTag, cachedBody);
+                    return;
+                }
+            }
+
+            // Cache is stale or missing — auto-check in background
+#pragma warning disable CS4014
+            CheckForRainstrapUpdatesAsync();
+#pragma warning restore CS4014
+        }
+
+        /// <summary>
+        /// Applies a cached release result without hitting the network.
+        /// </summary>
+        private void ApplyRainstrapCachedResult(string tag, string? body)
+        {
+            var latestVersion = Utilities.GetVersionFromString(tag);
+            var currentVersion = Utilities.GetVersionFromString(App.Version);
+
+            int comparison = currentVersion.CompareTo(latestVersion);
+
+            if (comparison >= 0)
+            {
+                IsRainstrapUpToDate = true;
+                RainstrapStatusText = Strings.Updates_Rainstrap_UpToDate;
+            }
+            else
+            {
+                RainstrapStatusText = String.Format(Strings.Updates_Rainstrap_UpdateAvailable, tag);
+                RainstrapLatestVersionText = tag;
+                RainstrapChangelog = body ?? "";
+            }
+
+            // Build a minimal release object for install support
+            _latestRainstrapRelease = new GithubRelease
+            {
+                TagName = tag,
+                Body = body ?? "",
+                Name = tag,
+                Assets = new List<GithubReleaseAsset>
+                {
+                    new GithubReleaseAsset
+                    {
+                        Name = "Rainstrap.exe",
+                        BrowserDownloadUrl = $"https://github.com/{App.ProjectRepository}/releases/download/{tag}/Rainstrap.exe"
+                    }
+                }
+            };
         }
 
         /// <summary>
@@ -505,6 +710,161 @@ namespace Bloxstrap.UI.ViewModels.Settings
             {
                 _apiLatencyText = value;
                 OnPropertyChanged(nameof(ApiLatencyText));
+            }
+        }
+
+        // ─── Rainstrap self-update methods ──────────────────────────────
+
+        public async Task CheckForRainstrapUpdatesAsync()
+        {
+            const string LOG_IDENT = "UpdatesViewModel::CheckForRainstrapUpdates";
+
+            if (IsCheckingRainstrap || _isInstallingRainstrap)
+                return;
+
+            RainstrapError = "";
+            RainstrapStatusText = "";
+            RainstrapLatestVersionText = "";
+            RainstrapChangelog = "";
+            IsRainstrapUpToDate = false;
+            IsCheckingRainstrap = true;
+
+            try
+            {
+                // Use a short timeout so the UI doesn't hang on slow connections
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                using var checkClient = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+                checkClient.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Rainstrap", App.Version));
+
+                var url = $"https://api.github.com/repos/{App.ProjectRepository}/releases/latest";
+                var response = await checkClient.GetAsync(url, cts.Token);
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var release = JsonSerializer.Deserialize<GithubRelease>(json);
+
+                if (release is null || release.Assets is null)
+                {
+                    RainstrapError = String.Format(Strings.Updates_Rainstrap_CheckFailed, "Invalid response from GitHub");
+                    return;
+                }
+
+                _latestRainstrapRelease = release;
+
+                var latestVersion = Utilities.GetVersionFromString(release.TagName);
+                var currentVersion = Utilities.GetVersionFromString(App.Version);
+
+                int comparison = currentVersion.CompareTo(latestVersion);
+
+                if (comparison >= 0)
+                {
+                    IsRainstrapUpToDate = true;
+                    RainstrapStatusText = Strings.Updates_Rainstrap_UpToDate;
+                }
+                else
+                {
+                    RainstrapStatusText = String.Format(Strings.Updates_Rainstrap_UpdateAvailable, release.TagName);
+                    RainstrapLatestVersionText = release.TagName;
+                    RainstrapChangelog = release.Body ?? "";
+                }
+
+                // Cache the result
+                App.State.Prop.LastRainstrapCheckUtc = DateTime.UtcNow;
+                App.State.Prop.LastRainstrapReleaseTag = release.TagName;
+                App.State.Prop.LastRainstrapReleaseBody = release.Body;
+                App.State.Save();
+
+                RainstrapLastCheckedText = String.Format(Strings.Updates_LastChecked, DateTime.UtcNow.ToLocalTime().ToString("g"));
+
+                App.Logger.WriteLine(LOG_IDENT, $"Rainstrap version check: current={App.Version}, latest={release.TagName}");
+            }
+            catch (TaskCanceledException)
+            {
+                RainstrapError = String.Format(Strings.Updates_Rainstrap_CheckFailed, "Request timed out");
+            }
+            catch (HttpRequestException ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"HTTP error: {ex.Message}");
+                RainstrapError = String.Format(Strings.Updates_Rainstrap_CheckFailed, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException(LOG_IDENT, ex);
+                RainstrapError = String.Format(Strings.Updates_Rainstrap_CheckFailed, ex.Message);
+            }
+            finally
+            {
+                IsCheckingRainstrap = false;
+            }
+        }
+
+        private async Task InstallRainstrapUpdateAsync()
+        {
+            const string LOG_IDENT = "UpdatesViewModel::InstallRainstrapUpdate";
+
+            if (_latestRainstrapRelease is null || _isInstallingRainstrap)
+                return;
+
+            var asset = _latestRainstrapRelease.Assets?.FirstOrDefault();
+            if (asset is null)
+            {
+                RainstrapError = String.Format(Strings.Updates_Rainstrap_CheckFailed, "No download asset found");
+                return;
+            }
+
+            MessageBoxResult choice = Frontend.ShowMessageBox(
+                String.Format(Strings.Updates_Rainstrap_UpdateAvailable, _latestRainstrapRelease.TagName),
+                MessageBoxImage.Question,
+                MessageBoxButton.YesNo,
+                MessageBoxResult.Yes
+            );
+
+            if (choice != MessageBoxResult.Yes)
+                return;
+
+            IsInstallingRainstrap = true;
+            RainstrapError = "";
+
+            try
+            {
+                RainstrapStatusText = Strings.Updates_Rainstrap_Downloading;
+
+                string downloadLocation = Path.Combine(Paths.TempUpdates, asset.Name);
+                Directory.CreateDirectory(Paths.TempUpdates);
+
+                if (!File.Exists(downloadLocation))
+                {
+                    var response = await App.HttpClient.GetAsync(asset.BrowserDownloadUrl);
+                    response.EnsureSuccessStatusCode();
+
+                    await using var fileStream = new FileStream(downloadLocation, FileMode.OpenOrCreate, FileAccess.Write);
+                    await response.Content.CopyToAsync(fileStream);
+                }
+
+                App.Logger.WriteLine(LOG_IDENT, $"Downloaded {_latestRainstrapRelease.TagName} to {downloadLocation}");
+
+                RainstrapStatusText = Strings.Updates_Rainstrap_Installing;
+
+                ProcessStartInfo startInfo = new()
+                {
+                    FileName = downloadLocation,
+                    Arguments = "-upgrade"
+                };
+
+                App.Settings.Save();
+                Process.Start(startInfo);
+
+                Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException(LOG_IDENT, ex);
+                RainstrapError = String.Format(Strings.Updates_Rainstrap_CheckFailed, ex.Message);
+                RainstrapStatusText = "";
+            }
+            finally
+            {
+                IsInstallingRainstrap = false;
             }
         }
     }

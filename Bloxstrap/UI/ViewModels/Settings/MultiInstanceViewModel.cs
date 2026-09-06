@@ -4,6 +4,8 @@ using System.Windows.Input;
 
 using CommunityToolkit.Mvvm.Input;
 
+using Bloxstrap.Plugins;
+
 namespace Bloxstrap.UI.ViewModels.Settings
 {
     public class InstanceCardViewModel : NotifyPropertyChangedViewModel
@@ -21,6 +23,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
     public class MultiInstanceViewModel : NotifyPropertyChangedViewModel
     {
+        private readonly MultiInstancePlugin _plugin;
+
         public ObservableCollection<InstanceCardViewModel> Instances { get; } = new();
 
         private Visibility _noInstancesVisibility = Visibility.Visible;
@@ -56,8 +60,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
             get => App.Settings.Prop.MultiInstanceLaunching;
             set
             {
-                App.Settings.Prop.MultiInstanceLaunching = value;
-                App.Settings.Save();
+                _plugin.SetMultiInstanceLaunching(value);
+                OnPropertyChanged(nameof(MultiInstanceLaunchingEnabled));
             }
         }
 
@@ -68,36 +72,14 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (_isLaunching)
                 return;
 
-            // guard against accidental parallel launches of the launcher itself
-            if (Utilities.IsRobloxRunning() && !App.Settings.Prop.MultiInstanceLaunching)
-            {
-                var choice = Frontend.ShowMessageBox(
-                    Strings.MultiInstance_ConfirmParallel,
-                    MessageBoxImage.Warning,
-                    MessageBoxButton.YesNo,
-                    MessageBoxResult.No
-                );
-
-                if (choice != MessageBoxResult.Yes)
-                    return;
-            }
-
             IsLaunching = true;
 
             try
             {
-                using var process = Process.Start(new ProcessStartInfo
-                {
-                    FileName = Paths.Process,
-                    Arguments = "-player",
-                    UseShellExecute = false
-                });
+                bool launched = _plugin.TryLaunchInstance();
 
-                await Task.Delay(1500);
-            }
-            catch (Exception ex)
-            {
-                Frontend.ShowMessageBox($"{Strings.Accounts_LaunchFailed}\n{ex.Message}", MessageBoxImage.Error);
+                if (launched)
+                    await Task.Delay(1500);
             }
             finally
             {
@@ -106,8 +88,9 @@ namespace Bloxstrap.UI.ViewModels.Settings
             }
         });
 
-        public MultiInstanceViewModel()
+        public MultiInstanceViewModel(MultiInstancePlugin plugin)
         {
+            _plugin = plugin;
             Refresh();
         }
 

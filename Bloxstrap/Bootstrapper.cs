@@ -1162,6 +1162,33 @@ namespace Bloxstrap
                     await using var fileStream = new FileStream(downloadLocation, FileMode.OpenOrCreate, FileAccess.Write);
                     await response.Content.CopyToAsync(fileStream);
                 }
+
+                // Verify the downloaded file is not zero-byte / incomplete
+                var fileInfo = new FileInfo(downloadLocation);
+                if (!fileInfo.Exists || fileInfo.Length == 0)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Downloaded file is missing or zero-byte, aborting update");
+                    try { File.Delete(downloadLocation); } catch { }
+                    return false;
+                }
+
+                // Verify SHA-256 checksum against release body
+                string? expectedHash = SHA256Hash.ExtractFromReleaseBody(releaseInfo.Body);
+                if (expectedHash is not null)
+                {
+                    string actualHash = SHA256Hash.FromFile(downloadLocation);
+                    if (!string.Equals(actualHash, expectedHash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"SHA-256 mismatch: expected {expectedHash}, got {actualHash}");
+                        try { File.Delete(downloadLocation); } catch { }
+                        return false;
+                    }
+                    App.Logger.WriteLine(LOG_IDENT, "SHA-256 checksum verified");
+                }
+                else
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "No SHA-256 checksum in release body — proceeding without verification");
+                }
 #endif
 
                 App.Logger.WriteLine(LOG_IDENT, $"Starting {version}...");

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "plugins": [
+    {
+      "id": "rainstrap.multiinstance",
+      "name": "Multi-Instance",
+      "version": "1.0.0",
+      "author": "Rainstrap",
+      "description": "Run multiple Roblox instances at the same time - directly through Rainstrap, no third-party tools.",
+      "apiVersion": "1.0",
+      "permissions": ["processManagement"],
+      "official": true,
+      "verified": true,
+      "builtin": true
+    },
+    {
+      "id": "rainstrap.clips",
+      "name": "Clips",
+      "version": "1.0.0",
+      "author": "Rainstrap",
+      "description": "Capture Roblox gameplay clips using a rolling replay buffer.",
+      "apiVersion": "1.0",
+      "permissions": ["screenCapture", "filesystem"],
+      "official": true,
+      "verified": true,
+      "builtin": true
+    },
+    {
+      "id": "rainstrap.accountmanager",
+      "name": "Account Manager",
+      "version": "1.0.0",
+      "author": "Rainstrap",
+      "description": "Manage multiple Roblox accounts and switch between them.",
+      "apiVersion": "1.0",
+      "permissions": ["credentialStorage", "cookieAccess"],
+      "official": true,
+      "verified": true,
+      "builtin": true
+    }
+  ]
+}

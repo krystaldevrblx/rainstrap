@@ -2440,4 +2440,25 @@ Restart now?</value>
   <data name="Plugins_Incompatible" xml:space="preserve">
     <value>The plugin "{0}" is not compatible with this version of Rainstrap: {1}</value>
   </data>
+  <data name="Plugins_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Plugins_DeleteConfirm" xml:space="preserve">
+    <value>Are you sure you want to uninstall this plugin? The plugin will be removed after Rainstrap restarts.</value>
+  </data>
+  <data name="Plugins_DeleteBuiltinConfirm" xml:space="preserve">
+    <value>Are you sure you want to deactivate this plugin? It will be disabled after Rainstrap restarts. You can re-enable it at any time.</value>
+  </data>
+  <data name="Plugins_PendingEnable" xml:space="preserve">
+    <value>Will be enabled after restart</value>
+  </data>
+  <data name="Plugins_PendingDisable" xml:space="preserve">
+    <value>Will be disabled after restart</value>
+  </data>
+  <data name="Plugins_PendingUninstall" xml:space="preserve">
+    <value>Will be removed after restart</value>
+  </data>
+  <data name="Plugins_BuiltinUpdateMessage" xml:space="preserve">
+    <value>This plugin is built into Rainstrap and will be updated when Rainstrap itself is updated.</value>
+  </data>
 </root>

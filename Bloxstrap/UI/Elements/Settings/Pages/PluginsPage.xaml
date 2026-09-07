@@ -80,6 +80,9 @@
                                 <TextBlock FontSize="11" Margin="0,2,0,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap">
                                     <Run Text="{x:Static resources:Strings.Plugins_Permissions}" /><Run Text="{Binding PermissionsText, Mode=OneWay}" />
                                 </TextBlock>
+                                <TextBlock FontSize="11" Margin="0,4,0,0" Foreground="{DynamicResource SystemFillColorAttentionBrush}" FontWeight="Medium"
+                                           Visibility="{Binding PendingStatusVisibility, Mode=OneWay}"
+                                           Text="{Binding PendingStatusText, Mode=OneWay}" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
@@ -95,6 +98,11 @@
                                            IsEnabled="{Binding InstallButtonEnabled, Mode=OneWay}"
                                            Visibility="{Binding UpdateVisibility, Mode=OneWay}"
                                            Click="UpdateButton_Click"
+                                           Tag="{Binding Id, Mode=OneWay}" />
+                                <ui:Button Margin="0,0,8,0" VerticalAlignment="Center"
+                                           Appearance="Danger"
+                                           Content="{x:Static resources:Strings.Plugins_Delete}"
+                                           Click="DeleteButton_Click"
                                            Tag="{Binding Id, Mode=OneWay}" />
                                 <ui:ToggleSwitch IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
                             </StackPanel>

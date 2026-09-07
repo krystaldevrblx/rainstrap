@@ -6133,5 +6133,47 @@ namespace Bloxstrap.Resources {
                 return ResourceManager.GetString("Plugins_Incompatible", resourceCulture);
             }
         }
+        
+        public static string Plugins_Delete {
+            get {
+                return ResourceManager.GetString("Plugins_Delete", resourceCulture);
+            }
+        }
+        
+        public static string Plugins_DeleteConfirm {
+            get {
+                return ResourceManager.GetString("Plugins_DeleteConfirm", resourceCulture);
+            }
+        }
+        
+        public static string Plugins_DeleteBuiltinConfirm {
+            get {
+                return ResourceManager.GetString("Plugins_DeleteBuiltinConfirm", resourceCulture);
+            }
+        }
+        
+        public static string Plugins_PendingEnable {
+            get {
+                return ResourceManager.GetString("Plugins_PendingEnable", resourceCulture);
+            }
+        }
+        
+        public static string Plugins_PendingDisable {
+            get {
+                return ResourceManager.GetString("Plugins_PendingDisable", resourceCulture);
+            }
+        }
+        
+        public static string Plugins_PendingUninstall {
+            get {
+                return ResourceManager.GetString("Plugins_PendingUninstall", resourceCulture);
+            }
+        }
+        
+        public static string Plugins_BuiltinUpdateMessage {
+            get {
+                return ResourceManager.GetString("Plugins_BuiltinUpdateMessage", resourceCulture);
+            }
+        }
     }
 }

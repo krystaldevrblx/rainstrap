@@ -26,6 +26,7 @@ namespace Bloxstrap.Plugins
 
         public bool IsPluginEnabled(string pluginId) => _enabledPlugins.Contains(pluginId);
         public bool IsPluginIncompatible(string pluginId) => _incompatiblePlugins.Contains(pluginId);
+        public bool IsBuiltinPlugin(string pluginId) => _builtinPluginIds.Contains(pluginId);
 
         public PluginManager(string baseDirectory)
         {

@@ -17,6 +17,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public string PermissionsText { get; set; } = "";
         public bool IsOfficial { get; set; }
         public bool IsVerified { get; set; }
+        public bool IsBuiltin { get; set; }
         public bool IsInstalled { get; set; }
 
         private bool _isEnabled = true;
@@ -68,6 +69,62 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 OnPropertyChanged(nameof(IsCatalogPlugin));
                 OnPropertyChanged(nameof(InstalledActionsVisibility));
                 OnPropertyChanged(nameof(AvailableActionsVisibility));
+            }
+        }
+
+        private bool _isPendingEnable = false;
+        public bool IsPendingEnable
+        {
+            get => _isPendingEnable;
+            set
+            {
+                _isPendingEnable = value;
+                OnPropertyChanged(nameof(IsPendingEnable));
+                OnPropertyChanged(nameof(IsPendingOperation));
+                OnPropertyChanged(nameof(PendingStatusVisibility));
+                OnPropertyChanged(nameof(PendingStatusText));
+            }
+        }
+
+        private bool _isPendingDisable = false;
+        public bool IsPendingDisable
+        {
+            get => _isPendingDisable;
+            set
+            {
+                _isPendingDisable = value;
+                OnPropertyChanged(nameof(IsPendingDisable));
+                OnPropertyChanged(nameof(IsPendingOperation));
+                OnPropertyChanged(nameof(PendingStatusVisibility));
+                OnPropertyChanged(nameof(PendingStatusText));
+            }
+        }
+
+        private bool _isPendingUninstall = false;
+        public bool IsPendingUninstall
+        {
+            get => _isPendingUninstall;
+            set
+            {
+                _isPendingUninstall = value;
+                OnPropertyChanged(nameof(IsPendingUninstall));
+                OnPropertyChanged(nameof(IsPendingOperation));
+                OnPropertyChanged(nameof(PendingStatusVisibility));
+                OnPropertyChanged(nameof(PendingStatusText));
+            }
+        }
+
+        public bool IsPendingOperation => IsPendingEnable || IsPendingDisable || IsPendingUninstall;
+        public Visibility PendingStatusVisibility => IsPendingOperation ? Visibility.Visible : Visibility.Collapsed;
+
+        public string PendingStatusText
+        {
+            get
+            {
+                if (IsPendingEnable) return Strings.Plugins_PendingEnable;
+                if (IsPendingDisable) return Strings.Plugins_PendingDisable;
+                if (IsPendingUninstall) return Strings.Plugins_PendingUninstall;
+                return "";
             }
         }
 
@@ -147,8 +204,13 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 return;
             }
 
+            var settings = App.Settings.Prop;
+
             foreach (var manifest in App.PluginManager.Manifests.Values)
             {
+                bool isEnabled = App.PluginManager.IsPluginEnabled(manifest.Id);
+                bool isBuiltin = App.PluginManager.IsBuiltinPlugin(manifest.Id);
+
                 var card = new PluginCardViewModel
                 {
                     Id = manifest.Id,
@@ -158,11 +220,15 @@ namespace Bloxstrap.UI.ViewModels.Settings
                     Version = manifest.Version,
                     IsOfficial = manifest.IsOfficial,
                     IsVerified = manifest.Verified,
+                    IsBuiltin = isBuiltin,
                     PermissionsText = manifest.Permissions.Count > 0
                         ? string.Join(", ", manifest.Permissions.Select(FormatPermission))
                         : Strings.Plugins_None,
-                    IsEnabled = App.PluginManager.IsPluginEnabled(manifest.Id),
-                    IsCatalogPlugin = false
+                    IsEnabled = isEnabled,
+                    IsCatalogPlugin = false,
+                    IsPendingEnable = settings.PendingEnable.Contains(manifest.Id),
+                    IsPendingDisable = settings.PendingDisable.Contains(manifest.Id),
+                    IsPendingUninstall = settings.PendingUninstall.Contains(manifest.Id)
                 };
 
                 card.PropertyChanged += (s, e) =>
@@ -264,11 +330,27 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (enable && !currentlyEnabled)
             {
                 App.PluginManager.RequestEnable(pluginId);
+
+                var card = InstalledPlugins.FirstOrDefault(p => p.Id == pluginId);
+                if (card is not null)
+                {
+                    card.IsPendingEnable = true;
+                    card.IsPendingDisable = false;
+                }
+
                 PromptRestart();
             }
             else if (!enable && currentlyEnabled)
             {
                 App.PluginManager.RequestDisable(pluginId);
+
+                var card = InstalledPlugins.FirstOrDefault(p => p.Id == pluginId);
+                if (card is not null)
+                {
+                    card.IsPendingDisable = true;
+                    card.IsPendingEnable = false;
+                }
+
                 PromptRestart();
             }
         }
@@ -282,10 +364,16 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (card is null || !card.HasUpdate)
                 return;
 
+            if (card.IsBuiltin)
+            {
+                Frontend.ShowMessageBox(Strings.Plugins_BuiltinUpdateMessage, MessageBoxImage.Information);
+                return;
+            }
+
             var catalog = await App.PluginManager.CatalogClient.GetCatalogAsync();
             var entry = catalog?.Plugins.FirstOrDefault(p => p.Id == pluginId);
 
-            if (entry is null)
+            if (entry is null || string.IsNullOrEmpty(entry.PackageUrl))
             {
                 Frontend.ShowMessageBox(Strings.Plugins_InstallFailed, MessageBoxImage.Error);
                 return;
@@ -353,7 +441,29 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (App.PluginManager is null)
                 return;
 
+            bool isBuiltin = App.PluginManager.IsBuiltinPlugin(pluginId);
+            string message = isBuiltin
+                ? Strings.Plugins_DeleteBuiltinConfirm
+                : Strings.Plugins_DeleteConfirm;
+
+            var result = Frontend.ShowMessageBox(
+                message,
+                MessageBoxImage.Warning,
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
             App.PluginManager.RequestUninstall(pluginId);
+
+            var card = InstalledPlugins.FirstOrDefault(p => p.Id == pluginId);
+            if (card is not null)
+            {
+                card.IsPendingUninstall = true;
+                card.IsPendingEnable = false;
+                card.IsPendingDisable = false;
+            }
+
             PromptRestart();
         }
 
@@ -366,6 +476,27 @@ namespace Bloxstrap.UI.ViewModels.Settings
             var entry = catalog?.Plugins.FirstOrDefault(p => p.Id == card.Id);
 
             if (entry is null)
+            {
+                Frontend.ShowMessageBox(Strings.Plugins_InstallFailed, MessageBoxImage.Error);
+                return;
+            }
+
+            if (entry.Builtin)
+            {
+                App.PluginManager.RequestEnable(entry.Id);
+
+                var installedCard = InstalledPlugins.FirstOrDefault(p => p.Id == entry.Id);
+                if (installedCard is not null)
+                {
+                    installedCard.IsPendingEnable = true;
+                }
+
+                PromptRestart();
+                await RefreshAsync();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(entry.PackageUrl))
             {
                 Frontend.ShowMessageBox(Strings.Plugins_InstallFailed, MessageBoxImage.Error);
                 return;

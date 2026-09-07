@@ -45,5 +45,8 @@ namespace Bloxstrap.Plugins
 
         [JsonPropertyName("category")]
         public string? Category { get; set; } = null;
+
+        [JsonPropertyName("builtin")]
+        public bool Builtin { get; set; } = false;
     }
 }

@@ -47,5 +47,13 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 await ViewModel.UpdatePluginAsync(pluginId);
             }
         }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string pluginId)
+            {
+                ViewModel.UninstallPlugin(pluginId);
+            }
+        }
     }
 }

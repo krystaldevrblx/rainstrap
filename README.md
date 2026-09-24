@@ -1,73 +1,95 @@
 <div align="center">
 
-<img src="Images/Rainstrap.png" alt="Rainstrap" width="256">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/krystaldevrblx/rainstrap/raw/main/Images/Rainstrap-Dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/krystaldevrblx/rainstrap/raw/main/Images/Rainstrap-Light.png">
+  <img src="https://github.com/krystaldevrblx/rainstrap/raw/main/Images/Rainstrap-Light.png" alt="rainstrap" width="820">
+</picture>
 
-# Rainstrap
+**a lightweight roblox bootstrapper made to make roblox easier to launch, manage, and configure.**
 
-**A performance-focused Roblox bootstrapper built for customization, optimization, and RainHub integration.**
-
-[![Release](https://img.shields.io/github/v/release/krystaldevrblx/rainstrap?style=flat-square&color=blue)](https://github.com/krystaldevrblx/rainstrap/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/krystaldevrblx/rainstrap/total?style=flat-square&color=green)](https://github.com/krystaldevrblx/rainstrap/releases/latest)
+[![Release](https://img.shields.io/github/v/release/krystaldevrblx/rainstrap?style=flat-square\&color=blue)](https://github.com/krystaldevrblx/rainstrap/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/krystaldevrblx/rainstrap/total?style=flat-square\&color=green)](https://github.com/krystaldevrblx/rainstrap/releases/latest)
 [![License](https://img.shields.io/github/license/krystaldevrblx/rainstrap?style=flat-square)](LICENSE)
 
 </div>
 
 > [!NOTE]
-> Rainstrap requires **Windows 10** or later.
+> rainstrap requires **windows 10** or later.
 
-## Features
+## what is rainstrap?
 
-- Detailed Roblox server information
-- Roblox Studio support
-- FastFlags editor with full configuration
-- Global Roblox settings (frame-rate cap, graphics quality, and more)
-- Performance-focused launch optimizations
-- Custom bootstrapper styles, themes, and icons
-- Cache cleaner
-- Roblox channel switching
-- RainHub integration
-- One-click installer with automatic dependency setup
+rainstrap is a roblox bootstrapper for windows.
+(ive tried to make it as lightweight as possible)
 
-## Quick Start
+## features
 
-Download the latest release from the [Releases](https://github.com/krystaldevrblx/rainstrap/releases/latest) page, then run `setup.bat` to install all required dependencies. After setup completes, launch `Rainstrap.exe`.
+* roblox player support
+* roblox studio support
+* roblox installation management
+* repair and diagnostics
+* update handling
+* performance and graphics settings
+* allowlisted fastflag configuration
+* basic appearance customization
+* simple installation and setup
 
-### System Requirements
+### fastflags
 
-| Requirement | Version |
-|---|---|
-| Windows | 10 or later |
-| .NET Runtime | 6.0 (auto-installed by setup) |
-| VC++ Redistributable | 2015-2022 (auto-installed by setup) |
-| WebView2 Runtime | Latest (auto-installed by setup) |
+rainstrap only supports fastflags that are currently on roblox's allowlist.
 
-## Building
+if a fastflag isn't on the allowlist, **rainstrap won't apply it.** there are no workarounds or ways to bypass the allowlist.
 
-Building from source requires the **.NET 6 SDK**.
+the allowlist can change over time, so some settings may stop working if roblox removes them.
 
-Clone the repository with submodules:
+## quick start
+
+download the latest release from the [releases](https://github.com/krystaldevrblx/rainstrap/releases/latest) page.
+
+run `setup.bat` and let it install everything rainstrap needs.
+
+once that's done, open `rainstrap.exe` and you're good to go.
+
+## system requirements
+
+| requirement          | version     |
+| -------------------- | ----------- |
+| windows              | 10 or later |
+| .net runtime         | 6.0         |
+| vc++ redistributable | 2015–2022   |
+| webview2             | required    |
+
+## building
+
+if you want to build rainstrap yourself, you'll need the **.net 6 sdk**.
+
+clone the repository with submodules:
 
 ```bash
 git clone --recursive https://github.com/krystaldevrblx/rainstrap.git
 cd rainstrap
 ```
 
-Build from the command line:
+then build it with:
 
 ```bash
 dotnet publish -p:PublishSingleFile=true -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
 ```
 
-Or open `Rainstrap.sln` in Visual Studio and build from there.
+or open `Rainstrap.sln` in visual studio and build it from there.
 
-The output will be produced as `Rainstrap.exe`.
+## credits
 
-## Credits & Attribution
+rainstrap is based on [fishstrap](https://github.com/fishstrap/fishstrap), which is based on [bloxstrap](https://github.com/bloxstraplabs/bloxstrap) by **pizzaboxer**.
 
-Rainstrap is a fork of [Fishstrap](https://github.com/fishstrap/fishstrap), which is based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap) by **pizzaboxer**.
+a lot of the original work comes from those projects, so please check them out if you're interested.
 
-Credit for the original software, libraries, and contributions belongs to their respective authors. All applicable licensing and attribution notices are preserved in this repository (`LICENSE`, `LICENSE.Bloxstrap`).
+the original projects and attribution notices are preserved in the repository.
 
-- **Rainstrap:** https://github.com/krystaldevrblx/rainstrap
-- **Fishstrap:** https://github.com/fishstrap/fishstrap
-- **Bloxstrap:** https://github.com/bloxstraplabs/bloxstrap
+* [rainstrap](https://github.com/krystaldevrblx/rainstrap)
+* [fishstrap](https://github.com/fishstrap/fishstrap)
+* [bloxstrap](https://github.com/bloxstraplabs/bloxstrap)
+
+---
+
+**rainhub support is not currently included in rainstrap.**

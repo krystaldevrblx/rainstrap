@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Images/icon.png" alt="Rainstrap" width="256">
+<img src="Images/Rainstrap.png" alt="Rainstrap" width="256">
 
 # Rainstrap
 

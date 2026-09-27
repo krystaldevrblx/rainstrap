@@ -29,6 +29,7 @@ namespace Bloxstrap.Models.Persistable
         public bool ForceRobloxLanguage { get; set; } = false;
         public bool UseFastFlagManager { get; set; } = true;
         public bool WPFSoftwareRender { get; set; } = false;
+        public bool RainBackgroundEnabled { get; set; } = true;
         public bool EnableAnalytics { get; set; } = false;
         public bool StaticDirectory { get; set; } = false;
         public string Channel { get; set; } = RobloxInterfaces.Deployment.DefaultChannel;
@@ -40,6 +41,9 @@ namespace Bloxstrap.Models.Persistable
         public bool EnableBetterMatchmaking { get; set; } = false;
         public bool EnableBetterMatchmakingRandomization { get; set; } = false;
         public WebEnvironment WebEnvironment { get; set; } = WebEnvironment.Production;
+
+        // update configuration
+        public UpgradeMode UpgradeMode { get; set; } = UpgradeMode.Automatic;
 
         // integration configuration
         public CleanerOptions CleanerOptions { get; set; } = CleanerOptions.TwoWeeks;
@@ -62,5 +66,13 @@ namespace Bloxstrap.Models.Persistable
 
         // mod preset configuration
         public bool UseDisableAppPatch { get; set; } = false;
+
+        // rainhub configuration
+        /// <summary>
+        /// RainHub API host. Empty means the hosted production API. Overridable so a
+        /// self-hosted RainHub can be pointed at without a rebuild.
+        /// </summary>
+        public string RainHubApiBaseUrl { get; set; } = "";
+        public QuickJoinPreference RainHubQuickJoinPreference { get; set; } = QuickJoinPreference.Balanced;
     }
 }

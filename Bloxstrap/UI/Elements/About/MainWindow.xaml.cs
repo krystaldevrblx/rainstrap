@@ -19,6 +19,17 @@ namespace Bloxstrap.UI.Elements.About
                 TranslatorsText.FontSize = 9;
         }
 
+        protected override void OnApplyTheme()
+        {
+            base.OnApplyTheme();
+
+            // the base constructor applies the theme before InitializeComponent runs
+            if (!IsInitialized)
+                return;
+
+            RainLayer.Refresh();
+        }
+
         #region INavigationWindow methods
 
         public Frame GetFrame() => RootFrame;

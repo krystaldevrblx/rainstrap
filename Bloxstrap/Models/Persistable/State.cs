@@ -12,11 +12,16 @@ namespace Bloxstrap.Models.Persistable
 
         public bool PromptWebView2Install { get; set; } = true;
 
-        public string? LastPage {  get; set; } = null!;
+        public string? LastPage { get; set; } = null!;
 
         public bool ForceReinstall { get; set; } = false;
 
         public WindowState SettingsWindow { get; set; } = new();
+
+        /// <summary>
+        /// UTC timestamp of the last manual Roblox update check from the Updates page.
+        /// </summary>
+        public DateTime? LastUpdateCheckUtc { get; set; } = null;
 
         #region Deprecated properties
         /// <summary>

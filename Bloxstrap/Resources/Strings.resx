@@ -813,6 +813,12 @@ Some text might not be translated to preferred language.</value>
   <data name="Menu.Appearance.Language.Description" xml:space="preserve">
     <value>A relaunch is required for changes to take effect. Some text might not be translated to preferred language.</value>
   </data>
+  <data name="Menu.Appearance.Rain.Title" xml:space="preserve">
+    <value>Rain Background</value>
+  </data>
+  <data name="Menu.Appearance.Rain.Description" xml:space="preserve">
+    <value>Show a subtle falling rain ambience behind the Rainstrap window.</value>
+  </data>
   <data name="Menu.Behaviour.ForceRobloxLanguage.Title" xml:space="preserve">
     <value>Allow use of unsupported Roblox languages</value>
   </data>
@@ -1179,6 +1185,12 @@ Would you like to enable test mode?</value>
   </data>
   <data name="Common_FastFlags" xml:space="preserve">
     <value>Fast Flag Editor</value>
+  </data>
+  <data name="Common_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Common_Note" xml:space="preserve">
+    <value>Note</value>
   </data>
   <data name="Menu.Load" xml:space="preserve">
     <value>Load</value>
@@ -1856,5 +1868,529 @@ Please don't change this setting unless you know what you're doing.</value>
   </data>
   <data name="Menu.Appearance.WindowManipulationAlert" xml:space="preserve">
     <value>This feature requires window manipulation</value>
+  </data>
+
+  <!-- Updates page - Roblox updates -->
+  <data name="Updates.Title" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="Updates.Description" xml:space="preserve">
+    <value>See which Roblox version you have, which one is available, and how Rainstrap should handle updates.</value>
+  </data>
+  <data name="Updates.CurrentVersion" xml:space="preserve">
+    <value>Current version</value>
+  </data>
+  <data name="Updates.AvailableVersion" xml:space="preserve">
+    <value>Available version</value>
+  </data>
+  <data name="Updates.NotChecked" xml:space="preserve">
+    <value>Not checked yet - use "Check for updates".</value>
+  </data>
+  <data name="Updates.UpToDate" xml:space="preserve">
+    <value>Roblox is up to date</value>
+  </data>
+  <data name="Updates.UpToDateDescription" xml:space="preserve">
+    <value>You have the latest Roblox version installed.</value>
+  </data>
+  <data name="Updates.UpdateAvailable" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="Updates.UpdateAvailableDescription" xml:space="preserve">
+    <value>A newer version of Roblox is available.</value>
+  </data>
+  <data name="Updates.CheckNow" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Updates.Checking" xml:space="preserve">
+    <value>Checking...</value>
+  </data>
+  <data name="Updates.LastChecked" xml:space="preserve">
+    <value>Last checked: {0}</value>
+  </data>
+  <data name="Updates.LastCheckedLabel" xml:space="preserve">
+    <value>Last checked</value>
+  </data>
+  <data name="Updates.LatencyLabel" xml:space="preserve">
+    <value>API latency</value>
+  </data>
+  <data name="Updates.LatencyNotMeasured" xml:space="preserve">
+    <value>Not measured</value>
+  </data>
+  <data name="Updates.CheckFailedTitle" xml:space="preserve">
+    <value>Unable to check for updates</value>
+  </data>
+  <data name="Updates.BehaviorHeader" xml:space="preserve">
+    <value>Update behaviour</value>
+  </data>
+  <data name="Updates.Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="Updates.CurrentChannel" xml:space="preserve">
+    <value>Current channel: {0}</value>
+  </data>
+  <data name="Updates.ApiLatency" xml:space="preserve">
+    <value>{0} ms</value>
+  </data>
+  <data name="Updates.UpgradeMode.Title" xml:space="preserve">
+    <value>Roblox updates</value>
+  </data>
+  <data name="Updates.UpgradeMode.Description" xml:space="preserve">
+    <value>Choose how Rainstrap should handle Roblox updates.</value>
+  </data>
+  <data name="Updates.UpgradeMode.Automatic" xml:space="preserve">
+    <value>Update automatically</value>
+  </data>
+  <data name="Updates.UpgradeMode.Notify" xml:space="preserve">
+    <value>Ask before updating</value>
+  </data>
+  <data name="Updates.ForcedNote" xml:space="preserve">
+    <value>Note: Roblox may still force an update when a newer version is required to play.</value>
+  </data>
+  <data name="Updates.CheckFailed" xml:space="preserve">
+    <value>Could not check for updates: {0}</value>
+  </data>
+  <data name="Updates.History.Header" xml:space="preserve">
+    <value>Version history</value>
+  </data>
+  <data name="Updates.History.Description" xml:space="preserve">
+    <value>Previously installed Roblox versions. You can roll back to a version if it's still available from Roblox.</value>
+  </data>
+  <data name="Updates.History.Empty" xml:space="preserve">
+    <value>No previous versions recorded yet. History builds up automatically as Rainstrap installs Roblox updates.</value>
+  </data>
+  <data name="Updates.History.InstalledOn" xml:space="preserve">
+    <value>Installed on {0}</value>
+  </data>
+  <data name="Updates.History.BadgeCurrent" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Updates.History.BadgeLatest" xml:space="preserve">
+    <value>Latest</value>
+  </data>
+  <data name="Updates.History.BadgePrevious" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Updates.History.CheckingRollback" xml:space="preserve">
+    <value>Checking rollback availability...</value>
+  </data>
+  <data name="Updates.History.RollbackAvailable" xml:space="preserve">
+    <value>Rollback available</value>
+  </data>
+  <data name="Updates.History.RollbackUnavailable" xml:space="preserve">
+    <value>Rollback unavailable (Roblox no longer provides this version)</value>
+  </data>
+  <data name="Updates.History.RollbackButton" xml:space="preserve">
+    <value>Roll back</value>
+  </data>
+  <data name="Updates.History.RollbackConfirmTitle" xml:space="preserve">
+    <value>Roll back Roblox?</value>
+  </data>
+  <data name="Updates.History.RollbackConfirmText" xml:space="preserve">
+    <value>Rainstrap will download and install Roblox {0} silently, without launching it.
+
+Please note:
+• Roblox may require a newer version again at any time; if so, updating becomes mandatory and this rollback will be replaced on your next launch (set updates to "Ask before updating" to hold it longer).
+• Saved settings carry over, but an older client may behave differently with current content.
+• You can always update again normally afterwards.</value>
+  </data>
+  <data name="Updates.History.RollbackStarted" xml:space="preserve">
+    <value>Rollback to Roblox {0} started. Roblox will install in the background.</value>
+  </data>
+  <data name="Updates.History.RollbackFailed" xml:space="preserve">
+    <value>Rollback failed: {0}</value>
+  </data>
+  <data name="Updates.History.RollbackUnavailableMessage" xml:space="preserve">
+    <value>This version is no longer available from Roblox. It cannot be rolled back to.</value>
+  </data>
+  <data name="Menu_RainHub_Title" xml:space="preserve">
+    <value>RainHub</value>
+  </data>
+  <data name="RainHub_Badge_Beta" xml:space="preserve">
+    <value>Beta</value>
+  </data>
+  <data name="RainHub_Intro_Title" xml:space="preserve">
+    <value>RainHub</value>
+  </data>
+  <data name="RainHub_Intro_Description" xml:space="preserve">
+    <value>Live Roblox server data and game discovery, powered by RainHub.</value>
+  </data>
+  <data name="RainHub_Connect_Title" xml:space="preserve">
+    <value>Connect RainHub</value>
+  </data>
+  <data name="RainHub_Connect_Description" xml:space="preserve">
+    <value>Link your RainHub account to unlock RainHub-powered features in Rainstrap.</value>
+  </data>
+  <data name="RainHub_Connect_Step1" xml:space="preserve">
+    <value>1. Sign in to RainHub in your browser.</value>
+  </data>
+  <data name="RainHub_Connect_Step2" xml:space="preserve">
+    <value>2. Open Devices, choose connect device, and get a 6 character code.</value>
+  </data>
+  <data name="RainHub_Connect_Step3" xml:space="preserve">
+    <value>3. Enter that code below and link this installation.</value>
+  </data>
+  <data name="RainHub_Connect_Note" xml:space="preserve">
+    <value>Rainstrap never asks for your RainHub password. The code can only link a device to the account that generated it, expires after 15 minutes, and works once.</value>
+  </data>
+  <data name="RainHub_Code_Placeholder" xml:space="preserve">
+    <value>6 character code</value>
+  </data>
+  <data name="RainHub_Link_Button" xml:space="preserve">
+    <value>Connect RainHub</value>
+  </data>
+  <data name="RainHub_Open_Website" xml:space="preserve">
+    <value>Open RainHub website</value>
+  </data>
+  <data name="RainHub_Open_Devices" xml:space="preserve">
+    <value>Get a pairing code</value>
+  </data>
+  <data name="RainHub_DeviceIdFormat" xml:space="preserve">
+    <value>Device: {0}</value>
+  </data>
+  <data name="RainHub_LastSeenFormat" xml:space="preserve">
+    <value>Last seen by RainHub: {0}</value>
+  </data>
+  <data name="RainHub_NoHeartbeatYet" xml:space="preserve">
+    <value>RainHub has not seen this device yet</value>
+  </data>
+  <data name="RainHub_Unlink_Button" xml:space="preserve">
+    <value>Unlink</value>
+  </data>
+  <data name="RainHub_Unlink_Confirm" xml:space="preserve">
+    <value>Unlink this PC? The pairing key stored here will be deleted, and you will need a new code from your RainHub dashboard to link again.</value>
+  </data>
+  <data name="RainHub_Unlink_Note" xml:space="preserve">
+    <value>Unlinking removes the key from this PC only. You can revoke the device from your RainHub dashboard at any time.</value>
+  </data>
+  <data name="RainHub_Tab_Live" xml:space="preserve">
+    <value>Live</value>
+  </data>
+  <data name="RainHub_Tab_QuickJoin" xml:space="preserve">
+    <value>Quick Join</value>
+  </data>
+  <data name="RainHub_Tab_Servers" xml:space="preserve">
+    <value>Servers</value>
+  </data>
+  <data name="RainHub_Tab_Discovery" xml:space="preserve">
+    <value>Discovery</value>
+  </data>
+  <data name="RainHub_Live_Title" xml:space="preserve">
+    <value>Roblox right now</value>
+  </data>
+  <data name="RainHub_Live_Description" xml:space="preserve">
+    <value>Live signals from RainHub. Nothing is shown here until RainHub has real data to report.</value>
+  </data>
+  <data name="RainHub_Live_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="RainHub_SignalsEmpty" xml:space="preserve">
+    <value>No signals yet. RainHub is still collecting live player history.</value>
+  </data>
+  <data name="RainHub_SignalsFailed" xml:space="preserve">
+    <value>Live activity could not be loaded.</value>
+  </data>
+  <data name="RainHub_FindServers" xml:space="preserve">
+    <value>Find servers</value>
+  </data>
+  <data name="RainHub_QuickJoin_Title" xml:space="preserve">
+    <value>Quick Join</value>
+  </data>
+  <data name="RainHub_QuickJoin_Description" xml:space="preserve">
+    <value>Pick a game, and RainHub finds a server for you using the preference below.</value>
+  </data>
+  <data name="RainHub_QuickJoin_Preference" xml:space="preserve">
+    <value>Server preference</value>
+  </data>
+  <data name="RainHub_QuickJoin_Button" xml:space="preserve">
+    <value>Quick Join</value>
+  </data>
+  <data name="RainHub_QuickJoin_Button_Description" xml:space="preserve">
+    <value>Uses the server preference above. RainHub does the searching and filtering.</value>
+  </data>
+  <data name="RainHub_QuickJoin_Balanced" xml:space="preserve">
+    <value>Balanced (best ping)</value>
+  </data>
+  <data name="RainHub_QuickJoin_Lowest" xml:space="preserve">
+    <value>Lowest population</value>
+  </data>
+  <data name="RainHub_QuickJoin_Highest" xml:space="preserve">
+    <value>Highest population</value>
+  </data>
+  <data name="RainHub_QuickJoin_Latency" xml:space="preserve">
+    <value>Lowest latency</value>
+  </data>
+  <data name="RainHub_QuickJoin_Random" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="RainHub_Servers_Title" xml:space="preserve">
+    <value>Server Finder</value>
+  </data>
+  <data name="RainHub_Servers_Description" xml:space="preserve">
+    <value>Search for a Roblox game, then browse its live servers.</value>
+  </data>
+  <data name="RainHub_Servers_Search_Placeholder" xml:space="preserve">
+    <value>Game name, Roblox URL, or place ID</value>
+  </data>
+  <data name="RainHub_Servers_Search_Button" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="RainHub_Servers_Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="RainHub_Servers_Sort" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="RainHub_Servers_Join" xml:space="preserve">
+    <value>Join</value>
+  </data>
+  <data name="RainHub_Servers_Refresh" xml:space="preserve">
+    <value>Refresh servers</value>
+  </data>
+  <data name="RainHub_ServerFull" xml:space="preserve">
+    <value>Full</value>
+  </data>
+  <data name="RainHub_Servers_CountFormat" xml:space="preserve">
+    <value>{0} servers</value>
+  </data>
+  <data name="RainHub_Filter_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="RainHub_Filter_Empty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="RainHub_Filter_Low" xml:space="preserve">
+    <value>Low population</value>
+  </data>
+  <data name="RainHub_Filter_Full" xml:space="preserve">
+    <value>Full</value>
+  </data>
+  <data name="RainHub_Filter_Richest" xml:space="preserve">
+    <value>Richest</value>
+  </data>
+  <data name="RainHub_Sort_MostPlayers" xml:space="preserve">
+    <value>Most players</value>
+  </data>
+  <data name="RainHub_Sort_FewestPlayers" xml:space="preserve">
+    <value>Fewest players</value>
+  </data>
+  <data name="RainHub_Sort_BestPing" xml:space="preserve">
+    <value>Best ping</value>
+  </data>
+  <data name="RainHub_Servers_SelectPrompt" xml:space="preserve">
+    <value>Select a game to see its servers.</value>
+  </data>
+  <data name="RainHub_Discovery_Title" xml:space="preserve">
+    <value>Discovery</value>
+  </data>
+  <data name="RainHub_Discovery_Description" xml:space="preserve">
+    <value>Games worth playing, ranked by RainHub.</value>
+  </data>
+  <data name="RainHub_Discovery_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="RainHub_Discovery_Empty" xml:space="preserve">
+    <value>RainHub has not published a discovery list yet.</value>
+  </data>
+  <data name="RainHub_Discovery_SummaryFormat" xml:space="preserve">
+    <value>{0} games tracked, {1} players live</value>
+  </data>
+  <data name="RainHub_Discovery_Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="RainHub_Discovery_Play" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="RainHub_Discovery_FindServers" xml:space="preserve">
+    <value>Find servers</value>
+  </data>
+  <data name="RainHub_Discovery_Open" xml:space="preserve">
+    <value>Open on Roblox</value>
+  </data>
+  <data name="RainHub_NotReported" xml:space="preserve">
+    <value>not reported</value>
+  </data>
+  <data name="RainHub_NoLiveData" xml:space="preserve">
+    <value>no live data</value>
+  </data>
+  <data name="RainHub_CollectingData" xml:space="preserve">
+    <value>collecting data</value>
+  </data>
+  <data name="RainHub_PlayerCountFormat" xml:space="preserve">
+    <value>{0}/{1} players</value>
+  </data>
+  <data name="RainHub_PlayersOnlineFormat" xml:space="preserve">
+    <value>{0} playing</value>
+  </data>
+  <data name="RainHub_VisitsFormat" xml:space="preserve">
+    <value>{0} visits</value>
+  </data>
+  <data name="RainHub_ScoreFormat" xml:space="preserve">
+    <value>score {0}</value>
+  </data>
+  <data name="RainHub_TrendFormat" xml:space="preserve">
+    <value>{0}{1}%</value>
+  </data>
+  <data name="RainHub_PingFormat" xml:space="preserve">
+    <value>{0} ms</value>
+  </data>
+  <data name="RainHub_FpsFormat" xml:space="preserve">
+    <value>{0} fps</value>
+  </data>
+  <data name="RainHub_LinkFailed" xml:space="preserve">
+    <value>Could not link this device to RainHub.</value>
+  </data>
+  <data name="RainHub_SearchFailed" xml:space="preserve">
+    <value>Game search could not be loaded.</value>
+  </data>
+  <data name="RainHub_ServersFailed" xml:space="preserve">
+    <value>The server list could not be loaded.</value>
+  </data>
+  <data name="RainHub_DiscoveryFailed" xml:space="preserve">
+    <value>Discovery could not be loaded.</value>
+  </data>
+  <data name="RainHub_JoinFailed" xml:space="preserve">
+    <value>Roblox could not be launched.</value>
+  </data>
+  <data name="RainHub_NoJoinableServers" xml:space="preserve">
+    <value>No joinable servers are available for this game right now.</value>
+  </data>
+  <data name="RainHub_PickAGameFirst" xml:space="preserve">
+    <value>Choose a game first.</value>
+  </data>
+  <data name="RainHub_NoServersMatch" xml:space="preserve">
+    <value>No servers match this filter.</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_Title" xml:space="preserve">
+    <value>What am I joining?</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_Description" xml:space="preserve">
+    <value>Every value below comes straight from Roblox via RainHub. Anything Roblox does not report is shown as not reported rather than guessed.</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_Players" xml:space="preserve">
+    <value>Players</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_Fill" xml:space="preserve">
+    <value>Fill</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_ServerId" xml:space="preserve">
+    <value>Server ID</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_Ping" xml:space="preserve">
+    <value>Ping</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_Fps" xml:space="preserve">
+    <value>FPS</value>
+  </data>
+  <data name="RainHub_FillHigh" xml:space="preserve">
+    <value>#22c55e</value>
+  </data>
+  <data name="RainHub_FillMedium" xml:space="preserve">
+    <value>#eab308</value>
+  </data>
+  <data name="RainHub_FillLow" xml:space="preserve">
+    <value>#6b8aad</value>
+  </data>
+  <data name="Menu_FastFlags_Presets_Title" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="FastFlagPresets_Intro" xml:space="preserve">
+    <value>Presets are curated collections of FastFlags maintained by Rainstrap. Every flag here is on Roblox's official allowlist for local configuration, because Roblox ignores any other flag set locally. Applying a preset only changes the flags it lists.</value>
+  </data>
+  <data name="FastFlagPresets_Category_Graphics" xml:space="preserve">
+    <value>Graphics</value>
+  </data>
+  <data name="FastFlagPresets_Category_Compatibility" xml:space="preserve">
+    <value>Compatibility</value>
+  </data>
+  <data name="FastFlagPresets_Category_UI" xml:space="preserve">
+    <value>Interface</value>
+  </data>
+  <data name="FastFlagPresets_Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="FastFlagPresets_Applied" xml:space="preserve">
+    <value>Applied</value>
+  </data>
+  <data name="FastFlagPresets_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="FastFlagPresets_Reapply" xml:space="preserve">
+    <value>Reapply</value>
+  </data>
+  <data name="FastFlagPresets_FlagsCount" xml:space="preserve">
+    <value>{0} flags</value>
+  </data>
+  <data name="FastFlagPresets_NotApplied" xml:space="preserve">
+    <value>Not applied</value>
+  </data>
+  <data name="FastFlagPresets_PartiallyApplied" xml:space="preserve">
+    <value>Partially applied</value>
+  </data>
+  <data name="FastFlagPresets_AppliedBadge" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="FastFlagPresets_ConflictNamesFormat" xml:space="preserve">
+    <value>Changes the same flags as: {0}</value>
+  </data>
+  <data name="FastFlagPresets_SharedWithControlsFormat" xml:space="preserve">
+    <value>Also changes flags owned by these controls on the FastFlags page, which will override them: {0}</value>
+  </data>
+  <data name="FastFlagPresets_ResetSharedWithControlsFormat" xml:space="preserve">
+    <value>This also resets these controls on the FastFlags page: {0}</value>
+  </data>
+  <data name="FastFlagPresets_BeforeApplyingFormat" xml:space="preserve">
+    <value>Before applying &#x201C;{0}&#x201D;:</value>
+  </data>
+  <data name="FastFlagPresets_RemoveConfirm_Message" xml:space="preserve">
+    <value>Remove &#x201C;{0}&#x201D;? This clears the {1} flags the preset sets so Roblox falls back to its own defaults. Flags the preset does not set are left alone.</value>
+  </data>
+
+  <data name="FastFlagPresets_AppliedTitle" xml:space="preserve">
+    <value>Preset applied</value>
+  </data>
+  <data name="FastFlagPresets_AppliedMessage" xml:space="preserve">
+    <value>{0} flags were set.</value>
+  </data>
+  <data name="FastFlagPresets_RemovedTitle" xml:space="preserve">
+    <value>Preset removed</value>
+  </data>
+  <data name="FastFlagPresets_RemovedMessage" xml:space="preserve">
+    <value>{0} flags were cleared.</value>
+  </data>
+  <data name="FastFlagPresets_FlagsHeader" xml:space="preserve">
+    <value>Flags in this preset</value>
+  </data>
+  <data name="FastFlagPresets_Empty" xml:space="preserve">
+    <value>No presets are available.</value>
+  </data>
+  <data name="FastFlagPresets_Editor" xml:space="preserve">
+    <value>Open the FastFlag editor to fine tune individual values.</value>
+  </data>
+  <data name="RainHub_SearchNoResults" xml:space="preserve">
+    <value>No games matched that search.</value>
+  </data>
+  <data name="RainHub_RobloxNotInstalled" xml:space="preserve">
+    <value>Roblox is not installed, so Rainstrap cannot start it. Install Roblox and try again.</value>
+  </data>
+  <data name="RainHub_LinkToUseThis" xml:space="preserve">
+    <value>Link your RainHub account to use this.</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_SelectPrompt" xml:space="preserve">
+    <value>Select a server above to see what you would be joining.</value>
+  </data>
+  <data name="RainHub_WhatAmIJoining_PingEstimated" xml:space="preserve">
+    <value>Ping (estimated)</value>
+  </data>
+  <data name="RainHub_Connected_Status" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="RainHub_Connected_Title" xml:space="preserve">
+    <value>RainHub connected</value>
+  </data>
+  <data name="RainHub_Relink_Title" xml:space="preserve">
+    <value>This device needs to be linked again</value>
+  </data>
+  <data name="RainHub_Relink_Message" xml:space="preserve">
+    <value>RainHub no longer accepts this device's link. Generate a new pairing code on the RainHub website to reconnect.</value>
   </data>
 </root>

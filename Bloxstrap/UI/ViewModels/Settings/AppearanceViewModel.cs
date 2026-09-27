@@ -111,6 +111,22 @@ namespace Bloxstrap.UI.ViewModels.Settings
             }
         }
 
+        public bool RainBackgroundEnabled
+        {
+            get => App.Settings.Prop.RainBackgroundEnabled;
+            set
+            {
+                if (App.Settings.Prop.RainBackgroundEnabled == value)
+                    return;
+
+                App.Settings.Prop.RainBackgroundEnabled = value;
+
+                ((MainWindow)Window.GetWindow(_page)!).ApplyRainBackground();
+
+                OnPropertyChanged(nameof(RainBackgroundEnabled));
+            }
+        }
+
         public byte AcrylicBackgroundOpacity
         {
             get => App.Settings.Prop.AcrylicBackgroundOpacity;

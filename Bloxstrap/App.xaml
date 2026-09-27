@@ -40,6 +40,8 @@
             <converters:StringFormatConverter x:Key="StringFormatConverter" />
             <converters:RangeConverter x:Key="RangeConverter" />
             <converters:EnumNameConverter x:Key="EnumNameConverter" />
+            <converters:RemoteImageConverter x:Key="RemoteImageConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

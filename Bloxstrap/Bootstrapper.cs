@@ -1460,6 +1460,27 @@ namespace Bloxstrap
 
             App.State.Prop.ForceReinstall = false;
 
+            // Record version history for player updates
+            if (!IsStudioLaunch)
+            {
+                var history = App.RobloxState.Prop.PlayerVersionHistory;
+                var newEntry = new PlayerVersionHistoryEntry
+                {
+                    VersionGuid = _latestVersionGuid,
+                    Version = _latestVersion?.ToString() ?? string.Empty,
+                    Channel = Deployment.Channel,
+                    InstalledAtUtc = DateTime.UtcNow
+                };
+                
+                history.Add(newEntry);
+                
+                // Keep only the last VersionHistoryMaxEntries
+                while (history.Count > RobloxState.VersionHistoryMaxEntries)
+                    history.RemoveAt(0);
+                
+                App.Logger.WriteLine(LOG_IDENT, $"Recorded version history: {newEntry.VersionGuid} ({newEntry.Version})");
+            }
+
             App.State.Save();
             App.RobloxState.Save();
 

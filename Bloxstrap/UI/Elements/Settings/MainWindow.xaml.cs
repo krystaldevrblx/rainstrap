@@ -84,6 +84,23 @@ namespace Bloxstrap.UI.Elements.Settings
             };
         }
 
+        protected override void OnApplyTheme()
+        {
+            base.OnApplyTheme();
+
+            // the base constructor applies the theme before InitializeComponent runs
+            if (!IsInitialized)
+                return;
+
+            RainLayer.Refresh();
+        }
+
+        /// <summary>
+        /// Repaints the rain layer without re-applying the whole theme. Turning the rain
+        /// off only affects the falling streaks - the gradient behind it is untouched.
+        /// </summary>
+        public void ApplyRainBackground() => OnApplyTheme();
+
         public void LoadState()
         {
             if (_state.Left > SystemParameters.VirtualScreenWidth)

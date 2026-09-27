@@ -1,0 +1,171 @@
+<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.FastFlagPresetsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:resources="clr-namespace:Bloxstrap.Resources"
+      mc:Ignorable="d"
+      d:DesignHeight="1400" d:DesignWidth="800"
+      Title="FastFlagPresetsPage"
+      Scrollable="True"
+      Loaded="Page_Loaded">
+    <StackPanel Margin="0,0,14,14">
+
+        <TextBlock Text="{x:Static resources:Strings.Menu_FastFlags_Presets_Title}" FontSize="20" FontWeight="Medium" />
+        <TextBlock Margin="0,4,0,12" FontSize="14" TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                   Text="{x:Static resources:Strings.FastFlagPresets_Intro}" />
+
+        <ui:InfoBar Padding="8" Style="{StaticResource HyperlinkInfoBarStyle}"
+                    Title="{x:Static resources:Strings.Common_Warning}"
+                    Message="{x:Static resources:Strings.Menu_FastFlags_EditorInfo}"
+                    Severity="Warning" IsOpen="True" IsClosable="False">
+            <ui:InfoBar.Tag>
+                <TextBlock VerticalAlignment="Center">
+                    <Hyperlink NavigateUri="https://devforum.roblox.com/t/allowlist-for-local-client-configuration-via-fast-flags/3966569" RequestNavigate="Hyperlink_RequestNavigate">Learn more</Hyperlink>
+                </TextBlock>
+            </ui:InfoBar.Tag>
+        </ui:InfoBar>
+
+        <ui:InfoBar Margin="0,12,0,0"
+                    Title="{Binding MessageTitle, Mode=OneWay}"
+                    Message="{Binding Message, Mode=OneWay}"
+                    Severity="Informational"
+                    IsOpen="{Binding HasMessage, Mode=OneWay}"
+                    IsClosable="False" />
+
+        <TextBlock Margin="0,12,0,0" FontSize="12" TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                   Text="{x:Static resources:Strings.FastFlagPresets_Empty}"
+                   Visibility="{Binding HasPresets, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding Presets, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="0,0,0,8" Padding="14" CornerRadius="8" BorderThickness="1"
+                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                            Background="{DynamicResource ControlFillColorDefaultBrush}">
+                        <StackPanel>
+
+                            <!-- header -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontSize="14" FontWeight="Medium"
+                                                   Text="{Binding Name, Mode=OneWay}" />
+                                        <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="4"
+                                                Background="{DynamicResource ControlFillColorSecondaryBrush}">
+                                            <TextBlock FontSize="10"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       Text="{Binding CategoryName, Mode=OneWay}" />
+                                        </Border>
+                                        <Border Margin="6,0,0,0" Padding="6,1" CornerRadius="4"
+                                                Background="{DynamicResource ControlFillColorSecondaryBrush}">
+                                            <TextBlock FontSize="10"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       Text="{Binding FlagsCountText, Mode=OneWay}" />
+                                        </Border>
+                                        <Border Margin="6,0,0,0" Padding="6,1" CornerRadius="4"
+                                                Background="{DynamicResource SystemFillColorSuccessBrush}"
+                                                Visibility="{Binding IsApplied, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <TextBlock FontSize="10" Foreground="White"
+                                                       Text="{x:Static resources:Strings.FastFlagPresets_AppliedBadge}" />
+                                        </Border>
+                                    </StackPanel>
+
+                                    <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Text="{Binding Description, Mode=OneWay}" />
+
+                                    <TextBlock Margin="0,3,0,0" FontSize="11"
+                                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                               Text="{Binding StateText, Mode=OneWay}" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="12,0,0,0">
+                                    <ui:Button MinWidth="96" Appearance="Primary" Icon="Play20"
+                                               Content="{Binding ApplyButtonText, Mode=OneWay}"
+                                               Command="{Binding DataContext.ApplyCommand, RelativeSource={RelativeSource AncestorType=ui:UiPage}}"
+                                               CommandParameter="{Binding}" />
+                                    <ui:Button Margin="8,0,0,0" MinWidth="96" Appearance="Caution" Icon="Delete20"
+                                               Content="{x:Static resources:Strings.FastFlagPresets_Remove}"
+                                               Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=ui:UiPage}}"
+                                               CommandParameter="{Binding}"
+                                               IsEnabled="{Binding IsTouched, Mode=OneWay}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- risk warning -->
+                            <Border Margin="0,10,0,0" Padding="10" CornerRadius="6"
+                                    BorderThickness="1"
+                                    BorderBrush="{DynamicResource SystemFillColorCautionBrush}"
+                                    Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                                    Visibility="{Binding HasWarning, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Warning20" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <TextBlock FontSize="11" TextWrapping="Wrap" VerticalAlignment="Center"
+                                               Text="{Binding Warning, Mode=OneWay}" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- overlap warning -->
+                            <Border Margin="0,8,0,0" Padding="10" CornerRadius="6"
+                                    BorderThickness="1"
+                                    BorderBrush="{DynamicResource SystemFillColorCautionBrush}"
+                                    Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                                    Visibility="{Binding HasConflicts, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Warning20" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <TextBlock FontSize="11" TextWrapping="Wrap" VerticalAlignment="Center"
+                                               Text="{Binding ConflictText, Mode=OneWay}" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- what it changes -->
+                            <Expander Margin="0,10,0,0" HorizontalAlignment="Stretch">
+                                <Expander.Header>
+                                    <TextBlock FontSize="12" FontWeight="Medium"
+                                               Text="{x:Static resources:Strings.FastFlagPresets_FlagsHeader}" />
+                                </Expander.Header>
+
+                                <ItemsControl Margin="0,6,0,0" ItemsSource="{Binding Flags, Mode=OneWay}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,1,0,1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" FontSize="11" FontFamily="{StaticResource CascadiaCode}"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Text="{Binding Name, Mode=OneWay}" />
+                                                <TextBlock Grid.Column="1" FontSize="11" FontFamily="{StaticResource CascadiaCode}"
+                                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                                           Text="{Binding Value, Mode=OneWay}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Expander>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <ui:CardAction Margin="0,4,0,0" Icon="EditSettings24" Command="{Binding OpenFastFlagEditorCommand}">
+            <StackPanel>
+                <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_FastFlagEditor_Title}" />
+                <TextBlock Margin="0,2,0,0" FontSize="12" TextWrapping="Wrap" Padding="0,0,16,0"
+                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                           Text="{x:Static resources:Strings.FastFlagPresets_Editor}" />
+            </StackPanel>
+        </ui:CardAction>
+    </StackPanel>
+</ui:UiPage>

@@ -6,6 +6,8 @@ using System.Windows.Threading;
 
 using Microsoft.Win32;
 
+using Bloxstrap.Integrations.RainHub;
+
 namespace Bloxstrap
 {
     /// <summary>
@@ -66,6 +68,8 @@ namespace Bloxstrap
         public static readonly GlobalSettingsManager GlobalSettings = new();
 
         public static readonly CookiesManager Cookies = new();
+
+        public static readonly RainHubAccount RainHubAccount = new();
 
         public static readonly HttpClient HttpClient = new(
             new HttpClientLoggingHandler(
@@ -318,6 +322,7 @@ namespace Bloxstrap
                 RobloxState.Load();
                 FastFlags.Load();
                 GlobalSettings.Load();
+                RainHubAccount.Load();
 
                 if (Settings.Prop.AllowCookieAccess)
                     Task.Run(Cookies.LoadCookies);

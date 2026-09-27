@@ -11,6 +11,8 @@ using Wpf.Ui.Controls;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
 
+using Bloxstrap.UI.Elements.Controls;
+
 namespace Bloxstrap.UI.Elements.Base
 {
     public abstract class WpfUiWindow : UiWindow
@@ -40,7 +42,11 @@ namespace Bloxstrap.UI.Elements.Base
             // there doesn't seem to be a way to query the name for merged dictionaries
             var dict = new ResourceDictionary { Source = new Uri($"pack://application:,,,/UI/Style/{Enum.GetName(App.Settings.Prop.Theme.GetFinal())}.xaml") };
 
-            this.Resources["MainWindowBackgroundBrush"] = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0));
+            // The single Rainstrap background for every window and dialog. Windows bind
+            // MainWindowBackgroundBrush, so defining the gradient in one place keeps it
+            // consistent app-wide without each page re-implementing it. It stays
+            // translucent so the window backdrop still reads through.
+            this.Resources["MainWindowBackgroundBrush"] = RainstrapBackground.Create();
 
             //if (App.Settings.Prop.UseAcrylicBackground && useAcrylic)
             //{
@@ -69,11 +75,19 @@ namespace Bloxstrap.UI.Elements.Base
 
             Application.Current.Resources.MergedDictionaries[customThemeIndex] = dict;
 
+            OnApplyTheme();
+
 #if QA_BUILD
             this.BorderBrush = System.Windows.Media.Brushes.Red;
             this.BorderThickness = new Thickness(4);
 #endif
         }
+
+        /// <summary>
+        /// Called after the theme resources have been swapped, so windows can repaint
+        /// anything that isn't driven by a DynamicResource.
+        /// </summary>
+        protected virtual void OnApplyTheme() { }
 
         protected override void OnSourceInitialized(EventArgs e)
         {

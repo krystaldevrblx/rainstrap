@@ -33,7 +33,15 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Retired in favour of release.yml ("Build release").
+    #
+    # This job published a framework-dependent, English-only exe: PublishSingleFile drops
+    # every satellite assembly, and --self-contained false means the exe needs the .NET 6
+    # Desktop Runtime installed. It also could not attach a build to a release that had
+    # already been published, which is why the v1.0.0 release ended up with no assets.
+    #
+    # Kept but disabled rather than deleted, so it is easy to restore.
+    if: false
     permissions:
       contents: write
 
@@ -58,7 +66,8 @@ jobs:
   release-test:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/release-test')
+    # Retired for the same reason as the release job above; see release.yml.
+    if: false
     permissions:
       contents: write
 

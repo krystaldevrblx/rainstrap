@@ -1,0 +1,104 @@
+name: Build release
+
+# Builds the release executables and attaches them to the GitHub release.
+#
+# Two assets are produced on purpose, because they trade off against each other:
+#
+#   Rainstrap.exe                    Standalone, single file, no .NET install required.
+#                                    PublishSingleFile cannot bundle satellite
+#                                    assemblies, so this build is ENGLISH ONLY.
+#
+#   Rainstrap-self-contained.zip     The full self-contained folder. Also needs no
+#                                    .NET install, and KEEPS all 32 translations.
+#
+# Ships both so the single exe is convenient and the zip is complete.
+#
+# The publish jobs in ci-release.yml were retired in favour of this workflow: they
+# produced a framework-dependent, English-only exe and could not attach a build
+# to a release that already existed.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to attach the build to, e.g. v1.0.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and attach release assets
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source and submodules
+        uses: actions/checkout@v6
+        with:
+          # Wpf.Ui is a submodule and Bloxstrap references it, so this is required.
+          submodules: true
+          ref: ${{ inputs.tag || github.ref_name }}
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Build
+        run: dotnet build Bloxstrap\Bloxstrap.csproj -c Release
+
+      - name: Publish single-file executable
+        run: >
+          dotnet publish Bloxstrap\Bloxstrap.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true
+          -o out-single
+
+      - name: Publish full self-contained build
+        run: >
+          dotnet publish Bloxstrap\Bloxstrap.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -o out-full
+
+      - name: Verify and package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          if (-not (Test-Path out-single\Rainstrap.exe)) { throw 'single-file exe was not produced' }
+          if (-not (Test-Path out-full\Rainstrap.exe))     { throw 'folder build exe was not produced' }
+
+          # Guards the reason the zip exists at all: if a future SDK change ever starts
+          # bundling or dropping satellites differently, this fails loudly instead of
+          # quietly shipping an English-only zip.
+          $sat = @(Get-ChildItem out-full -Recurse -Filter '*.resources.dll').Count
+          Write-Host "satellite assemblies in the folder build: $sat"
+          if ($sat -lt 1) { throw 'the folder build lost its translations' }
+
+          Compress-Archive -Path out-full\* -DestinationPath Rainstrap-self-contained.zip -Force
+
+          Get-ChildItem out-single\Rainstrap.exe, Rainstrap-self-contained.zip |
+            Select-Object Name, @{n = 'MB'; e = { [math]::Round($_.Length / 1MB, 1) } } |
+            Format-Table -AutoSize
+
+      - name: Attach assets to the release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          name: Rainstrap ${{ inputs.tag || github.ref_name }}
+          files: |
+            out-single/Rainstrap.exe
+            Rainstrap-self-contained.zip
+          fail_on_unmatched_files: true

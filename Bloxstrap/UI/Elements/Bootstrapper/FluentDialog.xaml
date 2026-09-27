@@ -27,7 +27,9 @@
     </Window.TaskbarItemInfo>
 
     <!--  Background is for Aero theme only  -->
-    <Grid Background="{Binding Path=MainWindowBackgroundBrush, Mode=OneTime}">
+    <!-- DynamicResource, not Binding: there is no DataContext here, so the binding
+         always resolved to null and this dialog fell back to the plain theme brush. -->
+    <Grid Background="{DynamicResource MainWindowBackgroundBrush}">
         <!--  Allow for drag  -->
         <TextBlock Margin="5" VerticalAlignment="Top" HorizontalAlignment="Right" FontSize="10" FontFamily="{StaticResource Rubik}" Text="{Binding VersionText}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
         <TextBlock Margin="5" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="10" FontFamily="{StaticResource Rubik}" Text="{Binding ChannelText}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>

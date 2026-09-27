@@ -16,7 +16,7 @@
         Width="420"
         SizeToContent="Height"
         ResizeMode="NoResize"
-        Background="{ui:ThemeResource ApplicationBackgroundBrush}"
+        Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendsContentIntoTitleBar="True"
         WindowStartupLocation="CenterScreen">
     <Grid>

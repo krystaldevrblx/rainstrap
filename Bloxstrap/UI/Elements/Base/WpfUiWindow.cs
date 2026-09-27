@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -26,6 +28,12 @@ namespace Bloxstrap.UI.Elements.Base
         #endregion
 
         private readonly IThemeService _themeService = new ThemeService();
+
+        /// <summary>
+        /// The rain layer this window was given automatically by <see cref="EnsureRainLayer"/>,
+        /// as opposed to one declared in the window's own XAML.
+        /// </summary>
+        private RainBackground? _autoRainLayer;
 
         public WpfUiWindow()
         {
@@ -87,7 +95,57 @@ namespace Bloxstrap.UI.Elements.Base
         /// Called after the theme resources have been swapped, so windows can repaint
         /// anything that isn't driven by a DynamicResource.
         /// </summary>
-        protected virtual void OnApplyTheme() { }
+        protected virtual void OnApplyTheme()
+        {
+            // A layer attached by EnsureRainLayer has no code-behind of its own to refresh
+            // it on a theme change, so its streak colours are rebuilt here. Windows that
+            // declare their own layer refresh it from their own override.
+            _autoRainLayer?.Refresh();
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            EnsureRainLayer();
+        }
+
+        /// <summary>
+        /// Gives the window an animated rain layer behind its content.
+        ///
+        /// Done here rather than in each window's XAML so that every window gets it -
+        /// including any added later - and so the setting is honoured in one place. The
+        /// layer is inserted as the first child of the root grid: a grid paints its own
+        /// Background before its children, so the gradient still shows through and the
+        /// rain sits above it but behind the window's actual content, which is the same
+        /// layering the hand-written layers in the settings and about windows use.
+        ///
+        /// Windows that already declare a <see cref="RainBackground"/> are left alone, and
+        /// a window whose content is not a grid (the offscreen context-menu host) is
+        /// skipped rather than having its layout restructured underneath it.
+        /// </summary>
+        private void EnsureRainLayer()
+        {
+            if (Content is not Grid root)
+                return;
+
+            foreach (object child in root.Children)
+            {
+                if (child is RainBackground)
+                    return;
+            }
+
+            var rain = new RainBackground();
+
+            Grid.SetRow(rain, 0);
+            Grid.SetColumn(rain, 0);
+            Grid.SetRowSpan(rain, Math.Max(1, root.RowDefinitions.Count));
+            Grid.SetColumnSpan(rain, Math.Max(1, root.ColumnDefinitions.Count));
+
+            root.Children.Insert(0, rain);
+
+            _autoRainLayer = rain;
+        }
 
         protected override void OnSourceInitialized(EventArgs e)
         {
@@ -126,7 +184,11 @@ namespace Bloxstrap.UI.Elements.Base
 
             while (clickedElement != null)
             {
-                if (clickedElement is System.Windows.Controls.Button || clickedElement is Button)
+                // Both button flavours must be caught: Wpf.Ui's Button does not derive
+                // from System.Windows.Controls.Button.
+                if (clickedElement is System.Windows.Controls.Button
+                    || clickedElement is Wpf.Ui.Controls.Button)
+
                 {
                     base.OnPreviewMouseLeftButtonDown(e);
                     return;

@@ -11,7 +11,7 @@
     Width="420"
     Height="190"
     MinHeight="0"
-    Background="{ui:ThemeResource ApplicationBackgroundBrush}"
+    Background="{DynamicResource MainWindowBackgroundBrush}"
     Closing="UiWindow_Closing"
     ExtendsContentIntoTitleBar="True"
     ResizeMode="NoResize"

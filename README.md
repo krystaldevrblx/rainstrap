@@ -20,9 +20,8 @@
 
  # **the best roblox bootstrapper (trust me bro)**
 
-**Note**
-
-rainstrap is an application for **Windows 10 and above**.
+ note:
+> rainstrap is an application for **Windows 10 and above.**
 
 ## Features
 

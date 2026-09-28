@@ -1,55 +1,57 @@
 <div align="center">
 
-<img src="Images/icon.png" alt="Rainstrap" width="256">
-
-# Rainstrap
-
-**A performance-focused Roblox bootstrapper built for customization, optimization, and RainHub integration.**
+![][banner-light]
+![][banner-dark]
 
 </div>
 
-> [!NOTE]
-> Rainstrap is an application for **Windows 10 and above**.
+# Rainstrap
+
+**the best roblox bootstrapper (trust me bro)**
+
+**Note**
+
+rainstrap is an application for **Windows 10 and above**.
 
 ## Features
 
-* Detailed Roblox server information
-* Support for Roblox Studio
-* FastFlags editor
+* detailed roblox server information (powered by RainHub)
+* support for Roblox Studio
+* fastflags editor
 
-  * Configure supported Roblox FastFlags directly through Rainstrap
-  * FastFlags not present in Roblox's allowlist cannot be applied
-  * This restriction does not affect Roblox Studio
-* Global Roblox settings editor
+  * configure supported roblox fastflags directly through Rainstrap
+  * fastflags not present in roblox's allowlist cannot be applied
+  * This restriction does not affect roblox studio
+* global roblox settings editor
 
-  * Adjustable frame-rate cap
-  * Graphics quality controls
-  * Additional client configuration options
-* Performance-focused improvements and launch optimizations
-* Custom bootstrapper styles, themes, and icons
-* Cache cleaner
-* Roblox channel switching
+  * adjustable frame-rate cap
+  * graphics quality controls
+  * additional client configuration options
+* performance-focused improvements and launch optimizations
+* custom bootstrapper styles, themes, and icons
+* cache cleaner
+* roblox channel switching
 * RainHub integration and RainHub-powered features
-* Additional quality-of-life improvements
+* additional quality-of-life improvements
 
 ## Building
 
-Building Rainstrap requires the **.NET 6 SDK**.
+building Rainstrap requires the **.NET 6 SDK**.
 
-Clone the repository with its submodules:
+clone the repository with its submodules:
 
 ```bash
 git clone --recursive https://github.com/krystaldevrblx/rainstrap.git
 cd rainstrap
 ```
 
-You can build the solution using Visual Studio or build directly from the command line:
+you can build the solution using Visual Studio or build directly from the command line:
 
 ```bash
 dotnet publish -p:PublishSingleFile=true -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
 ```
 
-The resulting executable will be produced as `Rainstrap.exe`.
+the resulting executable will be produced as `Rainstrap.exe`.
 
 ## Credits & Attribution
 
@@ -62,3 +64,16 @@ Rainstrap builds upon the work of these projects and their contributors. Credit 
 * **Bloxstrap:** https://github.com/bloxstraplabs/bloxstrap
 
 The applicable licensing and attribution notices from the upstream projects are preserved in this repository, including `LICENSE` and `LICENSE.Bloxstrap`.
+
+---
+
+<div align="center">
+
+**Rainstrap**
+
+*A better way to manage Roblox on Windows.*
+
+</div>
+
+[banner-light]: https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/Rainstrap-Light.png#gh-light-mode-only
+[banner-dark]: https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/Rainstrap-Dark.png#gh-dark-mode-only

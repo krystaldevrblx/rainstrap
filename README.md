@@ -1,11 +1,17 @@
 <div align="center">
 
-![][banner-light]
-![][banner-dark]
-
-</div>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/banner-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/banner-light.png">
+  <img alt="Rainstrap" src="https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/banner-light.png">
+</picture>
 
 # Rainstrap
+
+**A performance-focused Roblox bootstrapper built for customization, optimization, and RainHub integration.**
+
+
+</div>
 
 **the best roblox bootstrapper (trust me bro)**
 
@@ -74,6 +80,3 @@ The applicable licensing and attribution notices from the upstream projects are 
 *A better way to manage Roblox on Windows.*
 
 </div>
-
-[banner-light]: https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/Rainstrap-Light.png#gh-light-mode-only
-[banner-dark]: https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/Rainstrap-Dark.png#gh-dark-mode-only

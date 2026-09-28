@@ -6,11 +6,6 @@
   <img alt="Rainstrap" src="https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/banner-light.png">
 </picture>
 
-# Rainstrap
-
-**A performance-focused Roblox bootstrapper built for customization, optimization, and RainHub integration.**
-
-
 </div>
 
 **the best roblox bootstrapper (trust me bro)**

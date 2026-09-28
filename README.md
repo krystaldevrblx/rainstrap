@@ -1,3 +1,4 @@
+
 <div align="center">
 
 <picture>
@@ -6,9 +7,18 @@
   <img alt="Rainstrap" src="https://raw.githubusercontent.com/krystaldevrblx/rainstrap/main/Images/banner-light.png">
 </picture>
 
+<br>
+
+[![License](https://img.shields.io/github/license/krystaldevrblx/rainstrap?style=flat-square)](https://github.com/krystaldevrblx/rainstrap/blob/main/LICENSE)
+[![Build](https://img.shields.io/github/actions/workflow/status/krystaldevrblx/rainstrap/ci-release.yml?branch=main\&style=flat-square\&label=build)](https://github.com/krystaldevrblx/rainstrap/actions)
+[![Downloads](https://img.shields.io/github/downloads/krystaldevrblx/rainstrap/latest/total?style=flat-square)](https://github.com/krystaldevrblx/rainstrap/releases/latest)
+[![Release](https://img.shields.io/github/v/release/krystaldevrblx/rainstrap?style=flat-square)](https://github.com/krystaldevrblx/rainstrap/releases/latest)
+[![Stars](https://img.shields.io/github/stars/krystaldevrblx/rainstrap?style=flat-square)](https://github.com/krystaldevrblx/rainstrap)
+
 </div>
 
-**the best roblox bootstrapper (trust me bro)**
+
+ # **the best roblox bootstrapper (trust me bro)**
 
 **Note**
 

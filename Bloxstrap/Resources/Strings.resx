@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1949,11 +1949,23 @@ Please don't change this setting unless you know what you're doing.</value>
   <data name="Updates.CheckFailed" xml:space="preserve">
     <value>Could not check for updates: {0}</value>
   </data>
+  <data name="Updates.CheckingDescription" xml:space="preserve">
+    <value>Asking Roblox which version this channel currently ships...</value>
+  </data>
+  <data name="Updates.RestoredStatusTitle" xml:space="preserve">
+    <value>Previously checked: {0}</value>
+  </data>
+  <data name="Updates.RestoredStatusDescription" xml:space="preserve">
+    <value>{0} This is the result of your last check, saved so it survives closing this tab. Use "Check for updates" to run a new one.</value>
+  </data>
+  <data name="Updates.RestoredResult" xml:space="preserve">
+    <value>saved result from {0}</value>
+  </data>
   <data name="Updates.History.Header" xml:space="preserve">
     <value>Version history</value>
   </data>
   <data name="Updates.History.Description" xml:space="preserve">
-    <value>Previously installed Roblox versions. You can roll back to a version if it's still available from Roblox.</value>
+    <value>Versions this device has installed before. This is a record of what happened here, not a list of everything Roblox offers - use Version Control to choose which one to use.</value>
   </data>
   <data name="Updates.History.Empty" xml:space="preserve">
     <value>No previous versions recorded yet. History builds up automatically as Rainstrap installs Roblox updates.</value>
@@ -1969,38 +1981,6 @@ Please don't change this setting unless you know what you're doing.</value>
   </data>
   <data name="Updates.History.BadgePrevious" xml:space="preserve">
     <value>Previous</value>
-  </data>
-  <data name="Updates.History.CheckingRollback" xml:space="preserve">
-    <value>Checking rollback availability...</value>
-  </data>
-  <data name="Updates.History.RollbackAvailable" xml:space="preserve">
-    <value>Rollback available</value>
-  </data>
-  <data name="Updates.History.RollbackUnavailable" xml:space="preserve">
-    <value>Rollback unavailable (Roblox no longer provides this version)</value>
-  </data>
-  <data name="Updates.History.RollbackButton" xml:space="preserve">
-    <value>Roll back</value>
-  </data>
-  <data name="Updates.History.RollbackConfirmTitle" xml:space="preserve">
-    <value>Roll back Roblox?</value>
-  </data>
-  <data name="Updates.History.RollbackConfirmText" xml:space="preserve">
-    <value>Rainstrap will download and install Roblox {0} silently, without launching it.
-
-Please note:
-• Roblox may require a newer version again at any time; if so, updating becomes mandatory and this rollback will be replaced on your next launch (set updates to "Ask before updating" to hold it longer).
-• Saved settings carry over, but an older client may behave differently with current content.
-• You can always update again normally afterwards.</value>
-  </data>
-  <data name="Updates.History.RollbackStarted" xml:space="preserve">
-    <value>Rollback to Roblox {0} started. Roblox will install in the background.</value>
-  </data>
-  <data name="Updates.History.RollbackFailed" xml:space="preserve">
-    <value>Rollback failed: {0}</value>
-  </data>
-  <data name="Updates.History.RollbackUnavailableMessage" xml:space="preserve">
-    <value>This version is no longer available from Roblox. It cannot be rolled back to.</value>
   </data>
   <data name="Menu_RainHub_Title" xml:space="preserve">
     <value>RainHub</value>
@@ -2294,7 +2274,25 @@ Please note:
     <value>Presets</value>
   </data>
   <data name="FastFlagPresets_Intro" xml:space="preserve">
-    <value>Presets are curated collections of FastFlags maintained by Rainstrap. Every flag here is on Roblox's official allowlist for local configuration, because Roblox ignores any other flag set locally. Applying a preset only changes the flags it lists.</value>
+    <value>Named after the effect they have, so you can search for what you want. Every flag here is on Roblox's official allowlist for local configuration, because Roblox silently ignores any other flag set locally. Applying a preset only changes the flags it lists.</value>
+  </data>
+  <data name="FastFlagPresets_SearchPlaceholder" xml:space="preserve">
+    <value>Search presets, e.g. grey sky, grass, performance, vulkan</value>
+  </data>
+  <data name="FastFlagPresets_NoMatchesTitle" xml:space="preserve">
+    <value>No matching presets</value>
+  </data>
+  <data name="FastFlagPresets_NoMatches" xml:space="preserve">
+    <value>Nothing matches "{0}". Presets only exist for flags Roblox still allows to be set locally, so the list is deliberately short. Try a broader word, or open the Fast Flag Editor to set a flag by hand.</value>
+  </data>
+  <data name="FastFlagPresets_AllowlistNote" xml:space="preserve">
+    <value>On Roblox's allowlist: {0}</value>
+  </data>
+  <data name="FastFlagPresets_Risk_Experimental" xml:space="preserve">
+    <value>experimental</value>
+  </data>
+  <data name="FastFlagPresets_Risk_Risky" xml:space="preserve">
+    <value>risky</value>
   </data>
   <data name="FastFlagPresets_Category_Graphics" xml:space="preserve">
     <value>Graphics</value>
@@ -2392,5 +2390,190 @@ Please note:
   </data>
   <data name="RainHub_Relink_Message" xml:space="preserve">
     <value>RainHub no longer accepts this device's link. Generate a new pairing code on the RainHub website to reconnect.</value>
+  </data>
+  <data name="VersionControl.Title" xml:space="preserve">
+    <value>Version Control</value>
+  </data>
+  <data name="VersionControl.Description" xml:space="preserve">
+    <value>Choose which Roblox version Rainstrap uses. Your selection is remembered and keeps working across restarts.</value>
+  </data>
+  <data name="VersionControl.Refresh" xml:space="preserve">
+    <value>Refresh versions</value>
+  </data>
+  <data name="VersionControl.Refreshing" xml:space="preserve">
+    <value>Refreshing...</value>
+  </data>
+  <data name="VersionControl.LastRefreshed" xml:space="preserve">
+    <value>Last refreshed: {0}</value>
+  </data>
+  <data name="VersionControl.NeverRefreshed" xml:space="preserve">
+    <value>Not refreshed yet</value>
+  </data>
+  <data name="VersionControl.SelectedVersion" xml:space="preserve">
+    <value>Selected version</value>
+  </data>
+  <data name="VersionControl.FollowingChannel" xml:space="preserve">
+    <value>Following the {0} channel automatically</value>
+  </data>
+  <data name="VersionControl.Empty" xml:space="preserve">
+    <value>No versions discovered yet. Use "Refresh versions" to check what Roblox currently offers.</value>
+  </data>
+  <data name="VersionControl.Badge.Selected" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="VersionControl.Badge.Latest" xml:space="preserve">
+    <value>Latest</value>
+  </data>
+  <data name="VersionControl.Badge.Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="VersionControl.Status.Available" xml:space="preserve">
+    <value>Available to download</value>
+  </data>
+  <data name="VersionControl.Status.Unavailable" xml:space="preserve">
+    <value>No longer published by Roblox</value>
+  </data>
+  <data name="VersionControl.Status.Unknown" xml:space="preserve">
+    <value>Availability could not be verified</value>
+  </data>
+  <data name="VersionControl.Action.Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="VersionControl.Action.Select" xml:space="preserve">
+    <value>Use this version</value>
+  </data>
+  <data name="VersionControl.Action.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="VersionControl.Action.FollowChannel" xml:space="preserve">
+    <value>Follow channel</value>
+  </data>
+  <data name="VersionControl.Action.Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="VersionControl.DetailsTitle" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="VersionControl.Details.Guid" xml:space="preserve">
+    <value>Version identifier</value>
+  </data>
+  <data name="VersionControl.Details.Channel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="VersionControl.Details.Published" xml:space="preserve">
+    <value>Published</value>
+  </data>
+  <data name="VersionControl.Details.Availability" xml:space="preserve">
+    <value>Availability</value>
+  </data>
+  <data name="VersionControl.Details.Support" xml:space="preserve">
+    <value>Support state</value>
+  </data>
+  <data name="VersionControl.Details.Support.SUPPORTED" xml:space="preserve">
+    <value>Usable: published and installed correctly</value>
+  </data>
+  <data name="VersionControl.Details.Support.UNKNOWN" xml:space="preserve">
+    <value>Not yet verified</value>
+  </data>
+  <data name="VersionControl.Details.Support.CORRUPTEDINSTALLATION" xml:space="preserve">
+    <value>Installed files are incomplete. Reinstall to repair.</value>
+  </data>
+  <data name="VersionControl.Details.Support.NOLONGERPUBLISHED" xml:space="preserve">
+    <value>Roblox no longer publishes this version, so it cannot be downloaded or repaired.</value>
+  </data>
+  <data name="VersionControl.Details.Support.BLOCKEDBYROBLOX" xml:space="preserve">
+    <value>Roblox refused this version on launch and asked for an update. Rainstrap will not try to work around that. Pick another version.</value>
+  </data>
+  <data name="VersionControl.SelectedMessage" xml:space="preserve">
+    <value>Rainstrap will use Roblox {0} from now on.</value>
+  </data>
+  <data name="VersionControl.SelectFailed.NotInstalled" xml:space="preserve">
+    <value>Roblox {0} is not installed. Download it first.</value>
+  </data>
+  <data name="VersionControl.SelectFailed.Invalid" xml:space="preserve">
+    <value>The installed copy of Roblox {0} is incomplete and cannot be used. Download it again to repair it.</value>
+  </data>
+  <data name="VersionControl.SelectFailed.Unpublished" xml:space="preserve">
+    <value>Roblox no longer publishes {0}, so it cannot be selected or reinstalled.</value>
+  </data>
+  <data name="VersionControl.SelectFailed.Refused" xml:space="preserve">
+    <value>Roblox refused this version last time it ran and asked for an update. Choose a newer version instead.</value>
+  </data>
+  <data name="VersionControl.DownloadStarted" xml:space="preserve">
+    <value>Downloading Roblox {0}. This runs in the background; Roblox will not launch automatically.</value>
+  </data>
+  <data name="VersionControl.DownloadFailed" xml:space="preserve">
+    <value>Could not download Roblox {0}: {1}</value>
+  </data>
+  <data name="VersionControl.DownloadFailed.Unpublished" xml:space="preserve">
+    <value>Roblox no longer publishes {0}, so it cannot be downloaded.</value>
+  </data>
+  <data name="VersionControl.DownloadSucceeded" xml:space="preserve">
+    <value>Roblox {0} finished installing and passed validation.</value>
+  </data>
+  <data name="VersionControl.DownloadSucceeded.NotValidated" xml:space="preserve">
+    <value>Roblox {0} finished downloading, but the installed files did not pass validation. Try downloading it again.</value>
+  </data>
+  <data name="VersionControl.RemoveMessage" xml:space="preserve">
+    <value>Delete the installed copy of Roblox {0}? Your selected version is never removed by this.</value>
+  </data>
+  <data name="VersionControl.RemoveFailed" xml:space="preserve">
+    <value>Could not remove Roblox {0}: {1}</value>
+  </data>
+  <data name="VersionControl.RemoveRefused.Protected" xml:space="preserve">
+    <value>Roblox {0} is the version Rainstrap is set to use, so it cannot be removed.</value>
+  </data>
+  <data name="VersionControl.AgeWarning" xml:space="preserve">
+    <value>Roblox can stop accepting older versions at any time. If an older version stops working, Roblox will ask you to update and Rainstrap cannot change that.</value>
+  </data>
+  <data name="VersionControl.Limitation.NoHistoryEndpoint" xml:space="preserve">
+    <value>Roblox does not publish a list of older versions, so this shows the current release plus versions this device has already seen. It is not a complete catalogue.</value>
+  </data>
+  <data name="VersionControl.Limitation.PartialRefresh" xml:space="preserve">
+    <value>Some information could not be read, so this list may be incomplete.</value>
+  </data>
+  <data name="VersionControl.RefreshFailed" xml:space="preserve">
+    <value>Could not refresh versions: {0}</value>
+  </data>
+  <data name="VersionControl.RecoveryTitle" xml:space="preserve">
+    <value>Selected version unavailable</value>
+  </data>
+  <data name="VersionControl.RecoveryMessage.Missing" xml:space="preserve">
+    <value>Roblox {0} is selected but is not installed.</value>
+  </data>
+  <data name="VersionControl.RecoveryMessage.Invalid" xml:space="preserve">
+    <value>Roblox {0} is selected but its installed files are incomplete.</value>
+  </data>
+  <data name="VersionControl.RecoveryMessage.Unpublished" xml:space="preserve">
+    <value>Roblox {0} is selected, but Roblox no longer publishes it, so it can no longer be installed.</value>
+  </data>
+  <data name="VersionControl.RecoveryMessage.Unknown" xml:space="preserve">
+    <value>Roblox {0} is selected but could not be verified.</value>
+  </data>
+  <data name="VersionControl.RecoveryPrompt" xml:space="preserve">
+    <value>{0}
+
+Would you like to download it again? Choosing No switches to the current Roblox release.</value>
+  </data>
+  <data name="Menu.VersionControl.Title" xml:space="preserve">
+    <value>Version Control</value>
+  </data>
+  <data name="UpgradeNotify.Title" xml:space="preserve">
+    <value>Roblox update available</value>
+  </data>
+  <data name="UpgradeNotify.AvailableMessage" xml:space="preserve">
+    <value>A newer Roblox version is available.
+
+Current selected version: {0}
+Available version: {1}
+
+Would you like to update Roblox now, or continue using your selected version?
+
+Choose "Yes" to update to {1}, or "No" to keep {0}.{2}</value>
+  </data>
+  <data name="UpgradeNotify.PinnedNote" xml:space="preserve">
+    <value>
+
+You have chosen to use an older version. Updating will replace that choice.</value>
   </data>
 </root>

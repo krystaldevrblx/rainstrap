@@ -43,6 +43,25 @@ namespace Bloxstrap
         }
 
         /// <summary>
+        /// Reduces a version to "major.minor.build" so two spellings of the same release
+        /// line up, e.g. a "v1.0.0" git tag and App.Version's "1.0.0" or "1.0.0.0".
+        /// </summary>
+        public static string NormalizeVersion(string version)
+        {
+            try
+            {
+                var parsed = GetVersionFromString(version.Trim());
+                return $"{parsed.Major}.{parsed.Minor}.{Math.Max(parsed.Build, 0)}";
+            }
+            catch (Exception)
+            {
+                // not something we can reason about, hand it back as-is and let the
+                // caller decide what to do with an unusable value
+                return version.Trim().TrimStart('v', 'V');
+            }
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="versionStr1"></param>

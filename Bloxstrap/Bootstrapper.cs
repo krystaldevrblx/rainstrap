@@ -51,9 +51,44 @@ namespace Bloxstrap
         private LaunchMode _launchMode;
 
         private string _launchCommandLine = App.LaunchSettings.RobloxLaunchArgs;
-        private Version? _latestVersion = null;
+
+        /// <summary>
+        /// The newest version the channel currently publishes.
+        ///
+        /// Kept strictly separate from <see cref="_launchVersionGuid"/>: this one
+        /// is a fact about Roblox, the other is a decision about what to run. Merging
+        /// them is what previously made "latest" quietly become "selected", which
+        /// silently discarded the user's choice on every update.
+        /// </summary>
         private string _latestVersionGuid = null!;
-        private string _latestVersionDirectory = null!;
+        private Version? _latestVersion = null;
+
+        /// <summary>The version this launch will actually use.</summary>
+        private string _launchVersionGuid = null!;
+
+        /// <summary>Where <see cref="_launchVersionGuid"/> lives on disk.</summary>
+        private string _launchVersionDirectory = null!;
+
+        /// <summary>Why <see cref="_launchVersionGuid"/> was chosen.</summary>
+        private VersionResolution _resolution = new();
+
+        private VersionResolutionSource _versionResolutionSource = VersionResolutionSource.Channel;
+
+        /// <summary>
+        /// Guards the Notify prompt so a single launch attempt can never produce
+        /// two dialogs, however many code paths consult the decision.
+        /// </summary>
+        private bool _notifyPromptShown = false;
+
+        /// <summary>
+        /// True once the user has agreed to update in this launch, so the
+        /// not-yet-installed selection is recognised as pending rather than broken.
+        /// </summary>
+        private bool _updateAccepted = false;
+
+        /// <summary>Latest deployment info, kept so Notify can compare without refetching.</summary>
+        private ClientVersion? _channelDeployment = null;
+
         private PackageManifest _versionPackageManifest = null!;
         private GameJoinData _joinData = null!;
         public static bool _staticDirectory => App.Settings.Prop.StaticDirectory;
@@ -66,7 +101,19 @@ namespace Bloxstrap
         private long _totalPackagedBytes = 0;
         private bool _packageExtractionSuccess = true;
 
-        private bool _mustUpgrade => App.LaunchSettings.ForceFlag.Active || App.State.Prop.ForceReinstall || String.IsNullOrEmpty(AppData.State.VersionGuid) || !File.Exists(AppData.ExecutablePath);
+        /// <summary>
+        /// Whether this launch must install, whatever is already on disk.
+        ///
+        /// Settable because accepting a Notify update or agreeing to reinstall a
+        /// recovered selection both mean "yes, install" without changing the
+        /// version being resolved - the two decisions are independent.
+        /// </summary>
+        private bool _mustUpgrade => App.LaunchSettings.ForceFlag.Active
+                                  || App.State.Prop.ForceReinstall
+                                  || String.IsNullOrEmpty(AppData.State.VersionGuid)
+                                  || !File.Exists(AppData.ExecutablePath)
+                                  || _forcedInstall;
+        private bool _forcedInstall = false;
         private bool _noConnection = false;
 
         private AsyncMutex? _mutex;
@@ -267,8 +314,11 @@ namespace Bloxstrap
                 }
             }
 
-            CleanupVersionsFolder(); // cleanup after background updater
-
+            // Deferred until after the install decision, so a failed or skipped
+            // upgrade can never be followed by a cleanup that removes the version
+            // the user still depends on. Cleanup is also conservative now (see
+            // CleanupVersionsFolder), but ordering it after the install removes the
+            // whole class of "upgrade failed and then deleted what was working".
             bool allModificationsApplied = true;
 
             if (!_noConnection)
@@ -278,7 +328,7 @@ namespace Bloxstrap
 
                 await SetupPackageDictionaries(); // mods also require it
 
-                if (AppData.State.VersionGuid != _latestVersionGuid || _mustUpgrade)
+                if (AppData.State.VersionGuid != _launchVersionGuid || _mustUpgrade)
                 {
                     bool backgroundUpdaterMutexOpen = Utilities.DoesMutexExist($"{App.ProjectName}-BackgroundUpdater");
                     if (App.LaunchSettings.BackgroundUpdaterFlag.Active)
@@ -310,6 +360,10 @@ namespace Bloxstrap
                 allModificationsApplied = await ApplyModifications();
             }
 
+            // Reclaim incomplete installs only, and only once we know whether an
+            // install succeeded. Nothing the user can still launch is removed here.
+            CleanupVersionsFolder();
+
             // check registry entries for every launch, just in case the stock bootstrapper changes it back
 
             if (IsStudioLaunch)
@@ -317,7 +371,7 @@ namespace Bloxstrap
             else
                 WindowsRegistry.RegisterPlayer();
 
-            WindowsRegistry.RegisterClientLocation(IsStudioLaunch, _latestVersionDirectory); // if it for some reason doesnt exist
+            WindowsRegistry.RegisterClientLocation(IsStudioLaunch, _launchVersionDirectory); // if it for some reason doesnt exist
 
             if (_launchMode != LaunchMode.Player)
                 await mutex.ReleaseAsync();
@@ -509,22 +563,34 @@ namespace Bloxstrap
 
                 key.SetValueSafe("www." + Deployment.RobloxDomain, Deployment.IsDefaultChannel ? "" : Deployment.Channel);
 
-                _latestVersionGuid = clientVersion.VersionGuid;
+                _latestVersionGuid = Deployment.NormalizeVersionGuid(clientVersion.VersionGuid);
                 _latestVersion = Utilities.ParseVersionSafe(clientVersion.Version);
+                _channelDeployment = clientVersion;
             }
             else
             {
                 App.Logger.WriteLine(LOG_IDENT, $"Version set to {App.LaunchSettings.VersionFlag.Data} from arguments");
-                _latestVersionGuid = App.LaunchSettings.VersionFlag.Data;
+
+                // An explicit command line version is the newest thing we know
+                // about, since we never asked the channel. Saying otherwise would
+                // let Notify offer to "update" away from a version the user typed
+                // in by hand.
+                _latestVersionGuid = Deployment.NormalizeVersionGuid(App.LaunchSettings.VersionFlag.Data);
                 // we can't determine the version
             }
 
-            if (_staticDirectory)
-                _latestVersionDirectory = AppData.StaticDirectory;
-            else
-                _latestVersionDirectory = Path.Combine(Paths.Versions, _latestVersionGuid);
+            // Version Control decides what actually launches. This is the only
+            // place the launch version is chosen, and it happens after the channel
+            // answer is known so the selection can be compared against it without
+            // a second network call.
+            ResolveLaunchVersion();
 
-            string pkgManifestUrl = Deployment.GetLocation($"/{_latestVersionGuid}-rbxPkgManifest.txt");
+            if (_staticDirectory)
+                _launchVersionDirectory = AppData.StaticDirectory;
+            else
+                _launchVersionDirectory = Path.Combine(Paths.Versions, _launchVersionGuid);
+
+            string pkgManifestUrl = Deployment.GetLocation($"/{_launchVersionGuid}-rbxPkgManifest.txt");
             var pkgManifestData = await App.HttpClient.GetStringAsync(pkgManifestUrl);
 
             _versionPackageManifest = new(pkgManifestData);
@@ -540,6 +606,373 @@ namespace Bloxstrap
                 _launchMode = isPlayer ? LaunchMode.Player : LaunchMode.Studio;
                 SetupAppData(); // we need to set it up again
             }
+        }
+
+        /// <summary>
+        /// Chooses which version this launch will use.
+        ///
+        /// Three things can influence the answer, in this order:
+        ///
+        ///   1. Notify, which may offer the channel's newer release and update the
+        ///      selection only if the user says yes.
+        ///   2. Recovery, when a persisted selection no longer resolves to something
+        ///      usable. This asks rather than assumes, because silently swapping to
+        ///      the latest release is exactly the behaviour being fixed.
+        ///   3. VersionControl.ResolveLaunchVersion, which prefers an explicit
+        ///      command line, then the user's pin, then the channel.
+        ///
+        /// Nothing here writes <c>AppData.State.VersionGuid</c>. That is written only
+        /// once an install actually completes, so a decision made here can never
+        /// make a half-finished install look finished.
+        /// </summary>
+private void ResolveLaunchVersion()
+        {
+            const string LOG_IDENT = "Bootstrapper::ResolveLaunchVersion";
+
+            bool commandLinePinned = App.LaunchSettings.VersionFlag.Active
+                                  && !String.IsNullOrEmpty(App.LaunchSettings.VersionFlag.Data);
+
+            string? commandLineVersion = commandLinePinned ? App.LaunchSettings.VersionFlag.Data : null;
+
+            if (IsStudioLaunch)
+            {
+                // Studio has no Version Control surface. Leaving it on the channel
+                // keeps Studio launch behaviour exactly as it was.
+                ApplyResolution(new VersionResolution
+                {
+                    VersionGuid = _latestVersionGuid,
+                    Source = VersionResolutionSource.Channel,
+                });
+
+                App.Logger.WriteLine(LOG_IDENT, "Studio launch, using the channel version");
+
+                return;
+            }
+
+            // Notify is offered before the resolution is finalised, because saying
+            // "yes" is allowed to move the selection - and therefore the outcome.
+            if (!commandLinePinned && VersionControl.HasSelection)
+                RunNotifyCheck();
+
+            // The precedence rule lives in VersionControl so it is one testable
+            // function rather than being re-derived here.
+            _resolution = VersionControl.ResolveLaunchVersion(_latestVersionGuid, commandLineVersion);
+
+            if (_resolution.Source == VersionResolutionSource.UserSelection)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"A Version Control selection is in force: {_resolution.VersionGuid}");
+
+                if (IsUsableSelection(_resolution.VersionGuid, out string reason))
+                {
+                    ApplyResolution(_resolution);
+                    return;
+                }
+
+                // A version the user just agreed to install is not "missing" - it
+                // is about to be installed. Prompting about it here would ask the
+                // same question twice in one launch and could talk the user out of
+                // the update they just accepted.
+                if (_updateAccepted)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "The selection is the version the user just accepted; installing it");
+
+                    _forcedInstall = true;
+
+                    ApplyResolution(_resolution);
+                    return;
+                }
+
+                App.Logger.WriteLine(LOG_IDENT, $"The selected version is not usable ({reason}), offering recovery");
+
+                if (AttemptSelectionRecovery(reason))
+                {
+                    ApplyResolution(VersionControl.ResolveLaunchVersion(_latestVersionGuid));
+                    return;
+                }
+
+                App.Logger.WriteLine(LOG_IDENT, "Falling back to the channel version");
+            }
+
+            ApplyResolution(VersionControl.ResolveLaunchVersion(_latestVersionGuid, commandLineVersion));
+        }
+
+        private void ApplyResolution(VersionResolution resolution)
+        {
+            _resolution = resolution;
+            _launchVersionGuid = resolution.VersionGuid;
+            _versionResolutionSource = resolution.Source;
+
+            LogResolvedVersion();
+        }
+
+        /// <summary>
+        /// Logs which version this launch resolved to and why.
+        ///
+        /// This is the single line that makes "what is Roblox going to run, and
+        /// who decided that" answerable from the log alone, which is the question
+        /// Version Control exists to make predictable.
+        /// </summary>
+        private void LogResolvedVersion()
+        {
+            App.Logger.WriteLine(
+                "Bootstrapper::ResolveLaunchVersion",
+                $"Resolved to {_launchVersionGuid} via {_versionResolutionSource} " +
+                $"(channel latest: {_latestVersionGuid}, selected: " +
+                $"{Deployment.NormalizeVersionGuid(App.RobloxState.Prop.SelectedPlayerVersionGuid)}, " +
+                $"installed: {AppData.State.VersionGuid})");
+        }
+
+        /// <summary>
+        /// Whether a persisted selection can actually be launched.
+        ///
+        /// Presence of files is deliberately not sufficient: the executable has to
+        /// exist, be a plausible size, and report a parseable version.
+        /// </summary>
+        private bool IsUsableSelection(string versionGuid, out string reason)
+        {
+            const string LOG_IDENT = "Bootstrapper::IsUsableSelection";
+
+            if (String.IsNullOrEmpty(versionGuid))
+            {
+                reason = "no version selected";
+                return false;
+            }
+
+            if (VersionControl.WasRefused(versionGuid))
+            {
+                reason = "Roblox refused this version previously";
+                return false;
+            }
+
+            var validation = VersionControl.ValidateInstallation(versionGuid, AppData.ExecutableName);
+
+            if (!validation.IsValid)
+            {
+                reason = validation.Result.ToString();
+                App.Logger.WriteLine(LOG_IDENT, $"Validation of {versionGuid} failed: {reason}");
+
+                return false;
+            }
+
+            reason = "valid";
+            return true;
+        }
+
+        /// <summary>
+        /// Handles a selection that no longer works.
+        ///
+        /// Offers the user a reinstall, and falls back to the channel's current
+        /// release only if they decline. Returns true when the selection should be
+        /// kept and launched anyway (the reinstall path), false when it should be
+        /// abandoned in favour of the latest release.
+        ///
+        /// The prompt is skipped entirely when Roblox no longer publishes the
+        /// version, since a reinstall cannot possibly succeed and asking would only
+        /// be offering the user a dead end.
+        /// </summary>
+        private bool AttemptSelectionRecovery(string reason)
+        {
+            const string LOG_IDENT = "Bootstrapper::AttemptSelectionRecovery";
+
+            string selected = VersionControl.SelectedVersionGuid;
+            string displayVersion = GetSelectedVersionNumberOrGuid(selected);
+
+            // Reuse the manifest probe we already have to avoid a pointless
+            // prompt, and to tell the user the real reason.
+            var probe = _cancelTokenSource.IsCancellationRequested
+                ? default(VersionProbeResult)
+                : Deployment.ProbeVersionAsync(selected, _cancelTokenSource.Token).GetAwaiter().GetResult();
+
+            if (probe.State == VersionAvailability.Unavailable)
+            {
+                string message = String.Format(Strings.VersionControl_RecoveryMessage_Unpublished, displayVersion);
+
+                App.Logger.WriteLine(LOG_IDENT, message);
+
+                Frontend.ShowMessageBox(message, MessageBoxImage.Warning);
+
+                VersionControl.ClearSelection();
+
+                return false;
+            }
+
+            string explanation = reason switch
+            {
+                nameof(InstallationValidationResult.Missing) => String.Format(Strings.VersionControl_RecoveryMessage_Missing, displayVersion),
+                nameof(InstallationValidationResult.ExecutableMissing) => String.Format(Strings.VersionControl_RecoveryMessage_Missing, displayVersion),
+                nameof(InstallationValidationResult.ExecutableTruncated) => String.Format(Strings.VersionControl_RecoveryMessage_Invalid, displayVersion),
+                nameof(InstallationValidationResult.VersionUnreadable) => String.Format(Strings.VersionControl_RecoveryMessage_Invalid, displayVersion),
+                _ => String.Format(Strings.VersionControl_RecoveryMessage_Unknown, displayVersion),
+            };
+
+            string prompt = String.Format(Strings.VersionControl_RecoveryPrompt, explanation);
+
+            App.Logger.WriteLine(LOG_IDENT, prompt);
+
+            var result = Frontend.ShowMessageBox(
+                prompt,
+                MessageBoxImage.Warning,
+                MessageBoxButton.YesNo,
+                MessageBoxResult.No);
+
+            // Default is No: declining must never surprise the user by reinstalling.
+            if (result == MessageBoxResult.Yes)
+            {
+                // The selection stays exactly as it is. Downloading it again is the
+                // recovery, not a change of choice.
+                _forcedInstall = true;
+
+                App.Logger.WriteLine(LOG_IDENT, "User asked for the selected version to be reinstalled, keeping the selection");
+
+                return true;
+            }
+
+            App.Logger.WriteLine(LOG_IDENT, "User declined the reinstall, clearing the selection");
+
+            VersionControl.ClearSelection();
+
+            return false;
+        }
+
+        private string GetSelectedVersionNumberOrGuid(string versionGuid)
+        {
+            var fromHistory = App.RobloxState.Prop.PlayerVersionHistory
+                .FirstOrDefault(x => String.Equals(x.VersionGuid, versionGuid, StringComparison.OrdinalIgnoreCase));
+
+            if (fromHistory is not null && !String.IsNullOrWhiteSpace(fromHistory.Version))
+                return fromHistory.Version;
+
+            var validation = VersionControl.ValidateInstallation(versionGuid, AppData.ExecutableName);
+
+            if (validation.DetectedVersion is not null)
+                return validation.DetectedVersion;
+
+            return versionGuid;
+        }
+
+        /// <summary>
+        /// Runs the Notify check for this launch and applies the user's answer.
+        ///
+        /// The user is asked at most once per launch attempt. "No" - including a
+        /// dismissed dialog, which resolves to the same result - leaves the
+        /// selection untouched, so the choice survives into future launches instead
+        /// of being re-asked forever.
+        /// </summary>
+        private void RunNotifyCheck()
+        {
+            const string LOG_IDENT = "Bootstrapper::RunNotifyCheck";
+
+            if (_notifyPromptShown)
+                return;
+
+            if (App.Settings.Prop.UpgradeMode != UpgradeMode.Notify)
+                return;
+
+            // A pinned version still gets the prompt; a command line version does
+            // not. Someone who typed a version is not asking to be offered another.
+            if (App.LaunchSettings.VersionFlag.Active)
+                return;
+
+            if (App.LaunchSettings.QuietFlag.Active)
+            {
+                // Nothing can be shown, so treat it as a decline rather than
+                // silently updating.
+                App.Logger.WriteLine(LOG_IDENT, "Quiet launch, cannot prompt, keeping the selected version");
+                return;
+            }
+
+            string selectedVersionNumber = UpgradeNotifier.GetSelectedVersionNumber();
+
+            var detection = CompareAgainstChannel(selectedVersionNumber, out UpdateDetectionResult? failure);
+
+            if (failure is not null)
+            {
+                // A failed check must not update and must not block the launch.
+                // The previous version is still on disk and still selected.
+                App.Logger.WriteLine(LOG_IDENT, $"Update check failed, continuing with the selected version: {failure.Error}");
+                return;
+            }
+
+            var decision = UpgradeNotifier.Decide(
+                App.Settings.Prop.UpgradeMode,
+                detection,
+                VersionControl.IsSelectionPinned,
+                Deployment.Channel,
+                _notifyPromptShown);
+
+            if (decision != NotifyDecision.PromptUser)
+                return;
+
+            // Claim the slot before showing anything. Several code paths can reach
+            // this point and the user must never see two dialogs for one launch.
+            _notifyPromptShown = true;
+
+            string message = UpgradeNotifier.BuildPrompt(detection, VersionControl.IsSelectionPinned);
+
+            App.Logger.WriteLine(LOG_IDENT, message);
+
+            var result = Frontend.ShowMessageBox(
+                message,
+                MessageBoxImage.Information,
+                MessageBoxButton.YesNo,
+                // Default to No. Updating is a decision, not an inevitability, and
+                // "Yes" is the destructive choice, so it must be deliberate.
+                MessageBoxResult.No);
+
+            // Dismissal arrives as MessageBoxResult.None, which IsAccept treats the same
+            // way as No: no update, selection preserved. No second dialog is
+            // shown here - the answer is unambiguous, and a confirmation box on
+            // top of it would just be a second thing to dismiss.
+            if (!UpgradeNotifier.IsAccept(result))
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"User kept their version ({result})");
+
+                return;
+            }
+
+            App.Logger.WriteLine(LOG_IDENT, $"User accepted the update to {detection.LatestVersionGuid}");
+
+            // Only now, and only because they said yes, does the selection move.
+            // pinned: false marks this as an accepted update rather than an explicit
+            // choice, which is what lets a later Notify check ask again.
+            VersionControl.SelectVersion(detection.LatestVersionGuid, pinned: false);
+
+            _updateAccepted = true;
+            _forcedInstall = true;
+        }
+
+        /// <summary>
+        /// Compares a version against the channel's current release.
+        /// Returns a failed result rather than throwing.
+        /// </summary>
+        private UpdateDetectionResult CompareAgainstChannel(string selectedVersionNumber, out UpdateDetectionResult? failure)
+        {
+            failure = null;
+
+            if (_channelDeployment is null)
+            {
+                failure = new UpdateDetectionResult { Error = "No deployment information" };
+                return failure;
+            }
+
+            string latestVersionNumber = _channelDeployment.Version;
+
+            if (String.IsNullOrWhiteSpace(selectedVersionNumber))
+            {
+                // We cannot say whether an update exists, so we must not claim
+                // either way. This is a failure, not "up to date".
+                failure = new UpdateDetectionResult { Error = "The selected version number could not be determined" };
+                return failure;
+            }
+
+            var result = UpgradeNotifier.Compare(selectedVersionNumber, latestVersionNumber);
+
+            // Supplying both guids lets the comparison rule out the case where the
+            // two spellings name the same version, without ever ordering them.
+            result.SelectedVersionGuid = VersionControl.SelectedVersionGuid;
+            result.LatestVersionGuid = _latestVersionGuid;
+
+            return result;
         }
 
         private bool IsEligibleForBackgroundUpdate()
@@ -876,6 +1309,14 @@ namespace Bloxstrap
             if (String.IsNullOrEmpty(logFileName))
             {
                 App.Logger.WriteLine(LOG_IDENT, "Unable to identify log file");
+
+                // A client that starts and then dies before writing a log is the
+                // signature Roblox uses when it refuses an outdated client and
+                // demands an update. Record it so Version Control can advise the
+                // user to move to a newer version. This only ever informs the UI:
+                // no attempt is made to get around the refusal.
+                RecordPossibleRobloxRefusal("the client exited without writing a log file");
+
                 // Frontend.ShowPlayerErrorDialog();
                 return;
             }
@@ -970,6 +1411,43 @@ namespace Bloxstrap
             return false;
         }
 
+        /// <summary>
+        /// Records that the selected version appears to have been refused.
+        ///
+        /// Deliberately conservative: this only fires on a failure signal that is
+        /// specific enough to name as a likely update refusal, and only when the
+        /// installed files themselves are fine - otherwise it is a broken install,
+        /// not Roblox rejecting the version. It exists so Version Control can tell
+        /// the user to pick a newer version; it never attempts to influence the
+        /// client, and Roblox's enforcement is left entirely alone.
+        /// </summary>
+        private void RecordPossibleRobloxRefusal(string evidence)
+        {
+            const string LOG_IDENT = "Bootstrapper::RecordPossibleRobloxRefusal";
+
+            if (IsStudioLaunch)
+                return;
+
+            // Don't blame the version if the files are the actual problem.
+            var validation = VersionControl.ValidateInstallation(_launchVersionGuid, AppData.ExecutableName);
+
+            if (!validation.IsValid)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Not recording a refusal: the installation is broken ({validation.Result})");
+
+                return;
+            }
+
+            if (String.IsNullOrEmpty(_launchVersionGuid))
+                return;
+
+            App.Logger.WriteLine(LOG_IDENT, $"{_launchVersionGuid} may have been refused because {evidence}");
+
+            VersionControl.RecordRefusal(_launchVersionGuid);
+
+            Frontend.ShowMessageBox(Strings.VersionControl_Details_Support_BLOCKEDBYROBLOX, MessageBoxImage.Warning);
+        }
+
         public void Cancel()
         {
             const string LOG_IDENT = "Bootstrapper::Cancel";
@@ -991,9 +1469,16 @@ namespace Bloxstrap
                     // clean up registry keys
                     WindowsRegistry.RegisterClientLocation(IsStudioLaunch, null);
 
-                    // clean up install
-                    if (Directory.Exists(_latestVersionDirectory))
-                        Directory.Delete(_latestVersionDirectory, true);
+                    // A reinstall stages the previous version aside rather than
+                    // deleting it. Capture that before restoring, because the
+                    // restore clears the field - cancelling a reinstall must not be
+                    // the thing that leaves the user with no client at all.
+                    bool hadStagedCopy = _stagedVersionDirectory is not null;
+
+                    RestoreStagedVersionDirectory();
+
+                    if (!hadStagedCopy && Directory.Exists(_launchVersionDirectory))
+                        Directory.Delete(_launchVersionDirectory, true);
                 }
                 catch (Exception ex)
                 {
@@ -1038,14 +1523,18 @@ namespace Bloxstrap
             if (releaseInfo is null)
                 return false;
 
-            var versionComparison = Utilities.CompareVersions(App.Version, releaseInfo.TagName);
+            string latestVersion = Utilities.NormalizeVersion(releaseInfo.TagName);
+            string currentVersion = Utilities.NormalizeVersion(App.Version);
 
-            // check if we aren't using a deployed build, so we can update to one if a new version comes out
-            if (App.IsProductionBuild && versionComparison == VersionComparison.Equal || versionComparison == VersionComparison.GreaterThan)
+            // the release tag is the source of truth - only move people off this build
+            // once the published tag stops matching the version they're running
+            if (string.Equals(latestVersion, currentVersion, StringComparison.OrdinalIgnoreCase))
             {
-                App.Logger.WriteLine(LOG_IDENT, "No updates found");
+                App.Logger.WriteLine(LOG_IDENT, $"Already on the latest release ({releaseInfo.TagName})");
                 return false;
             }
+
+            App.Logger.WriteLine(LOG_IDENT, $"Update found: {currentVersion} -> {latestVersion}");
 
             if (Dialog is not null)
                 Dialog.CancelEnabled = false;
@@ -1127,29 +1616,69 @@ namespace Bloxstrap
 
         #region Roblox Install
 
-        private static bool TryDeleteRobloxInDirectory(string dir)
+        /// <summary>
+        /// True when a Roblox process is running out of the given folder.
+        ///
+        /// Used as a hard veto on deletion. A folder that is merely unprotected may
+        /// still be the one a live client is executing from, and deleting that out
+        /// from under it corrupts a running installation.
+        /// </summary>
+        private static bool IsVersionDirectoryInUse(string dir)
         {
-            // If neither of these exist in the directory, return true.
-            // This was not implemented properly.
-            string clientPath = Path.Combine(dir, App.RobloxPlayerAppName);
-            if (!File.Exists(clientPath))
-            {
-                clientPath = Path.Combine(dir, App.RobloxStudioAppName);
-                if (!File.Exists(clientPath))
-                    return true;
-            }
-
             try
             {
-                File.Delete(clientPath);
-                return true;
+                string target = Path.GetFullPath(dir).TrimEnd(Path.DirectorySeparatorChar);
+
+                foreach (string processName in new[] { "RobloxPlayerBeta", "RobloxStudioBeta" })
+                {
+                    foreach (var process in Process.GetProcessesByName(processName))
+                    {
+                        try
+                        {
+                            string? location = process.MainModule?.FileName;
+
+                            if (String.IsNullOrEmpty(location))
+                                continue;
+
+                            if (Path.GetFullPath(location).StartsWith(target + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                                return true;
+                        }
+                        catch (Exception)
+                        {
+                            // An inaccessible process is not evidence of anything,
+                            // and the delete attempt itself will fail safely if the
+                            // files really are locked.
+                        }
+                        finally
+                        {
+                            process.Dispose();
+                        }
+                    }
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                App.Logger.WriteLine("Bootstrapper::IsVersionDirectoryInUse", "Could not enumerate processes");
+                App.Logger.WriteException("Bootstrapper::IsVersionDirectoryInUse", ex);
             }
+
+            return false;
         }
 
+        /// <summary>
+        /// Removes version folders that are safe to remove.
+        ///
+        /// This used to delete every version except the one that happened to be
+        /// recorded as installed. That made Version Control impossible - any version
+        /// the user downloaded but had not switched to yet was destroyed on the next
+        /// launch, and a selected version could be deleted by the very launch that
+        /// was meant to use it.
+        ///
+        /// The policy is now conservative and explicit: it only removes folders that
+        /// are broken leftovers, and everything the user might still want is
+        /// protected. Removing a real version is a deliberate user action on the
+        /// Version Control page, never a side effect of installing another one.
+        /// </summary>
         public static void CleanupVersionsFolder()
         {
             const string LOG_IDENT = "Bootstrapper::CleanupVersionsFolder";
@@ -1166,38 +1695,122 @@ namespace Bloxstrap
                 return;
             }
 
+            var protectedGuids = VersionControl.GetProtectedVersionGuids();
+
+            App.Logger.WriteLine(LOG_IDENT, $"Protected version folders: {String.Join(", ", protectedGuids)}");
+
             foreach (string dir in Directory.GetDirectories(Paths.Versions))
             {
                 string dirName = Path.GetFileName(dir);
 
-                if (
-                    !_staticDirectory && (dirName != App.RobloxState.Prop.Player.VersionGuid && dirName != App.RobloxState.Prop.Studio.VersionGuid) ||
-                    _staticDirectory && (dirName != "WindowsPlayer" && dirName != "WindowsStudio64")
-                    )
+                if (String.IsNullOrWhiteSpace(dirName))
+                    continue;
+
+                // The running client is never touched, whatever the policy says.
+                if (IsVersionDirectoryInUse(dir))
                 {
-                    // TODO: this is too expensive
-                    //Filesystem.AssertReadOnlyDirectory(dir);
-
-                    // check if it's still being used first
-                    // we dont want to accidentally delete the files of a running roblox instance
-                    if (!TryDeleteRobloxInDirectory(dir))
-                        continue;
-
-                    try
-                    {
-                        Directory.Delete(dir, true);
-                    }
-                    catch (UnauthorizedAccessException ex)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, $"Failed to delete {dir}");
-                        App.Logger.WriteException(LOG_IDENT, ex);
-                    }
-                    catch (IOException ex)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, $"Failed to delete {dir}");
-                        App.Logger.WriteException(LOG_IDENT, ex);
-                    }
+                    App.Logger.WriteLine(LOG_IDENT, $"Skipping {dirName}: a Roblox process is running from it");
+                    continue;
                 }
+
+                if (!VersionControl.CanDeleteVersion(dirName, protectedGuids, isRunning: false))
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Keeping {dirName}: protected");
+                    continue;
+                }
+
+                // Conservative by design: only a folder with no working executable
+                // is treated as a safe automatic delete. An interrupted download
+                // leaves exactly this shape, and it can never be launched. Anything
+                // that still has a usable executable is left for the user to remove
+                // deliberately, so a failed update can never take out the only
+                // working version.
+                var validation = VersionControl.ValidateInstallation(dirName, GuessExecutableName(dirName));
+
+                if (validation.IsValid)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Keeping {dirName}: installed and usable, removal is a user action");
+                    continue;
+                }
+
+                if (!validation.RequiresReinstall)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Keeping {dirName}: could not be classified ({validation.Result})");
+                    continue;
+                }
+
+                App.Logger.WriteLine(LOG_IDENT, $"Removing {dirName}: incomplete installation ({validation.Result})");
+
+                try
+                {
+                    Directory.Delete(dir, true);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to delete {dir}");
+                    App.Logger.WriteException(LOG_IDENT, ex);
+                }
+                catch (IOException ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to delete {dir}");
+                    App.Logger.WriteException(LOG_IDENT, ex);
+                }
+            }
+        }
+
+        private static string GuessExecutableName(string directoryName)
+        {
+            string dir = Path.Combine(Paths.Versions, directoryName);
+
+            if (File.Exists(Path.Combine(dir, App.RobloxPlayerAppName)))
+                return App.RobloxPlayerAppName;
+
+            return App.RobloxStudioAppName;
+        }
+
+        /// <summary>
+        /// Removes a single installed version on explicit user request.
+        ///
+        /// Refuses anything protected, and refuses while the client is running out
+        /// of it. Returns a failure reason rather than throwing so the UI can show
+        /// something specific.
+        /// </summary>
+        public static string? RemoveInstalledVersion(string versionGuid, out string normalizedGuid)
+        {
+            const string LOG_IDENT = "Bootstrapper::RemoveInstalledVersion";
+
+            normalizedGuid = Deployment.NormalizeVersionGuid(versionGuid);
+
+            if (String.IsNullOrEmpty(normalizedGuid))
+                return "No version was specified";
+
+            var protectedGuids = VersionControl.GetProtectedVersionGuids();
+
+            if (protectedGuids.Contains(normalizedGuid))
+                return String.Format(Strings.VersionControl_RemoveRefused_Protected, normalizedGuid);
+
+            string dir = Path.Combine(Paths.Versions, normalizedGuid);
+
+            if (!Directory.Exists(dir))
+                return String.Format(Strings.VersionControl_RemoveFailed, normalizedGuid, "It is not installed");
+
+            if (IsVersionDirectoryInUse(dir))
+                return String.Format(Strings.VersionControl_RemoveFailed, normalizedGuid, "Roblox is running from it");
+
+            try
+            {
+                Directory.Delete(dir, true);
+
+                App.Logger.WriteLine(LOG_IDENT, $"Removed {normalizedGuid} on user request");
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to remove {normalizedGuid}");
+                App.Logger.WriteException(LOG_IDENT, ex);
+
+                return String.Format(Strings.VersionControl_RemoveFailed, normalizedGuid, ex.Message);
             }
         }
 
@@ -1206,7 +1819,7 @@ namespace Bloxstrap
             const string LOG_IDENT = "Bootstrapper::MigrateCompatibilityFlags";
 
             string oldClientLocation = Path.Combine(Paths.Versions, AppData.State.VersionGuid, AppData.ExecutableName);
-            string newClientLocation = Path.Combine(_latestVersionDirectory, AppData.ExecutableName);
+            string newClientLocation = Path.Combine(_launchVersionDirectory, AppData.ExecutableName);
 
             // move old compatibility flags for the old location
             using RegistryKey appFlagsKey = Registry.CurrentUser.CreateSubKey($"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers");
@@ -1219,7 +1832,7 @@ namespace Bloxstrap
                 appFlagsKey.DeleteValueSafe(oldClientLocation);
             }
         }
-        private static void KillRobloxPlayers()
+private static void KillRobloxPlayers()
         {
             const string LOG_IDENT = "Bootstrapper::KillRobloxPlayers";
 
@@ -1241,6 +1854,103 @@ namespace Bloxstrap
             }
         }
 
+        /// <summary>
+        /// Where the previous copy of a version is parked while a replacement is
+        /// installed over it. Null when nothing is being staged.
+        /// </summary>
+        private string? _stagedVersionDirectory = null;
+
+        /// <summary>
+        /// True when the directory about to be wiped is the version currently
+        /// recorded as installed.
+        ///
+        /// That is the only case where a delete can cost the user their working
+        /// client, so it is the only case that gets a staged replacement.
+        /// </summary>
+        private bool IsReinstallingWorkingVersion()
+        {
+            if (_staticDirectory)
+                return true; // a static layout has exactly one folder
+
+            string installed = Deployment.NormalizeVersionGuid(AppData.State.VersionGuid);
+
+            return !String.IsNullOrEmpty(installed)
+                && String.Equals(installed, _launchVersionGuid, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Moves the existing version folder aside so it can be restored if the
+        /// replacement install fails.
+        /// </summary>
+        private void RollbackExistingVersionDirectory()
+        {
+            _stagedVersionDirectory = VersionInstallTransaction.Stage(_launchVersionDirectory);
+
+            App.Logger.WriteLine(
+                "Bootstrapper::RollbackExistingVersionDirectory",
+                $"Moved the existing installation to {_stagedVersionDirectory}");
+        }
+
+        /// <summary>
+        /// Deletes the staged copy after a successful, validated install.
+        /// </summary>
+        private void CommitStagedVersionDirectory()
+        {
+            if (_stagedVersionDirectory is null)
+                return;
+
+            const string LOG_IDENT = "Bootstrapper::CommitStagedVersionDirectory";
+
+            try
+            {
+                VersionInstallTransaction.Commit(_stagedVersionDirectory);
+
+                App.Logger.WriteLine(LOG_IDENT, "Install verified, discarded the staged copy");
+            }
+            catch (Exception ex)
+            {
+                // Leaving a spare folder behind is harmless; failing here would
+                // discard a perfectly good install over housekeeping.
+                App.Logger.WriteLine(LOG_IDENT, "Could not remove the staged directory, it will be reclaimed by cleanup");
+                App.Logger.WriteException(LOG_IDENT, ex);
+            }
+            finally
+            {
+                _stagedVersionDirectory = null;
+            }
+        }
+
+        /// <summary>
+        /// Puts the staged copy back after a failed install.
+        ///
+        /// The half-written replacement is removed first. This is the guarantee
+        /// that a failed update never leaves the user with nothing to launch.
+        /// </summary>
+        private bool RestoreStagedVersionDirectory()
+        {
+            const string LOG_IDENT = "Bootstrapper::RestoreStagedVersionDirectory";
+
+            if (_stagedVersionDirectory is null)
+                return false;
+
+            App.Logger.WriteLine(LOG_IDENT, "Install did not complete, restoring the previous version");
+
+            bool restored = false;
+
+            try
+            {
+                restored = VersionInstallTransaction.Rollback(_launchVersionDirectory, _stagedVersionDirectory);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Could not restore the previous version");
+                App.Logger.WriteException(LOG_IDENT, ex);
+            }
+
+            _stagedVersionDirectory = null;
+
+            return restored;
+        }
 
         private async Task UpgradeRoblox()
         {
@@ -1263,20 +1973,45 @@ namespace Bloxstrap
                 KillRobloxPlayers();
 
             // get a fully clean install
-            if (!App.LaunchSettings.BackgroundUpdaterFlag.Active && Directory.Exists(_latestVersionDirectory))
+            if (!App.LaunchSettings.BackgroundUpdaterFlag.Active && Directory.Exists(_launchVersionDirectory))
             {
-                try
+                // Reinstalling over the version that is currently working used to
+                // delete it first, which meant a failed download left the user with
+                // nothing. The existing copy is moved aside instead and only removed
+                // once the replacement has been verified, so a failure restores it.
+                if (IsReinstallingWorkingVersion())
                 {
-                    Directory.Delete(_latestVersionDirectory, true);
+                    App.Logger.WriteLine(LOG_IDENT, $"Staging the existing {_launchVersionGuid} aside instead of deleting it");
+
+                    try
+                    {
+                        RollbackExistingVersionDirectory();
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, "Could not stage the existing version directory, aborting so nothing is destroyed");
+                        App.Logger.WriteException(LOG_IDENT, ex);
+
+                        _isInstalling = false;
+
+                        throw;
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    App.Logger.WriteLine(LOG_IDENT, "Failed to delete the latest version directory");
-                    App.Logger.WriteException(LOG_IDENT, ex);
+                    try
+                    {
+                        Directory.Delete(_launchVersionDirectory, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, "Failed to delete the target version directory");
+                        App.Logger.WriteException(LOG_IDENT, ex);
+                    }
                 }
             }
 
-            Directory.CreateDirectory(_latestVersionDirectory);
+            Directory.CreateDirectory(_launchVersionDirectory);
 
             var cachedPackageHashes = Directory.GetFiles(Paths.Downloads).Select(x => Path.GetFileName(x));
 
@@ -1380,7 +2115,7 @@ namespace Bloxstrap
                             return;
                         }
 
-                        string baseDirectory = Path.Combine(_latestVersionDirectory, PackageDirectoryMap[package.Name]);
+                        string baseDirectory = Path.Combine(_launchVersionDirectory, PackageDirectoryMap[package.Name]);
 
                         ExtractPackage(package);
 
@@ -1404,16 +2139,49 @@ namespace Bloxstrap
 
             // finishing and cleanup
 
+            // Validate before committing anything. This is the point where the
+            // install is declared good: the state file is not written, the staged
+            // copy is not discarded, and the version is not made selectable until
+            // the executable is confirmed present, correctly sized, and reporting a
+            // parseable version. A package set that extracted without error but
+            // produced no launchable client is caught here rather than at the next
+            // launch.
+            var validation = VersionControl.ValidateInstallation(_launchVersionGuid, AppData.ExecutableName);
+
+            if (!validation.IsValid)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Install of {_launchVersionGuid} did not validate ({validation.Result}), rolling back");
+
+                RestoreStagedVersionDirectory();
+
+                _isInstalling = false;
+
+                Frontend.ShowMessageBox(
+                    String.Format(Strings.VersionControl_DownloadSucceeded_NotValidated, _launchVersionGuid),
+                    MessageBoxImage.Error);
+
+                // A failure here must not be allowed to fall through to the launch,
+                // and must not mark the version as installed.
+                App.State.Prop.ForceReinstall = false;
+                App.State.Save();
+
+                App.Terminate(ErrorCode.ERROR_INSTALL_FAILURE);
+                return;
+            }
+
+            App.Logger.WriteLine(LOG_IDENT, $"Install of {_launchVersionGuid} validated ({validation.DetectedVersion}, {validation.SizeBytes} bytes)");
+
+            // Verified. Only now is the previous copy disposable.
+            CommitStagedVersionDirectory();
+
             MigrateCompatibilityFlags();
 
-            AppData.State.VersionGuid = _latestVersionGuid;
+            AppData.State.VersionGuid = _launchVersionGuid;
 
             AppData.State.PackageHashes.Clear();
 
             foreach (var package in _versionPackageManifest)
                 AppData.State.PackageHashes.Add(package.Name, package.Signature);
-
-            CleanupVersionsFolder();
 
             var allPackageHashes = new List<string>();
 
@@ -1454,7 +2222,7 @@ namespace Bloxstrap
                 uninstallKey.SetValueSafe("EstimatedSize", totalSize);
             }
 
-            WindowsRegistry.RegisterClientLocation(IsStudioLaunch, _latestVersionDirectory);
+            WindowsRegistry.RegisterClientLocation(IsStudioLaunch, _launchVersionDirectory);
 
             App.Logger.WriteLine(LOG_IDENT, $"Registered as {totalSize} KB");
 
@@ -1463,21 +2231,36 @@ namespace Bloxstrap
             // Record version history for player updates
             if (!IsStudioLaunch)
             {
+                // The version number now comes from the validated install rather
+                // than from what the deployment API happened to report, so a launch
+                // pinned with a command line records a real number instead of a
+                // blank. Writing an empty version here would leave Version Control
+                // unable to order the entry.
+                string recordedVersion = validation.DetectedVersion
+                                      ?? _latestVersion?.ToString()
+                                      ?? String.Empty;
+
                 var history = App.RobloxState.Prop.PlayerVersionHistory;
+
                 var newEntry = new PlayerVersionHistoryEntry
                 {
-                    VersionGuid = _latestVersionGuid,
-                    Version = _latestVersion?.ToString() ?? string.Empty,
+                    VersionGuid = _launchVersionGuid,
+                    Version = recordedVersion,
                     Channel = Deployment.Channel,
                     InstalledAtUtc = DateTime.UtcNow
                 };
-                
+
+                // Don't stack duplicates: re-installing the same version must not
+                // fill the bounded history with copies of itself, which would push
+                // genuinely useful older versions out.
+                history.RemoveAll(x => String.Equals(x.VersionGuid, newEntry.VersionGuid, StringComparison.OrdinalIgnoreCase));
+
                 history.Add(newEntry);
-                
+
                 // Keep only the last VersionHistoryMaxEntries
                 while (history.Count > RobloxState.VersionHistoryMaxEntries)
                     history.RemoveAt(0);
-                
+
                 App.Logger.WriteLine(LOG_IDENT, $"Recorded version history: {newEntry.VersionGuid} ({newEntry.Version})");
             }
 
@@ -1534,7 +2317,7 @@ namespace Bloxstrap
                 const string path = "rbxasset://fonts/CustomFont.ttf";
 
                 // lets make sure the content/fonts/families path exists in the version directory
-                string contentFolder = Path.Combine(_latestVersionDirectory, "content");
+                string contentFolder = Path.Combine(_launchVersionDirectory, "content");
                 Directory.CreateDirectory(contentFolder);
 
                 string fontsFolder = Path.Combine(contentFolder, "fonts");
@@ -1583,10 +2366,10 @@ namespace Bloxstrap
             App.Logger.WriteLine(LOG_IDENT, "Writing AppSettings.xml...");
             if (!File.Exists(Paths.Modifications + "\\AppSettings.xml"))
             {
-                Directory.CreateDirectory(_latestVersionDirectory);
+                Directory.CreateDirectory(_launchVersionDirectory);
 
                 await File.WriteAllTextAsync(
-                    Path.Combine(_latestVersionDirectory, "AppSettings.xml"),
+                    Path.Combine(_launchVersionDirectory, "AppSettings.xml"),
                     AppSettings.Replace("roblox.com", Deployment.RobloxDomain)
                 );
             }
@@ -1623,7 +2406,7 @@ namespace Bloxstrap
                 modFolderFiles.Add(relativeFile);
 
                 string fileModFolder = Path.Combine(Paths.Modifications, relativeFile);
-                string fileVersionFolder = Path.Combine(_latestVersionDirectory, relativeFile);
+                string fileVersionFolder = Path.Combine(_launchVersionDirectory, relativeFile);
 
                 if (File.Exists(fileVersionFolder) && MD5Hash.FromFile(fileModFolder) == MD5Hash.FromFile(fileVersionFolder))
                 {
@@ -1667,7 +2450,7 @@ namespace Bloxstrap
                 {
                     App.Logger.WriteLine(LOG_IDENT, $"{fileLocation} was removed as a mod but does not belong to a package");
 
-                    string versionFileLocation = Path.Combine(_latestVersionDirectory, fileLocation);
+                    string versionFileLocation = Path.Combine(_launchVersionDirectory, fileLocation);
 
                     if (File.Exists(versionFileLocation))
                         File.Delete(versionFileLocation);
@@ -1867,7 +2650,7 @@ namespace Bloxstrap
                 return;
             }
 
-            string packageFolder = Path.Combine(_latestVersionDirectory, packageDir);
+            string packageFolder = Path.Combine(_launchVersionDirectory, packageDir);
             string? fileFilter = null;
 
             // for sharpziplib, each file in the filter needs to be a regex

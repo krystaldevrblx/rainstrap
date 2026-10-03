@@ -35,10 +35,26 @@
                     IsOpen="{Binding HasMessage, Mode=OneWay}"
                     IsClosable="False" />
 
+        <!-- Search. Presets are named after the effect they produce, so someone
+             who knows they want a grey sky should be able to type "sky". -->
+        <ui:TextBox Margin="0,12,0,0"
+                    PlaceholderText="{x:Static resources:Strings.FastFlagPresets_SearchPlaceholder}"
+                    Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Padding="10,6,10,6" />
+
         <TextBlock Margin="0,12,0,0" FontSize="12" TextWrapping="Wrap"
                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                    Text="{x:Static resources:Strings.FastFlagPresets_Empty}"
                    Visibility="{Binding HasPresets, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!-- Distinct from "no presets exist": a search that matched nothing says
+             which search, so it is clear the list is not empty. -->
+        <ui:InfoBar Margin="0,12,0,0"
+                    Title="{x:Static resources:Strings.FastFlagPresets_NoMatchesTitle}"
+                    Message="{Binding NoMatchesText, Mode=OneWay}"
+                    Severity="Informational"
+                    IsOpen="{Binding NoMatchesVisibility, Mode=OneWay}"
+                    IsClosable="False" />
 
         <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding Presets, Mode=OneWay}">
             <ItemsControl.ItemTemplate>
@@ -59,12 +75,6 @@
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontSize="14" FontWeight="Medium"
                                                    Text="{Binding Name, Mode=OneWay}" />
-                                        <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="4"
-                                                Background="{DynamicResource ControlFillColorSecondaryBrush}">
-                                            <TextBlock FontSize="10"
-                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                       Text="{Binding CategoryName, Mode=OneWay}" />
-                                        </Border>
                                         <Border Margin="6,0,0,0" Padding="6,1" CornerRadius="4"
                                                 Background="{DynamicResource ControlFillColorSecondaryBrush}">
                                             <TextBlock FontSize="10"
@@ -76,6 +86,13 @@
                                                 Visibility="{Binding IsApplied, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <TextBlock FontSize="10" Foreground="White"
                                                        Text="{x:Static resources:Strings.FastFlagPresets_AppliedBadge}" />
+                                        </Border>
+                                        <Border Margin="6,0,0,0" Padding="6,1" CornerRadius="4"
+                                                Background="{DynamicResource ControlFillColorTertiaryBrush}"
+                                                Visibility="{Binding IsRisky, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <TextBlock FontSize="10"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       Text="{Binding RiskText, Mode=OneWay}" />
                                         </Border>
                                     </StackPanel>
 
@@ -134,7 +151,15 @@
                                                Text="{x:Static resources:Strings.FastFlagPresets_FlagsHeader}" />
                                 </Expander.Header>
 
-                                <ItemsControl Margin="0,6,0,0" ItemsSource="{Binding Flags, Mode=OneWay}">
+                                <StackPanel>
+                                    <!-- States plainly that these are the flags Roblox
+                                         actually reads, so a preset can be trusted
+                                         without the user having to check the allowlist. -->
+                                    <TextBlock Margin="0,6,0,0" FontSize="11" TextWrapping="Wrap"
+                                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                               Text="{Binding AllowlistNoteText, Mode=OneWay}" />
+
+                                    <ItemsControl Margin="0,6,0,0" ItemsSource="{Binding Flags, Mode=OneWay}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid Margin="0,1,0,1">
@@ -151,7 +176,8 @@
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                    </ItemsControl>
+                                </StackPanel>
                             </Expander>
                         </StackPanel>
                     </Border>

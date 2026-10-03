@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Runtime.CompilerServices;
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
@@ -8,3 +9,9 @@ using System.Windows;
                                               //(used if a resource is not found in the page,
                                               // app, or any theme specific resource dictionaries)
 )]
+
+// The test project exercises internal helpers (paths, utilities, state loading)
+// as well as the public version-control surface. Without this it could only assert
+// on the outermost layer, which is exactly the layer where none of the interesting
+// decisions live.
+[assembly: InternalsVisibleTo("Rainstrap.Tests")]

@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Rainstrap's test project.
+
+    Deliberately small and deliberately NOT added to Rainstrap.sln: adding it to
+    the solution would make every `dotnet build` of the solution build the test
+    project too, which for a WPF app is pure cost. Tests are run explicitly with
+    `dotnet test Tests\Rainstrap.Tests.csproj`.
+
+    What is tested here, and why:
+
+      * The FastFlag preset catalogue and allowlist. These encode the rule that
+        every preset flag must be one Roblox recognises and every value must be
+        one Roblox accepts. A violation is invisible - the client silently ignores
+        an unrecognised flag - so it has to be checked mechanically.
+
+      * Update-check persistence. The rule under test is that a successful check
+        survives a restart and a failed one does not destroy it.
+
+      * Version-history classification and rollback argument construction. A wrong
+        argument makes the relaunch silently install the wrong version.
+
+      * RainHub link state. Deciding when to show the tab, and when a credential
+        should be discarded, must not be guesswork.
+
+    What is NOT tested here, and why:
+
+      * Anything needing a live Roblox connection or a DPAPI-protected file on
+        disk. Those are integration concerns and a test asserting them would pass
+        or fail for reasons outside the code.
+      * WPF visual state. The rules are extracted into the pure static classes
+        under test; the controls that display them are thin bindings.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Bloxstrap.Tests</RootNamespace>
+    <AssemblyName>Rainstrap.Tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.6.6" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bloxstrap\Bloxstrap.csproj" />
+  </ItemGroup>
+
+</Project>

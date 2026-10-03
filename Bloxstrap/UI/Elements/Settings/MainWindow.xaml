@@ -61,9 +61,20 @@
             <ui:NavigationFluent x:Name="RootNavigation" Grid.Row="1" Grid.Column="0" Margin="0,0,12,0" Frame="{Binding ElementName=RootFrame}" SelectedPageIndex="0">
                 <ui:NavigationFluent.Items>
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Integrations_Title}" PageType="{x:Type pages:IntegrationsPage}" Icon="Add28" Tag="integrations" />
-                    <ui:NavigationItem x:Name="rainhub" Content="{x:Static resources:Strings.Menu_RainHub_Title}" PageType="{x:Type pages:RainHubPage}" Icon="Globe20" Tag="rainhub" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Behaviour_Title}" PageType="{x:Type pages:BehaviourPage}" Icon="PlaySettings20" Tag="bootstrapper" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Common_Deployment}" PageType="{x:Type pages:ChannelPage}" Icon="CloudArchive20" Tag="channel" />
+
+                    <!-- Shown only while a RainHub account is linked; see
+                         MainWindow.ApplyRainHubTabVisibility. The account linking
+                         flow itself lives on the Integrations page, so nothing is
+                         hidden from an unlinked user. -->
+                    <ui:NavigationItem x:Name="rainhub" Content="{x:Static resources:Strings.Menu_RainHub_Title}" PageType="{x:Type pages:RainHubPage}" Icon="Globe20" Tag="rainhub" Visibility="Collapsed" />
+
+                    <!-- Version Control is the main version-management surface.
+                         It replaces the old per-history-entry rollback button, which
+                         could not persist a choice and probed availability on every
+                         page load. -->
+                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_VersionControl_Title}" PageType="{x:Type pages:VersionControlPage}" Icon="Stack24" Tag="versioncontrol" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Updates_Title}" PageType="{x:Type pages:UpdatesPage}" Icon="ArrowDownload24" Tag="updates" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Mods_Title}" PageType="{x:Type pages:ModsPage}" Icon="WrenchScrewdriver20" Tag="mods" />
                     <ui:NavigationItem x:Name="fastflags" Content="{x:Static resources:Strings.Menu_FastFlags_Title}" PageType="{x:Type pages:FastFlagsPage}" Icon="Flag24" Tag="fastflags" />

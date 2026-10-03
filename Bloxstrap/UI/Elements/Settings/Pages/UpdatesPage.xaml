@@ -25,7 +25,23 @@
         <!-- version status card -->
         <Border Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" Background="{DynamicResource ControlFillColorDefaultBrush}">
             <StackPanel>
-                <TextBlock FontSize="16" FontWeight="Medium" Text="{Binding StatusTitle, Mode=OneWay}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" FontSize="16" FontWeight="Medium" Text="{Binding StatusTitle, Mode=OneWay}" />
+                    <!-- Marks a result that was restored from disk rather than
+                         produced by a check in this session, so a saved answer is
+                         never read as a fresh one. -->
+                    <Border Grid.Column="1" Margin="8,0,0,0" Padding="8,2" CornerRadius="4"
+                            VerticalAlignment="Center"
+                            Background="{DynamicResource SystemFillColorNeutralBackgroundBrush}"
+                            Visibility="{Binding RestoredBadgeVisibility, Mode=OneWay}">
+                        <TextBlock FontSize="11" Text="{Binding RestoredBadgeText, Mode=OneWay}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    </Border>
+                </Grid>
                 <TextBlock Margin="0,4,0,0" FontSize="12" Text="{Binding StatusDescription, Mode=OneWay}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
             </StackPanel>
         </Border>
@@ -86,7 +102,9 @@
                     IsOpen="True"
                     IsClosable="False" />
 
-        <!-- version history (version-control style) -->
+        <!-- version history: a read-only record of what this device installed.
+             Choosing which version to use is Version Control's job, so there is
+             deliberately no action on these rows. -->
         <TextBlock Margin="0,24,0,0" Text="{x:Static resources:Strings.Updates_History_Header}" FontSize="20" FontWeight="Medium" />
         <TextBlock Margin="0,4,0,8" Text="{x:Static resources:Strings.Updates_History_Description}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
 
@@ -103,43 +121,26 @@
                     <Border Margin="0,0,0,6" Padding="12" CornerRadius="8" BorderThickness="1"
                             BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                             Background="{DynamicResource ControlFillColorDefaultBrush}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontSize="13" FontWeight="Medium" Text="{Binding DisplayVersion, Mode=OneWay}" VerticalAlignment="Center" />
-                                    <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="4" Background="{DynamicResource SystemFillColorSuccessBrush}">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <TextBlock FontSize="11" Text="{Binding StateBadgeText, Mode=OneWay}" Foreground="White" />
-                                    </Border>
-                                    <TextBlock Margin="8,0,0,0" FontSize="11" VerticalAlignment="Center"
-                                               Text="{Binding RollbackStatusText, Mode=OneWay}"
-                                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                               Visibility="{Binding RollbackProbeVisibility, Mode=OneWay}" />
-                                </StackPanel>
-                                <TextBlock FontSize="11" Text="{Binding VersionGuid, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextTrimming="CharacterEllipsis" />
-                                <TextBlock FontSize="11" Text="{Binding InstalledText, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontSize="13" FontWeight="Medium" Text="{Binding DisplayVersion, Mode=OneWay}" VerticalAlignment="Center" />
+                                <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="4" Background="{DynamicResource SystemFillColorSuccessBrush}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock FontSize="11" Text="{Binding StateBadgeText, Mode=OneWay}" Foreground="White" />
+                                </Border>
                             </StackPanel>
-
-                            <ui:Button Grid.Column="1" VerticalAlignment="Center" MinWidth="110"
-                                       Content="{x:Static resources:Strings.Updates_History_RollbackButton}"
-                                       Command="{Binding RollbackCommand}"
-                                       Appearance="Caution"
-                                       Visibility="{Binding RollbackButtonVisibility, Mode=OneWay}" />
-                        </Grid>
+                            <TextBlock FontSize="11" Text="{Binding VersionGuid, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock FontSize="11" Text="{Binding InstalledText, Mode=OneWay}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                        </StackPanel>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

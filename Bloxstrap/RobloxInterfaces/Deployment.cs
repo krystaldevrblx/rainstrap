@@ -199,7 +199,7 @@ namespace Bloxstrap.RobloxInterfaces
             return false;
         }
 
-        public static async Task<DateTime?> GetVersionTimestamp(string version)
+        public static async Task<DateTime?> GetVersionTimestamp(string version, CancellationToken token = default)
         {
             const string LOG_IDENT = "Deployment::GetVersionTimestamp";
             const string header = "last-modified";
@@ -210,8 +210,8 @@ namespace Bloxstrap.RobloxInterfaces
 
             try
             {
-                string location = GetLocation($"/{version}-rbxPkgManifest.txt");
-                var response = await App.HttpClient.GetAsync(location);
+                string location = GetLocation($"/{NormalizeVersionGuid(version)}-rbxPkgManifest.txt");
+                var response = await App.HttpClient.GetAsync(location, token);
                 response.EnsureSuccessStatusCode();
 
                 if (response.Content.Headers.TryGetValues(header, out var values))
@@ -222,6 +222,10 @@ namespace Bloxstrap.RobloxInterfaces
                     return dateTime;
                 }
             } 
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+                throw;
+            }
             catch (HttpRequestException ex)
             {
                 App.Logger.WriteLine(LOG_IDENT, $"Failed to get timestamp for {version}");
@@ -231,7 +235,271 @@ namespace Bloxstrap.RobloxInterfaces
             return null;
         }
 
-        public static async Task<ClientVersion> GetInfo(string? channel = null, bool behindProductionCheck = false, bool includeTimestamp = false)
+/// <summary>
+        /// Checks whether one specific published version is still downloadable.
+        /// GetInfo can't answer this - it only reports whatever the channel currently
+        /// points at, which is never an older version we're trying to roll back to.
+        /// </summary>
+        public static async Task<bool> IsVersionAvailable(string versionGuid)
+        {
+            return (await ProbeVersionAsync(versionGuid)).State == VersionAvailability.Available;
+        }
+
+        /// <summary>
+        /// Probes a single published version and reports what the probe established.
+        ///
+        /// A transport failure (timeout, DNS, 5xx) deliberately resolves to
+        /// <see cref="VersionAvailability.Unknown"/> rather than
+        /// <see cref="VersionAvailability.Unavailable"/>. Only an authoritative
+        /// 403/404 from the CDN means Roblox actually withdrew the version; treating
+        /// a flaky connection as a withdrawal would delete a perfectly good version
+        /// from the user's catalogue.
+        /// </summary>
+        public static async Task<VersionProbeResult> ProbeVersionAsync(string versionGuid, CancellationToken token = default)
+        {
+            const string LOG_IDENT = "Deployment::ProbeVersionAsync";
+
+            if (String.IsNullOrEmpty(versionGuid))
+                return new(VersionAvailability.Unavailable, null);
+
+            versionGuid = NormalizeVersionGuid(versionGuid);
+
+            if (String.IsNullOrEmpty(BaseUrl))
+                await InitializeConnectivity();
+
+            if (String.IsNullOrEmpty(BaseUrl))
+                return new(VersionAvailability.Unknown, null);
+
+            try
+            {
+                string location = GetLocation($"/{versionGuid}-rbxPkgManifest.txt");
+                App.Logger.WriteLine(LOG_IDENT, $"Probing {versionGuid}");
+
+                using var request = new HttpRequestMessage(HttpMethod.Head, location);
+                using var response = await App.HttpClient.SendAsync(request, token);
+
+                // 403 is what the CDN returns for a version that is no longer
+                // published; 404 shows up on mirrors that are behind. Both mean
+                // "not downloadable", and neither is a network fault.
+                if (response.IsSuccessStatusCode)
+                {
+                    DateTime? lastModified = null;
+
+                    if (response.Content.Headers.TryGetValues("last-modified", out var values))
+                    {
+                        if (DateTime.TryParse(values.First(), CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime parsed))
+                            lastModified = parsed;
+                    }
+
+                    return new(VersionAvailability.Available, lastModified);
+                }
+
+                if (response.StatusCode == HttpStatusCode.Forbidden || response.StatusCode == HttpStatusCode.NotFound)
+                    return new(VersionAvailability.Unavailable, null);
+
+                App.Logger.WriteLine(LOG_IDENT, $"Probe of {versionGuid} returned {response.StatusCode}, treating as unknown");
+
+                return new(VersionAvailability.Unknown, null);
+            }
+            catch (TaskCanceledException)
+            {
+                // a timeout is not evidence of anything about the version itself
+                return new(VersionAvailability.Unknown, null);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to probe {versionGuid}");
+                App.Logger.WriteException(LOG_IDENT, ex);
+
+                return new(VersionAvailability.Unknown, null);
+            }
+        }
+
+        /// <summary>
+        /// Downloads and parses a version's package manifest, returning null when it
+        /// is not published.
+        ///
+        /// Used before an install so a withdrawn version fails fast and loudly
+        /// instead of half-downloading into a folder that can never work.
+        /// </summary>
+        public static async Task<PackageManifest?> GetPackageManifestAsync(string versionGuid, CancellationToken token = default)
+        {
+            const string LOG_IDENT = "Deployment::GetPackageManifestAsync";
+
+            versionGuid = NormalizeVersionGuid(versionGuid);
+
+            if (String.IsNullOrEmpty(BaseUrl))
+                await InitializeConnectivity();
+
+            if (String.IsNullOrEmpty(BaseUrl))
+                return null;
+
+            try
+            {
+                string location = GetLocation($"/{versionGuid}-rbxPkgManifest.txt");
+                string data = await App.HttpClient.GetStringAsync(location, token);
+
+                return new PackageManifest(data);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Could not fetch the package manifest for {versionGuid}");
+                App.Logger.WriteException(LOG_IDENT, ex);
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Accepts both spellings of a client version upload guid.
+        ///
+        /// Roblox's own APIs and the CDN disagree about the "version-" prefix - the
+        /// deployment API returns it, and the stock bootstrapper command line often
+        /// omits it - so both forms have to resolve to one canonical value or the
+        /// same version silently appears twice in a list keyed by guid.
+        /// </summary>
+        public static string NormalizeVersionGuid(string versionGuid)
+        {
+            if (String.IsNullOrWhiteSpace(versionGuid))
+                return String.Empty;
+
+            versionGuid = versionGuid.Trim();
+
+            // Strip any existing prefix (in any casing) before re-adding the
+            // canonical one, so "VERSION-abc" and "abc" produce byte-identical
+            // results and cannot end up as two entries in a guid-keyed map.
+            if (versionGuid.StartsWith("version-", StringComparison.OrdinalIgnoreCase))
+                versionGuid = versionGuid["version-".Length..];
+
+            return String.IsNullOrEmpty(versionGuid)
+                ? String.Empty
+                : $"version-{versionGuid}";
+        }
+
+        /// <summary>
+        /// Enumerates every Roblox version Rainstrap can legitimately discover.
+        ///
+        /// This is NOT an exhaustive historical catalogue, and the returned
+        /// <see cref="VersionCatalogResult.IsExhaustive"/> says so. Roblox only
+        /// publishes the current version of each channel through its public
+        /// deployment API - there is no endpoint that lists prior releases. Older
+        /// versions therefore enter the catalogue only through sources that observed
+        /// them: the channel's own deployment info, this machine's install history,
+        /// and version folders already on disk. Anything else would have to be
+        /// invented, which is why this method returns a result object carrying an
+        /// explicit exhaustiveness flag rather than a bare list.
+        /// </summary>
+        public static async Task<VersionCatalogResult> DiscoverVersionsAsync(
+            string binaryType,
+            IEnumerable<string> observedVersionGuids,
+            ISet<string> installedVersionGuids,
+            CancellationToken token = default)
+        {
+            const string LOG_IDENT = "Deployment::DiscoverVersionsAsync";
+
+            string previousBinaryType = BinaryType;
+            BinaryType = binaryType;
+
+            try
+            {
+                var discovered = new Dictionary<string, VersionCatalogEntry>(StringComparer.OrdinalIgnoreCase);
+                var failures = new List<string>();
+                bool latestResolved = false;
+
+                // Source 1: the channel's current deployment. This is the only
+                // version Roblox will tell us about directly, and it is what makes
+                // "latest official" a real distinction in the UI.
+                try
+                {
+                    ClientVersion current = await GetInfo(Channel, includeTimestamp: true, token: token);
+
+                    if (!String.IsNullOrEmpty(current.VersionGuid))
+                    {
+                        latestResolved = true;
+
+                        var guid = NormalizeVersionGuid(current.VersionGuid);
+
+                        discovered[guid] = new VersionCatalogEntry
+                        {
+                            VersionGuid = guid,
+                            Version = current.Version,
+                            Channel = Channel,
+                            Availability = VersionAvailability.Available,
+                            PublishedUtc = current.Timestamp,
+                            Source = VersionDiscoverySource.ChannelDeployment,
+                            IsLatestOfficial = true,
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Could not read the current deployment for {binaryType}");
+                    App.Logger.WriteException(LOG_IDENT, ex);
+
+                    failures.Add(binaryType);
+                }
+
+                // Source 2 and 3: versions this machine has actually seen. A guid in
+                // local history is a candidate, never proof of availability, so
+                // each one is verified against the CDN below before it can be
+                // offered for download.
+                foreach (string rawGuid in observedVersionGuids)
+                {
+                    if (String.IsNullOrWhiteSpace(rawGuid))
+                        continue;
+
+                    string guid = NormalizeVersionGuid(rawGuid);
+
+                    if (String.IsNullOrEmpty(guid) || discovered.ContainsKey(guid))
+                        continue;
+
+                    discovered[guid] = new VersionCatalogEntry
+                    {
+                        VersionGuid = guid,
+                        Version = String.Empty,
+                        Channel = String.Empty,
+                        Availability = VersionAvailability.Unknown,
+                        Source = VersionDiscoverySource.ObservedLocally,
+                        IsInstalled = installedVersionGuids.Contains(guid),
+                    };
+                }
+
+                // Verify every candidate that is not already known-good from the
+                // channel. Serialised rather than parallel: a handful of HEAD
+                // requests is cheap, and a fan-out is exactly the thing that gets
+                // a client rate limited by the CDN.
+                foreach (var entry in discovered.Values.Where(x => x.Availability != VersionAvailability.Available))
+                {
+                    token.ThrowIfCancellationRequested();
+
+                    var probe = await ProbeVersionAsync(entry.VersionGuid, token);
+
+                    entry.Availability = probe.State;
+
+                    if (probe.State == VersionAvailability.Available)
+                        entry.PublishedUtc ??= probe.LastModifiedUtc;
+                }
+
+                App.Logger.WriteLine(LOG_IDENT, $"Discovered {discovered.Count} version(s), latest resolved: {latestResolved}");
+
+                return new VersionCatalogResult
+                {
+                    Entries = discovered.Values.ToList(),
+                    Failures = failures,
+                    LatestResolved = latestResolved,
+
+                    // Never exhaustive: Roblox publishes only the current version per
+                    // channel, so a complete historical list does not exist to fetch.
+                    IsExhaustive = false,
+                };
+            }
+            finally
+            {
+                BinaryType = previousBinaryType;
+            }
+        }
+
+        public static async Task<ClientVersion> GetInfo(string? channel = null, bool behindProductionCheck = false, bool includeTimestamp = false, CancellationToken token = default)
         {
             const string LOG_IDENT = "Deployment::GetInfo";
 
@@ -272,12 +540,16 @@ namespace Bloxstrap.RobloxInterfaces
                 try
                 {
                     request.RequestUri = UrlBuilder.BuildApiUrl("clientsettingscdn", path);
-                    clientVersion = await Http.SendJson<ClientVersion>(request);
+                    clientVersion = await Http.SendJson<ClientVersion>(request, token);
                 }
                 catch (HttpRequestException httpEx) 
-                when (!isDefaultChannel && BadChannelCodes.Contains(httpEx.StatusCode))
+                    when (!isDefaultChannel && BadChannelCodes.Contains(httpEx.StatusCode))
                 {
                     throw new InvalidChannelException(httpEx.StatusCode);
+                }
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -287,19 +559,22 @@ namespace Bloxstrap.RobloxInterfaces
                     try
                     {
                         request.RequestUri = UrlBuilder.BuildApiUrl("clientsettings", path);
-                        clientVersion = await Http.SendJson<ClientVersion>(request);
+                        clientVersion = await Http.SendJson<ClientVersion>(request, token);
                     }
                     catch (HttpRequestException httpEx)
-                    when (!isDefaultChannel && BadChannelCodes.Contains(httpEx.StatusCode))
+                        when (!isDefaultChannel && BadChannelCodes.Contains(httpEx.StatusCode))
                     {
                         throw new InvalidChannelException(httpEx.StatusCode);
                     }
                 }
 
+                if (clientVersion is null)
+                    throw new HttpRequestException($"The deployment API returned no version for {DescribeTarget(BinaryType, channel)}.");
+
                 // check if channel is behind LIVE
                 if (!isDefaultChannel && behindProductionCheck)
                 {
-                    var defaultClientVersion = await GetInfo(DefaultChannel);
+                    var defaultClientVersion = await GetInfo(DefaultChannel, token: token);
 
                     if (Utilities.CompareVersions(clientVersion.Version, defaultClientVersion.Version) == VersionComparison.LessThan)
                         clientVersion.IsBehindDefaultChannel = true;
@@ -308,12 +583,15 @@ namespace Bloxstrap.RobloxInterfaces
                     clientVersion.IsBehindDefaultChannel = false;
 
                 if (includeTimestamp && clientVersion.Timestamp is null)
-                    clientVersion.Timestamp = await GetVersionTimestamp(clientVersion.VersionGuid);
+                    clientVersion.Timestamp = await GetVersionTimestamp(clientVersion.VersionGuid, token);
 
                 ClientVersionCache[cacheKey] = clientVersion;
             }
 
             return clientVersion;
         }
+
+        private static string DescribeTarget(string binaryType, string channel)
+            => String.IsNullOrEmpty(channel) ? binaryType : $"{binaryType}/{channel}";
     }
 }

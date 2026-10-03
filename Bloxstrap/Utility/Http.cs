@@ -9,9 +9,9 @@
         /// <param name="url"></param>
         /// <exception cref="HttpRequestException"></exception>
         /// <exception cref="JsonException"></exception>
-        public static async Task<T> GetJson<T>(Uri url)
+        public static async Task<T> GetJson<T>(Uri url, CancellationToken token = default)
         {
-            var request = await App.HttpClient.GetAsync(url);
+            var request = await App.HttpClient.GetAsync(url, token);
 
             request.EnsureSuccessStatusCode();
 
@@ -20,9 +20,9 @@
             return JsonSerializer.Deserialize<T>(json)!;
         }
 
-        public static async Task<T> SendJson<T>(HttpRequestMessage requestMessage)
+        public static async Task<T> SendJson<T>(HttpRequestMessage requestMessage, CancellationToken token = default)
         {
-            var request = await App.HttpClient.SendAsync(requestMessage);
+            var request = await App.HttpClient.SendAsync(requestMessage, token);
 
             request.EnsureSuccessStatusCode();
 

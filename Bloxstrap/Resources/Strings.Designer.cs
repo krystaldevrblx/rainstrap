@@ -581,27 +581,11 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
-        ///   Looks up a localized string similar to Error.
-        /// </summary>
-        public static string Common_Error {
-            get {
-                return ResourceManager.GetString("Common_Error", resourceCulture);
-            }
-        }        
-        /// <summary>
         ///   Looks up a localized string similar to Export.
         /// </summary>
         public static string Common_Export {
             get {
                 return ResourceManager.GetString("Common.Export", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Fast Flag Editor.
-        /// </summary>
-        public static string Common_FastFlags {
-            get {
-                return ResourceManager.GetString("Common_FastFlags", resourceCulture);
             }
         }        
         /// <summary>
@@ -754,14 +738,6 @@ namespace Bloxstrap.Resources {
         public static string Common_NotAvailable {
             get {
                 return ResourceManager.GetString("Common.NotAvailable", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Note.
-        /// </summary>
-        public static string Common_Note {
-            get {
-                return ResourceManager.GetString("Common_Note", resourceCulture);
             }
         }        
         /// <summary>
@@ -962,6 +938,30 @@ namespace Bloxstrap.Resources {
         public static string Common_Yes {
             get {
                 return ResourceManager.GetString("Common.Yes", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string Common_Error {
+            get {
+                return ResourceManager.GetString("Common_Error", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Fast Flag Editor.
+        /// </summary>
+        public static string Common_FastFlags {
+            get {
+                return ResourceManager.GetString("Common_FastFlags", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Note.
+        /// </summary>
+        public static string Common_Note {
+            get {
+                return ResourceManager.GetString("Common_Note", resourceCulture);
             }
         }        
         /// <summary>
@@ -2117,6 +2117,14 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
+        ///   Looks up a localized string similar to On Roblox's allowlist: {0}.
+        /// </summary>
+        public static string FastFlagPresets_AllowlistNote {
+            get {
+                return ResourceManager.GetString("FastFlagPresets_AllowlistNote", resourceCulture);
+            }
+        }        
+        /// <summary>
         ///   Looks up a localized string similar to Applied.
         /// </summary>
         public static string FastFlagPresets_Applied {
@@ -2157,7 +2165,7 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
-        ///   Looks up a localized string similar to Before applying &amp;#x201C;{0}&amp;#x201D;:.
+        ///   Looks up a localized string similar to Before applying “{0}”:.
         /// </summary>
         public static string FastFlagPresets_BeforeApplyingFormat {
             get {
@@ -2229,11 +2237,27 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
-        ///   Looks up a localized string similar to Presets are curated collections of FastFlags maintained by Rainstrap. Every flag here is on Roblox's official allowlist for local configuration, because Roblox ignores any other flag set locally. Applying a preset only changes the flags it lists..
+        ///   Looks up a localized string similar to Named after the effect they have, so you can search for what you want. Every flag here is on Roblox's official allowlist for local configuration, because Roblox silently ignores any other flag set locally. Applying a preset only changes the flags it lists..
         /// </summary>
         public static string FastFlagPresets_Intro {
             get {
                 return ResourceManager.GetString("FastFlagPresets_Intro", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing matches "{0}". Presets only exist for flags Roblox still allows to be set locally, so the list is deliberately short. Try a broader word, or open the Fast Flag Editor to set a flag by hand..
+        /// </summary>
+        public static string FastFlagPresets_NoMatches {
+            get {
+                return ResourceManager.GetString("FastFlagPresets_NoMatches", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to No matching presets.
+        /// </summary>
+        public static string FastFlagPresets_NoMatchesTitle {
+            get {
+                return ResourceManager.GetString("FastFlagPresets_NoMatchesTitle", resourceCulture);
             }
         }        
         /// <summary>
@@ -2269,7 +2293,7 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
-        ///   Looks up a localized string similar to Remove &amp;#x201C;{0}&amp;#x201D;? This clears the {1} flags the preset sets so Roblox falls back to its own defaults. Flags the preset does not set are left alone..
+        ///   Looks up a localized string similar to Remove “{0}”? This clears the {1} flags the preset sets so Roblox falls back to its own defaults. Flags the preset does not set are left alone..
         /// </summary>
         public static string FastFlagPresets_RemoveConfirm_Message {
             get {
@@ -2298,6 +2322,30 @@ namespace Bloxstrap.Resources {
         public static string FastFlagPresets_ResetSharedWithControlsFormat {
             get {
                 return ResourceManager.GetString("FastFlagPresets_ResetSharedWithControlsFormat", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to experimental.
+        /// </summary>
+        public static string FastFlagPresets_Risk_Experimental {
+            get {
+                return ResourceManager.GetString("FastFlagPresets_Risk_Experimental", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to risky.
+        /// </summary>
+        public static string FastFlagPresets_Risk_Risky {
+            get {
+                return ResourceManager.GetString("FastFlagPresets_Risk_Risky", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Search presets, e.g. grey sky, grass, performance, vulkan.
+        /// </summary>
+        public static string FastFlagPresets_SearchPlaceholder {
+            get {
+                return ResourceManager.GetString("FastFlagPresets_SearchPlaceholder", resourceCulture);
             }
         }        
         /// <summary>
@@ -3261,7 +3309,7 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
-        ///   Looks up a localized string similar to Change deployment and installation settings for Roblox &amp;amp; Rainstrap..
+        ///   Looks up a localized string similar to Change deployment and installation settings for Roblox &amp; Rainstrap..
         /// </summary>
         public static string Menu_Channel_Description {
             get {
@@ -3738,14 +3786,6 @@ namespace Bloxstrap.Resources {
         public static string Menu_FastFlags_Presets_RenderingMode_Title {
             get {
                 return ResourceManager.GetString("Menu.FastFlags.Presets.RenderingMode.Title", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Presets.
-        /// </summary>
-        public static string Menu_FastFlags_Presets_Title {
-            get {
-                return ResourceManager.GetString("Menu_FastFlags_Presets_Title", resourceCulture);
             }
         }        
         /// <summary>
@@ -4445,14 +4485,6 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
-        ///   Looks up a localized string similar to RainHub.
-        /// </summary>
-        public static string Menu_RainHub_Title {
-            get {
-                return ResourceManager.GetString("Menu_RainHub_Title", resourceCulture);
-            }
-        }        
-        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Menu_Save {
@@ -4573,11 +4605,43 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
+        ///   Looks up a localized string similar to Version Control.
+        /// </summary>
+        public static string Menu_VersionControl_Title {
+            get {
+                return ResourceManager.GetString("Menu.VersionControl.Title", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Presets.
+        /// </summary>
+        public static string Menu_FastFlags_Presets_Title {
+            get {
+                return ResourceManager.GetString("Menu_FastFlags_Presets_Title", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to RainHub.
+        /// </summary>
+        public static string Menu_RainHub_Title {
+            get {
+                return ResourceManager.GetString("Menu_RainHub_Title", resourceCulture);
+            }
+        }        
+        /// <summary>
         ///   Looks up a localized string similar to Icons.
         /// </summary>
         public static string Paths_Icons {
             get {
                 return ResourceManager.GetString("Paths.Icons", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Beta.
+        /// </summary>
+        public static string RainHub_Badge_Beta {
+            get {
+                return ResourceManager.GetString("RainHub_Badge_Beta", resourceCulture);
             }
         }        
         /// <summary>
@@ -4834,14 +4898,6 @@ namespace Bloxstrap.Resources {
         public static string RainHub_Intro_Description {
             get {
                 return ResourceManager.GetString("RainHub_Intro_Description", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Beta.
-        /// </summary>
-        public static string RainHub_Badge_Beta {
-            get {
-                return ResourceManager.GetString("RainHub_Badge_Beta", resourceCulture);
             }
         }        
         /// <summary>
@@ -5501,6 +5557,14 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
+        ///   Looks up a localized string similar to Asking Roblox which version this channel currently ships....
+        /// </summary>
+        public static string Updates_CheckingDescription {
+            get {
+                return ResourceManager.GetString("Updates.CheckingDescription", resourceCulture);
+            }
+        }        
+        /// <summary>
         ///   Looks up a localized string similar to Check for updates.
         /// </summary>
         public static string Updates_CheckNow {
@@ -5565,15 +5629,7 @@ namespace Bloxstrap.Resources {
             }
         }        
         /// <summary>
-        ///   Looks up a localized string similar to Checking rollback availability....
-        /// </summary>
-        public static string Updates_History_CheckingRollback {
-            get {
-                return ResourceManager.GetString("Updates.History.CheckingRollback", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Previously installed Roblox versions. You can roll back to a version if it's still available from Roblox..
+        ///   Looks up a localized string similar to Versions this device has installed before. This is a record of what happened here, not a list of everything Roblox offers - use Version Control to choose which one to use..
         /// </summary>
         public static string Updates_History_Description {
             get {
@@ -5602,70 +5658,6 @@ namespace Bloxstrap.Resources {
         public static string Updates_History_InstalledOn {
             get {
                 return ResourceManager.GetString("Updates.History.InstalledOn", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Rollback available.
-        /// </summary>
-        public static string Updates_History_RollbackAvailable {
-            get {
-                return ResourceManager.GetString("Updates.History.RollbackAvailable", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Roll back.
-        /// </summary>
-        public static string Updates_History_RollbackButton {
-            get {
-                return ResourceManager.GetString("Updates.History.RollbackButton", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Rainstrap will download and install Roblox {0} silently, without launching it. Please note: â€¢ Roblox may require a newer version again at any time; if so, updating becomes mandatory and this rollback will be replaced on your next launch (set updates to "Ask before updating" to hold it longer). â€¢ Saved settings carry over, but an older client may behave differently with current content. â€¢ You can always update again normally afterwards..
-        /// </summary>
-        public static string Updates_History_RollbackConfirmText {
-            get {
-                return ResourceManager.GetString("Updates.History.RollbackConfirmText", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Roll back Roblox?.
-        /// </summary>
-        public static string Updates_History_RollbackConfirmTitle {
-            get {
-                return ResourceManager.GetString("Updates.History.RollbackConfirmTitle", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Rollback failed: {0}.
-        /// </summary>
-        public static string Updates_History_RollbackFailed {
-            get {
-                return ResourceManager.GetString("Updates.History.RollbackFailed", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Rollback to Roblox {0} started. Roblox will install in the background..
-        /// </summary>
-        public static string Updates_History_RollbackStarted {
-            get {
-                return ResourceManager.GetString("Updates.History.RollbackStarted", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to Rollback unavailable (Roblox no longer provides this version).
-        /// </summary>
-        public static string Updates_History_RollbackUnavailable {
-            get {
-                return ResourceManager.GetString("Updates.History.RollbackUnavailable", resourceCulture);
-            }
-        }        
-        /// <summary>
-        ///   Looks up a localized string similar to This version is no longer available from Roblox. It cannot be rolled back to..
-        /// </summary>
-        public static string Updates_History_RollbackUnavailableMessage {
-            get {
-                return ResourceManager.GetString("Updates.History.RollbackUnavailableMessage", resourceCulture);
             }
         }        
         /// <summary>
@@ -5714,6 +5706,30 @@ namespace Bloxstrap.Resources {
         public static string Updates_NotChecked {
             get {
                 return ResourceManager.GetString("Updates.NotChecked", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to saved result from {0}.
+        /// </summary>
+        public static string Updates_RestoredResult {
+            get {
+                return ResourceManager.GetString("Updates.RestoredResult", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} This is the result of your last check, saved so it survives closing this tab. Use "Check for updates" to run a new one..
+        /// </summary>
+        public static string Updates_RestoredStatusDescription {
+            get {
+                return ResourceManager.GetString("Updates.RestoredStatusDescription", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Previously checked: {0}.
+        /// </summary>
+        public static string Updates_RestoredStatusTitle {
+            get {
+                return ResourceManager.GetString("Updates.RestoredStatusTitle", resourceCulture);
             }
         }        
         /// <summary>
@@ -5787,6 +5803,462 @@ namespace Bloxstrap.Resources {
             get {
                 return ResourceManager.GetString("Updates.UpToDateDescription", resourceCulture);
             }
-        }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to A newer Roblox version is available. Current selected version: {0} Available version: {1} Would you like to update Roblox now, or continue using your selected version? Choose "Yes" to update to {1}, or "No" to keep {0}.{2}.
+        /// </summary>
+        public static string UpgradeNotify_AvailableMessage {
+            get {
+                return ResourceManager.GetString("UpgradeNotify.AvailableMessage", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to You have chosen to use an older version. Updating will replace that choice..
+        /// </summary>
+        public static string UpgradeNotify_PinnedNote {
+            get {
+                return ResourceManager.GetString("UpgradeNotify.PinnedNote", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox update available.
+        /// </summary>
+        public static string UpgradeNotify_Title {
+            get {
+                return ResourceManager.GetString("UpgradeNotify.Title", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Details.
+        /// </summary>
+        public static string VersionControl_Action_Details {
+            get {
+                return ResourceManager.GetString("VersionControl.Action.Details", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        public static string VersionControl_Action_Download {
+            get {
+                return ResourceManager.GetString("VersionControl.Action.Download", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Follow channel.
+        /// </summary>
+        public static string VersionControl_Action_FollowChannel {
+            get {
+                return ResourceManager.GetString("VersionControl.Action.FollowChannel", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        public static string VersionControl_Action_Remove {
+            get {
+                return ResourceManager.GetString("VersionControl.Action.Remove", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this version.
+        /// </summary>
+        public static string VersionControl_Action_Select {
+            get {
+                return ResourceManager.GetString("VersionControl.Action.Select", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox can stop accepting older versions at any time. If an older version stops working, Roblox will ask you to update and Rainstrap cannot change that..
+        /// </summary>
+        public static string VersionControl_AgeWarning {
+            get {
+                return ResourceManager.GetString("VersionControl.AgeWarning", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed.
+        /// </summary>
+        public static string VersionControl_Badge_Installed {
+            get {
+                return ResourceManager.GetString("VersionControl.Badge.Installed", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Latest.
+        /// </summary>
+        public static string VersionControl_Badge_Latest {
+            get {
+                return ResourceManager.GetString("VersionControl.Badge.Latest", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected.
+        /// </summary>
+        public static string VersionControl_Badge_Selected {
+            get {
+                return ResourceManager.GetString("VersionControl.Badge.Selected", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose which Roblox version Rainstrap uses. Your selection is remembered and keeps working across restarts..
+        /// </summary>
+        public static string VersionControl_Description {
+            get {
+                return ResourceManager.GetString("VersionControl.Description", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Availability.
+        /// </summary>
+        public static string VersionControl_Details_Availability {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Availability", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Channel.
+        /// </summary>
+        public static string VersionControl_Details_Channel {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Channel", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Version identifier.
+        /// </summary>
+        public static string VersionControl_Details_Guid {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Guid", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Published.
+        /// </summary>
+        public static string VersionControl_Details_Published {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Published", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Support state.
+        /// </summary>
+        public static string VersionControl_Details_Support {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Support", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox refused this version on launch and asked for an update. Rainstrap will not try to work around that. Pick another version..
+        /// </summary>
+        public static string VersionControl_Details_Support_BLOCKEDBYROBLOX {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Support.BLOCKEDBYROBLOX", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed files are incomplete. Reinstall to repair..
+        /// </summary>
+        public static string VersionControl_Details_Support_CORRUPTEDINSTALLATION {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Support.CORRUPTEDINSTALLATION", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox no longer publishes this version, so it cannot be downloaded or repaired..
+        /// </summary>
+        public static string VersionControl_Details_Support_NOLONGERPUBLISHED {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Support.NOLONGERPUBLISHED", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Usable: published and installed correctly.
+        /// </summary>
+        public static string VersionControl_Details_Support_SUPPORTED {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Support.SUPPORTED", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Not yet verified.
+        /// </summary>
+        public static string VersionControl_Details_Support_UNKNOWN {
+            get {
+                return ResourceManager.GetString("VersionControl.Details.Support.UNKNOWN", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Version {0}.
+        /// </summary>
+        public static string VersionControl_DetailsTitle {
+            get {
+                return ResourceManager.GetString("VersionControl.DetailsTitle", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not download Roblox {0}: {1}.
+        /// </summary>
+        public static string VersionControl_DownloadFailed {
+            get {
+                return ResourceManager.GetString("VersionControl.DownloadFailed", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox no longer publishes {0}, so it cannot be downloaded..
+        /// </summary>
+        public static string VersionControl_DownloadFailed_Unpublished {
+            get {
+                return ResourceManager.GetString("VersionControl.DownloadFailed.Unpublished", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading Roblox {0}. This runs in the background; Roblox will not launch automatically..
+        /// </summary>
+        public static string VersionControl_DownloadStarted {
+            get {
+                return ResourceManager.GetString("VersionControl.DownloadStarted", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox {0} finished installing and passed validation..
+        /// </summary>
+        public static string VersionControl_DownloadSucceeded {
+            get {
+                return ResourceManager.GetString("VersionControl.DownloadSucceeded", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox {0} finished downloading, but the installed files did not pass validation. Try downloading it again..
+        /// </summary>
+        public static string VersionControl_DownloadSucceeded_NotValidated {
+            get {
+                return ResourceManager.GetString("VersionControl.DownloadSucceeded.NotValidated", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to No versions discovered yet. Use "Refresh versions" to check what Roblox currently offers..
+        /// </summary>
+        public static string VersionControl_Empty {
+            get {
+                return ResourceManager.GetString("VersionControl.Empty", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Following the {0} channel automatically.
+        /// </summary>
+        public static string VersionControl_FollowingChannel {
+            get {
+                return ResourceManager.GetString("VersionControl.FollowingChannel", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Last refreshed: {0}.
+        /// </summary>
+        public static string VersionControl_LastRefreshed {
+            get {
+                return ResourceManager.GetString("VersionControl.LastRefreshed", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox does not publish a list of older versions, so this shows the current release plus versions this device has already seen. It is not a complete catalogue..
+        /// </summary>
+        public static string VersionControl_Limitation_NoHistoryEndpoint {
+            get {
+                return ResourceManager.GetString("VersionControl.Limitation.NoHistoryEndpoint", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Some information could not be read, so this list may be incomplete..
+        /// </summary>
+        public static string VersionControl_Limitation_PartialRefresh {
+            get {
+                return ResourceManager.GetString("VersionControl.Limitation.PartialRefresh", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Not refreshed yet.
+        /// </summary>
+        public static string VersionControl_NeverRefreshed {
+            get {
+                return ResourceManager.GetString("VersionControl.NeverRefreshed", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox {0} is selected but its installed files are incomplete..
+        /// </summary>
+        public static string VersionControl_RecoveryMessage_Invalid {
+            get {
+                return ResourceManager.GetString("VersionControl.RecoveryMessage.Invalid", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox {0} is selected but is not installed..
+        /// </summary>
+        public static string VersionControl_RecoveryMessage_Missing {
+            get {
+                return ResourceManager.GetString("VersionControl.RecoveryMessage.Missing", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox {0} is selected but could not be verified..
+        /// </summary>
+        public static string VersionControl_RecoveryMessage_Unknown {
+            get {
+                return ResourceManager.GetString("VersionControl.RecoveryMessage.Unknown", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox {0} is selected, but Roblox no longer publishes it, so it can no longer be installed..
+        /// </summary>
+        public static string VersionControl_RecoveryMessage_Unpublished {
+            get {
+                return ResourceManager.GetString("VersionControl.RecoveryMessage.Unpublished", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} Would you like to download it again? Choosing No switches to the current Roblox release..
+        /// </summary>
+        public static string VersionControl_RecoveryPrompt {
+            get {
+                return ResourceManager.GetString("VersionControl.RecoveryPrompt", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected version unavailable.
+        /// </summary>
+        public static string VersionControl_RecoveryTitle {
+            get {
+                return ResourceManager.GetString("VersionControl.RecoveryTitle", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh versions.
+        /// </summary>
+        public static string VersionControl_Refresh {
+            get {
+                return ResourceManager.GetString("VersionControl.Refresh", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not refresh versions: {0}.
+        /// </summary>
+        public static string VersionControl_RefreshFailed {
+            get {
+                return ResourceManager.GetString("VersionControl.RefreshFailed", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Refreshing....
+        /// </summary>
+        public static string VersionControl_Refreshing {
+            get {
+                return ResourceManager.GetString("VersionControl.Refreshing", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not remove Roblox {0}: {1}.
+        /// </summary>
+        public static string VersionControl_RemoveFailed {
+            get {
+                return ResourceManager.GetString("VersionControl.RemoveFailed", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete the installed copy of Roblox {0}? Your selected version is never removed by this..
+        /// </summary>
+        public static string VersionControl_RemoveMessage {
+            get {
+                return ResourceManager.GetString("VersionControl.RemoveMessage", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox {0} is the version Rainstrap is set to use, so it cannot be removed..
+        /// </summary>
+        public static string VersionControl_RemoveRefused_Protected {
+            get {
+                return ResourceManager.GetString("VersionControl.RemoveRefused.Protected", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Rainstrap will use Roblox {0} from now on..
+        /// </summary>
+        public static string VersionControl_SelectedMessage {
+            get {
+                return ResourceManager.GetString("VersionControl.SelectedMessage", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected version.
+        /// </summary>
+        public static string VersionControl_SelectedVersion {
+            get {
+                return ResourceManager.GetString("VersionControl.SelectedVersion", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to The installed copy of Roblox {0} is incomplete and cannot be used. Download it again to repair it..
+        /// </summary>
+        public static string VersionControl_SelectFailed_Invalid {
+            get {
+                return ResourceManager.GetString("VersionControl.SelectFailed.Invalid", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox {0} is not installed. Download it first..
+        /// </summary>
+        public static string VersionControl_SelectFailed_NotInstalled {
+            get {
+                return ResourceManager.GetString("VersionControl.SelectFailed.NotInstalled", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox refused this version last time it ran and asked for an update. Choose a newer version instead..
+        /// </summary>
+        public static string VersionControl_SelectFailed_Refused {
+            get {
+                return ResourceManager.GetString("VersionControl.SelectFailed.Refused", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Roblox no longer publishes {0}, so it cannot be selected or reinstalled..
+        /// </summary>
+        public static string VersionControl_SelectFailed_Unpublished {
+            get {
+                return ResourceManager.GetString("VersionControl.SelectFailed.Unpublished", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Available to download.
+        /// </summary>
+        public static string VersionControl_Status_Available {
+            get {
+                return ResourceManager.GetString("VersionControl.Status.Available", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to No longer published by Roblox.
+        /// </summary>
+        public static string VersionControl_Status_Unavailable {
+            get {
+                return ResourceManager.GetString("VersionControl.Status.Unavailable", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Availability could not be verified.
+        /// </summary>
+        public static string VersionControl_Status_Unknown {
+            get {
+                return ResourceManager.GetString("VersionControl.Status.Unknown", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Version Control.
+        /// </summary>
+        public static string VersionControl_Title {
+            get {
+                return ResourceManager.GetString("VersionControl.Title", resourceCulture);
+            }
+        }        
     }
 }

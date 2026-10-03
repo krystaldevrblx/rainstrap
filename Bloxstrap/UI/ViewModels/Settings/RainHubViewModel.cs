@@ -40,7 +40,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
             OpenRainHubDevicesCommand = new RelayCommand(() => Utilities.ShellExecute(RainHubClient.DevicesUrl));
 
             RefreshAllCommand = new AsyncRelayCommand(LoadAllAsync);
-            RefreshSignalsCommand = new AsyncRelayCommand(() => LoadSignalsAsync(_cts.Token));
 
             SearchGamesCommand = new AsyncRelayCommand(() => SearchGamesAsync(_cts.Token));
             RefreshServersCommand = new AsyncRelayCommand(() => RefreshServersAsync(_cts.Token));
@@ -48,7 +47,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
             JoinServerCommand = new RelayCommand<RainHubServerItem>(JoinServer);
             InspectServerCommand = new RelayCommand<RainHubServerItem>(InspectServer);
             JoinQuickCommand = new AsyncRelayCommand(() => QuickJoinAsync(_cts.Token));
-            OpenSignalServersCommand = new RelayCommand<RainHubSignalItem>(OpenSignalGame);
 
             RefreshDiscoveryCommand = new AsyncRelayCommand(() => LoadDiscoveryAsync(_cts.Token));
             PlayGameCommand = new RelayCommand<RainHubGameItem>(PlayGame);
@@ -63,14 +61,12 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public ICommand OpenRainHubWebsiteCommand { get; }
         public ICommand OpenRainHubDevicesCommand { get; }
         public ICommand RefreshAllCommand { get; }
-        public ICommand RefreshSignalsCommand { get; }
         public ICommand SearchGamesCommand { get; }
         public ICommand RefreshServersCommand { get; }
         public ICommand SelectSearchResultCommand { get; }
         public ICommand JoinServerCommand { get; }
         public ICommand InspectServerCommand { get; }
         public ICommand JoinQuickCommand { get; }
-        public ICommand OpenSignalServersCommand { get; }
         public ICommand RefreshDiscoveryCommand { get; }
         public ICommand PlayGameCommand { get; }
         public ICommand FindServersCommand { get; }
@@ -306,102 +302,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 OnPropertyChanged(nameof(NeedsRelink));
                 OnPropertyChanged(nameof(HasNoRelinkNeeded));
             }
-        }
-
-        #endregion
-
-        #region Live signals
-
-        public ObservableCollection<RainHubSignalItem> LiveSignals { get; } = new();
-
-        private bool _isLoadingSignals;
-        public bool IsLoadingSignals
-        {
-            get => _isLoadingSignals;
-            private set
-            {
-                _isLoadingSignals = value;
-                OnPropertyChanged(nameof(IsLoadingSignals));
-            }
-        }
-
-        public bool HasSignals => LiveSignals.Count > 0;
-
-        /// <summary>Inverse of <see cref="HasSignals"/>, used for the empty state.</summary>
-        public bool IsEmptySignals => !HasSignals;
-
-        public string SignalsEmptyText => HasSignals ? "" : Strings.RainHub_SignalsEmpty;
-
-        private void RaiseSignalsChanged()
-        {
-            OnPropertyChanged(nameof(HasSignals));
-            OnPropertyChanged(nameof(IsEmptySignals));
-            OnPropertyChanged(nameof(SignalsEmptyText));
-        }
-
-        private async Task LoadSignalsAsync(CancellationToken token)
-        {
-            IsLoadingSignals = true;
-
-            RainHubResult<RainHubLiveSignalsResponse> result;
-
-            try
-            {
-                result = await RainHubClient.GetLiveSignalsAsync(token).ConfigureAwait(true);
-            }
-            catch (OperationCanceledException)
-            {
-                IsLoadingSignals = false;
-                return;
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteException("RainHubViewModel::LoadSignalsAsync", ex);
-                IsLoadingSignals = false;
-                SetError(Strings.RainHub_SignalsFailed);
-                return;
-            }
-
-            IsLoadingSignals = false;
-
-            if (token.IsCancellationRequested)
-                return;
-
-            if (!result.Success || result.Value is null)
-            {
-                // Live signals are the one part that works while unlinked, so a failure
-                // here is informational rather than blocking.
-                SetError(result.Error, result.Message, Strings.RainHub_SignalsFailed);
-                return;
-            }
-
-            LiveSignals.Clear();
-
-            foreach (var signal in result.Value.Signals)
-                LiveSignals.Add(new RainHubSignalItem(signal));
-
-            RaiseSignalsChanged();
-        }
-
-        /// <summary>
-        /// Sends a live signal's game into the Server Finder flow, so "find servers" from
-        /// the live feed uses the same place-id path as the search box - and actually
-        /// loads the servers, rather than leaving the user to discover they must also
-        /// refresh.
-        /// </summary>
-        private void OpenSignalGame(RainHubSignalItem? signal)
-        {
-            if (signal?.PlaceId is not { } placeId)
-                return;
-
-            if (!IsLinked)
-            {
-                SetError(Strings.RainHub_LinkToUseThis);
-                return;
-            }
-
-            UseGame(placeId, signal.GameName);
-            _ = RefreshServersAsync(_cts.Token);
         }
 
         #endregion
@@ -1168,12 +1068,16 @@ namespace Bloxstrap.UI.ViewModels.Settings
         #region Lifecycle
 
         /// <summary>
-        /// Called when the page is shown. Live signals work whether or not the device is
-        /// linked; everything else needs the link.
+        /// Called when the page is shown. Everything on this page needs the link, which
+        /// is why the tab is only visible when one exists.
         /// </summary>
         public async Task OnPageLoadedAsync()
         {
             RaiseLinkStateChanged();
+
+            if (!IsLinked)
+                return;
+
             await LoadAllAsync();
         }
 
@@ -1181,13 +1085,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             ClearError();
 
-            await LoadSignalsAsync(_cts.Token);
-
-            if (_cts.IsCancellationRequested)
-                return;
-
-            if (IsLinked)
-                await SendHeartbeatAsync();
+            await SendHeartbeatAsync();
 
             if (_cts.IsCancellationRequested || !IsLinked)
                 return;
@@ -1214,7 +1112,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private void ResetData()
         {
-            LiveSignals.Clear();
             SearchResults.Clear();
             Servers.Clear();
             DiscoveryGames.Clear();
@@ -1224,7 +1121,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
             DiscoveryGenresText = "";
             ClearSelectedServer();
 
-            RaiseSignalsChanged();
             OnPropertyChanged(nameof(HasSearchResults));
             OnPropertyChanged(nameof(HasDiscoveryGames));
             OnPropertyChanged(nameof(DiscoveryEmptyText));

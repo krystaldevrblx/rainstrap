@@ -46,9 +46,14 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         public string FlagsCountText => string.Format(Strings.FastFlagPresets_FlagsCount, FlagCount);
 
-        public string CategoryName =>
-            Strings.ResourceManager.GetString($"FastFlagPresets_Category_{Preset.Category}")
-            ?? Preset.Category.ToString();
+        /// <summary>
+        /// The allowlist status of every flag this preset sets, shown so a user can see
+        /// the change is one Roblox actually reads without having to trust the label.
+        /// </summary>
+        public string AllowlistNoteText =>
+            string.Format(
+                Strings.FastFlagPresets_AllowlistNote,
+                string.Join(", ", Flags.Select(f => f.Name)));
 
         public IReadOnlyList<FastFlagPresetFlag> Flags { get; }
 
@@ -56,6 +61,17 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public string Warning => Preset.Warning ?? "";
 
         public bool IsRisky => Preset.Risk != FastFlagPresetRisk.None;
+
+        /// <summary>
+        /// A short label so a preset carrying a caution is visible before it is opened,
+        /// rather than only after the user has already scrolled into the warning text.
+        /// </summary>
+        public string RiskText => Preset.Risk switch
+        {
+            FastFlagPresetRisk.Risky => Strings.FastFlagPresets_Risk_Risky,
+            FastFlagPresetRisk.Experimental => Strings.FastFlagPresets_Risk_Experimental,
+            _ => "",
+        };
 
         /// <summary>
         /// Presets that would set at least one shared flag to a different value.
@@ -149,7 +165,36 @@ namespace Bloxstrap.UI.ViewModels.Settings
             OpenFastFlagEditorCommand = new RelayCommand(() => OpenFlagEditorEvent?.Invoke(this, EventArgs.Empty));
         }
 
+        /// <summary>
+        /// Presets matching the current search, or all of them when the box is empty.
+        /// Replaced wholesale on each search rather than filtered in place, so a removed
+        /// item cannot linger in the list.
+        /// </summary>
         public ObservableCollection<FastFlagPresetItem> Presets { get; } = new();
+
+        private string _searchQuery = "";
+
+        /// <summary>
+        /// Free-text filter over preset name, description and search terms.
+        ///
+        /// The point of naming presets after their visible effect is that someone can
+        /// type that effect in and find it, so this box is the feature rather than a
+        /// convenience.
+        /// </summary>
+        public string SearchQuery
+        {
+            get => _searchQuery;
+            set
+            {
+                if (_searchQuery == value)
+                    return;
+                _searchQuery = value;
+                OnPropertyChanged(nameof(SearchQuery));
+                LoadPresets();
+            }
+        }
+
+        public bool HasSearchQuery => !string.IsNullOrWhiteSpace(_searchQuery);
 
         public ICommand ApplyCommand { get; }
         public ICommand RemoveCommand { get; }
@@ -188,14 +233,25 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         public bool HasPresets => Presets.Count > 0;
 
+        /// <summary>
+        /// True when a search is active and matched nothing. Drives the empty state, so
+        /// "no such preset" is not shown as "the catalogue is empty".
+        /// </summary>
+        public bool NoMatchesVisibility => HasSearchQuery && Presets.Count == 0;
+
+        public string NoMatchesText => string.Format(Strings.FastFlagPresets_NoMatches, SearchQuery);
+
         public void LoadPresets()
         {
             Presets.Clear();
 
-            foreach (var preset in FastFlagPresetCatalogue.All)
+            foreach (var preset in FastFlagPresetCatalogue.Search(_searchQuery))
                 Presets.Add(new FastFlagPresetItem(preset));
 
             OnPropertyChanged(nameof(HasPresets));
+            OnPropertyChanged(nameof(HasSearchQuery));
+            OnPropertyChanged(nameof(NoMatchesVisibility));
+            OnPropertyChanged(nameof(NoMatchesText));
         }
 
         public void RefreshStates()
@@ -232,8 +288,14 @@ namespace Bloxstrap.UI.ViewModels.Settings
                     return;
             }
 
+            // Deliberately not saved here. Applying a preset goes through the same
+            // FastFlagManager as typing a flag into the editor, and the editor also
+            // waits for the window's Save. Saving here would make presets the only
+            // setting that persists without asking, which is exactly the kind of
+            // surprise the rest of the settings page avoids.
             foreach (var (flag, value) in item.Preset.Flags)
                 App.FastFlags.SetValue(flag, value);
+
             MessageTitle = Strings.FastFlagPresets_AppliedTitle;
             Message = string.Format(Strings.FastFlagPresets_AppliedMessage, item.FlagCount);
 

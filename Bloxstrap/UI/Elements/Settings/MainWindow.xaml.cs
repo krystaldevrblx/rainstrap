@@ -14,6 +14,7 @@ using Wpf.Ui.Controls;
 using Bloxstrap.UI.ViewModels.Settings;
 using Bloxstrap.UI.Elements.Settings.Pages;
 using Bloxstrap.UI.Elements.Controls;
+using Bloxstrap.Integrations.RainHub;
 
 namespace Bloxstrap.UI.Elements.Settings
 {
@@ -46,6 +47,8 @@ namespace Bloxstrap.UI.Elements.Settings
             gbs.Opacity = viewModel.GBSEnabled ? 1 : 0.5;
             gbs.IsEnabled = viewModel.GBSEnabled; // binding doesnt work as expected so we are setting it in here instead
 
+            ApplyRainHubTabVisibility();
+
             LoadState();
 
             string? lastPageName = App.State.Prop.LastPage;
@@ -62,9 +65,9 @@ namespace Bloxstrap.UI.Elements.Settings
                     fastflags.PageType = typeof(FastFlagsDisabled);
             });
 
-            if (lastPage != null)
-                SafeNavigate(lastPage);
-
+            // The RainHub tab appears and disappears with the link, including when the
+            // link is dropped from inside the page itself. Re-evaluated on navigation
+            // so a page that unlinks itself is reflected as soon as the user leaves.
             RootNavigation.Navigated += OnNavigation!;
 
             void OnNavigation(object? sender, RoutedNavigationEventArgs e)
@@ -72,7 +75,12 @@ namespace Bloxstrap.UI.Elements.Settings
                 INavigationItem? currentPage = RootNavigation.Current;
 
                 App.State.Prop.LastPage = currentPage?.PageType.FullName!;
+
+                ApplyRainHubTabVisibility();
             }
+
+            if (lastPage != null)
+                SafeNavigate(lastPage);
 
             // run scraper
             this.Loaded += (s, e) =>
@@ -121,6 +129,27 @@ namespace Bloxstrap.UI.Elements.Settings
                 this.Left = _state.Left;
                 this.Top = _state.Top;
             }
+        }
+
+        /// <summary>
+        /// Shows the RainHub tab only while an account is actually linked.
+        ///
+        /// Shown conditionally rather than always: with no link the page can do nothing
+        /// except offer to link, which belongs in settings, and an inviting tab that
+        /// leads to a dead end is worse than no tab. Set in code because the same
+        /// reason that applies to the Global Settings item - the binding is not
+        /// evaluated reliably by NavigationFluent.
+        /// </summary>
+        private void ApplyRainHubTabVisibility()
+        {
+            bool linked = RainHubAccount.IsLinked;
+
+            rainhub.Visibility = linked ? Visibility.Visible : Visibility.Collapsed;
+
+            // The remembered last page is still valid while linked, but must not be
+            // restored onto a tab that is hidden.
+            if (!linked && RootNavigation.Current?.PageType == typeof(RainHubPage))
+                SafeNavigate(typeof(BehaviourPage));
         }
 
         private async void SafeNavigate(Type page)

@@ -472,47 +472,6 @@
 
             <TabControl Margin="0,16,0,0" Background="Transparent" BorderThickness="0">
 
-                <!-- ─────────── LIVE ─────────── -->
-                <TabItem Header="{x:Static resources:Strings.RainHub_Tab_Live}">
-                    <StackPanel Margin="0,12,0,0">
-                        <TextBlock FontSize="16" FontWeight="Medium"
-                                   Text="{x:Static resources:Strings.RainHub_Live_Title}" />
-                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap"
-                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                   Text="{x:Static resources:Strings.RainHub_Live_Description}" />
-
-                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                            <ui:ProgressRing Width="18" Height="18" Margin="0,0,10,0" VerticalAlignment="Center"
-                                            IsIndeterminate="True"
-                                            Visibility="{Binding IsLoadingSignals, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                            <ui:Button Icon="ArrowSync16"
-                                       Content="{x:Static resources:Strings.RainHub_Live_Refresh}"
-                                       Command="{Binding RefreshSignalsCommand}" />
-                        </StackPanel>
-
-                        <TextBlock Margin="0,12,0,0" FontSize="12" TextWrapping="Wrap"
-                                   Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                   Text="{Binding SignalsEmptyText, Mode=OneWay}"
-                                   Visibility="{Binding IsEmptySignals, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-                        <ListView MaxHeight="420" Margin="0,8,0,0"
-                                  ItemsSource="{Binding LiveSignals, Mode=OneWay}"
-                                  Background="Transparent" BorderThickness="0"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                  VirtualizingPanel.IsVirtualizing="True"
-                                  VirtualizingPanel.VirtualizationMode="Recycling"
-                                  Visibility="{Binding HasSignals, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <ListView.ItemContainerStyle>
-                                <StaticResource ResourceKey="RainHubFlatListItem" />
-                            </ListView.ItemContainerStyle>
-                            <ListView.ItemTemplate>
-                                <StaticResource ResourceKey="RainHubSignalRowTemplate" />
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </StackPanel>
-                </TabItem>
-
                 <!-- ─────────── SERVERS ─────────── -->
                 <TabItem Header="{x:Static resources:Strings.RainHub_Tab_Servers}">
                     <StackPanel Margin="0,12,0,0">

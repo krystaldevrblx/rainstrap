@@ -35,7 +35,14 @@ namespace Bloxstrap
 
         public const string ApisKey = $"Software\\{ProjectName}";
 
-        public static LaunchSettings LaunchSettings { get; private set; } = null!;
+        /// <summary>
+        /// Launch flags for this process.
+        ///
+        /// The setter is internal rather than private so the static bootstrapper
+        /// entry points (which read <c>App.LaunchSettings</c> without owning it)
+        /// can be exercised by tests without standing up a whole Application.
+        /// </summary>
+        public static LaunchSettings LaunchSettings { get; internal set; } = null!;
 
         public static BuildMetadataAttribute BuildMetadata = Assembly.GetExecutingAssembly().GetCustomAttribute<BuildMetadataAttribute>()!;
 

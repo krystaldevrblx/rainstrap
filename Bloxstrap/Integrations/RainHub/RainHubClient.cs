@@ -141,8 +141,13 @@ namespace Bloxstrap.Integrations.RainHub
         #region Public endpoints
 
         /// <summary>
-        /// GET /api/live-signals - the only RainHub data endpoint that is public, so it
-        /// works whether or not this installation is linked.
+        /// GET /api/live-signals - RainHub's public activity feed, still consumed by the
+        /// web dashboard, so the endpoint and its models are kept.
+        ///
+        /// No longer called from the RainHub settings page. That page used to show this
+        /// feed as a "Live" tab, which was live data with nothing to act on: every signal
+        /// sent the user to the same place the tab already had. The feed stays here so
+        /// re-adding it does not mean re-deriving the client call and models.
         /// </summary>
         public static async Task<RainHubResult<RainHubLiveSignalsResponse>> GetLiveSignalsAsync(
             CancellationToken cancellationToken = default)
